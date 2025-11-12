@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     filename: item.getElementsByTagName('Filename')[0].textContent,
                     year: item.getElementsByTagName('Year')[0].textContent,
                     paper: item.getElementsByTagName('Paper')[0].textContent,
+                    // ▼▼▼ THIS IS THE CORRECTED LINE THAT WAS BROKEN ▼▼▼
                     question: item.getElementsByTagName('Question')[0].textContent,
                     mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
                     otherTopics: otherTopics.join(', ') // Join other topics with a comma
@@ -54,11 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.otherTopics}</td>
             `;
 
+            // ▼▼▼ THIS IS THE SPLIT-FORM "CLICK-TO-VIEW" LOGIC ▼▼▼
+            // It has not changed. It updates the top panel.
             // 3. Add click event to row to show PDF
             tr.addEventListener('click', () => {
-                // Assumes PDFs are in a 'pdfs' folder!
-                pdfViewer.src = `pdfs/${rowData.filename}`;
+                // This updates the top panel iframe, it does NOT download
+                pdfViewer.src = `https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/${rowData.filename}`;
             });
+            // ▲▲▲ THIS IS THE LOGIC YOU WANT ▲▲▲
 
             tableBody.appendChild(tr);
         }
@@ -77,27 +81,68 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable(filteredData);
     });
 
-    // 5. Logic for the "Create HTML" button
+    // 5. Logic for the "Create HTML" button (THIS causes the download)
+    // This code only runs when you click the BUTTON
     generateBtn.addEventListener('click', () => {
-        // Get the *currently visible* (filtered) rows from the table
         const visibleRows = tableBody.querySelectorAll('tr');
-        
+        const pdfBaseUrl = "https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/";
+
         let htmlContent = `
-            <html>
-            <head><title>Filtered PDF List</title></head>
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+              <meta charset='UTF-8'>
+              <title>Filtered PDF Report</title>
+              <style>
+                body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 20px; background: #f4f4f4; }
+                h1 { text-align: center; color: #333; }
+                .pdf-section { 
+                    margin-bottom: 40px; 
+                    background: #ffffff; 
+                    padding: 15px; 
+                    border-radius: 8px; 
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+                }
+                .header-row { 
+                    font-size: 1.2em; 
+                    margin-bottom: 10px; 
+                    padding-bottom: 5px;
+                    border-bottom: 1px solid #eee;
+                }
+                .file-title { font-weight: bold; }
+                .topic-label { color: #555; }
+                embed { 
+                    width: 100%; 
+                    height: 800px; 
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+              </style>
+            </head>
             <body>
-                <h1>Filtered PDF List</h1>
-                <ul>
+                <h1>Filtered PDF Report</h1>
         `;
 
         visibleRows.forEach(row => {
-            const filename = row.cells[0].textContent; // Get filename from first cell
-            // Assuming the PDFs are in the 'pdfs' folder in your repo
-            htmlContent += `<li><a href="pdfs/${filename}">${filename}</a></li>\n`;
+            const filename = row.cells[0].textContent;
+            const mainTopic = row.cells[4].textContent;
+            const fullPdfUrl = pdfBaseUrl + filename;
+            
+            htmlContent += `
+                <div class='pdf-section'>
+                    <div class='header-row'>
+                        <span class='file-title'>${filename}</span>
+                        <span class='topic-label'>(Category: ${mainTopic})</span>
+                    </div>
+                    <embed 
+                        src='${fullPdfUrl}' 
+                        type='application/pdf'
+                    />
+                </div>
+            `;
         });
 
         htmlContent += `
-                </ul>
             </body>
             </html>
         `;
@@ -106,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const blob = new Blob([htmlContent], { type: 'text/html' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = 'filtered_list.html'; // The suggested filename
+        a.download = 'filtered_report.html';
         a.click();
         URL.revokeObjectURL(a.href);
     });
