@@ -1,10 +1,16 @@
 // Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
     
+    // Get references to all interactive elements
     const tableBody = document.getElementById('data-table-body');
     const pdfViewer = document.getElementById('pdf-viewer');
     const generateBtn = document.getElementById('generate-html-btn');
-    const filterTopicInput = document.getElementById('filter-topic');
+    
+    // Get references to the new drop-down filters
+    const topicFilter = document.getElementById('filter-topic');
+    const yearFilter = document.getElementById('filter-year');
+    const paperFilter = document.getElementById('filter-paper');
+    const questionFilter = document.getElementById('filter-question');
 
     let allData = []; // To store all parsed data from XML
 
@@ -32,14 +38,77 @@ document.addEventListener('DOMContentLoaded', () => {
                     paper: item.getElementsByTagName('Paper')[0].textContent,
                     question: item.getElementsByTagName('Question')[0].textContent,
                     mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
-                    otherTopics: otherTopics.join(', ') // Join other topics with a comma
+                    otherTopics: otherTopics.join(', ')
                 });
             }
+
+            // NEW: Populate the drop-down filters
+            populateDropdowns();
+            
+            // Add event listeners to the filters
+            topicFilter.addEventListener('change', applyFilters);
+            yearFilter.addEventListener('change', applyFilters);
+            paperFilter.addEventListener('change', applyFilters);
+            questionFilter.addEventListener('change', applyFilters);
+
             // Initial render of the table
             renderTable(allData);
         });
 
-    // 2. Function to render the table rows
+    // 2. NEW: Function to populate the drop-down lists
+    function populateDropdowns() {
+        // Use Sets to get unique values
+        const topics = [...new Set(allData.map(item => item.mainTopic))].sort();
+        const years = [...new Set(allData.map(item => item.year))].sort((a, b) => b - a); // Sort years descending
+        const papers = [...new Set(allData.map(item => item.paper))].sort();
+        const questions = [...new Set(allData.map(item => item.question))].sort();
+
+        // Helper function to add options to a select
+        const addOptions = (selectElement, options, defaultText) => {
+            selectElement.innerHTML = `<option value="all">All ${defaultText}</option>`; // Clear and add default
+            options.forEach(optionValue => {
+                const option = document.createElement('option');
+                option.value = optionValue;
+                option.text = optionValue;
+                selectElement.appendChild(option);
+            });
+        };
+
+        // Populate each drop-down
+        addOptions(topicFilter, topics, 'Topics');
+        addOptions(yearFilter, years, 'Years');
+        addOptions(paperFilter, papers, 'Papers');
+        addOptions(questionFilter, questions, 'Questions');
+    }
+
+    // 3. NEW: Function to filter data based on all drop-downs
+    function applyFilters() {
+        const selectedTopic = topicFilter.value;
+        const selectedYear = yearFilter.value;
+        const selectedPaper = paperFilter.value;
+        const selectedQuestion = questionFilter.value;
+
+        let filteredData = allData;
+
+        // Apply filters one by one
+        if (selectedTopic !== 'all') {
+            filteredData = filteredData.filter(item => item.mainTopic === selectedTopic);
+        }
+        if (selectedYear !== 'all') {
+            filteredData = filteredData.filter(item => item.year === selectedYear);
+        }
+        if (selectedPaper !== 'all') {
+            filteredData = filteredData.filter(item => item.paper === selectedPaper);
+        }
+        if (selectedQuestion !== 'all') {
+            filteredData = filteredData.filter(item => item.question === selectedQuestion);
+        }
+
+        // Re-render the table with the filtered data
+        renderTable(filteredData);
+    }
+
+    // 4. Function to render the table rows (This is from before)
     function renderTable(data) {
         tableBody.innerHTML = ''; // Clear existing table
         
@@ -54,35 +123,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.otherTopics}</td>
             `;
 
-            // ▼▼▼ THIS IS THE CORRECTED "CLICK-TO-VIEW" LOGIC ▼▼▼
+            // "Click-to-view" split-form logic
             tr.addEventListener('click', () => {
-                // Use the correct GitHub Pages URL, not raw.githubusercontent.com
                 pdfViewer.src = `https://sialaichai.github.io/physics9702/pdfs/${rowData.filename}`;
             });
-            // ▲▲▲ THIS WILL NOW WORK AS A SPLIT-FORM ▲▲▲
 
             tableBody.appendChild(tr);
         }
     }
     
-    // 4. Add filtering logic
-    filterTopicInput.addEventListener('keyup', () => {
-        const filterValue = filterTopicInput.value.toLowerCase();
-        
-        const filteredData = allData.filter(item => 
-            item.mainTopic.toLowerCase().includes(filterValue) ||
-            item.otherTopics.toLowerCase().includes(filterValue) ||
-            item.filename.toLowerCase().includes(filterValue)
-        );
-        
-        renderTable(filteredData);
-    });
-
-    // 5. Logic for the "Create HTML" button (This part is unchanged)
+    // 5. Logic for the "Create HTML" button (Unchanged)
     generateBtn.addEventListener('click', () => {
+        // This button now correctly uses the visible rows in the table,
+        // so it will respect the drop-down filters!
         const visibleRows = tableBody.querySelectorAll('tr');
-        
-        // Use the GitHub Pages URL here as well
         const pdfBaseUrl = "https://sialaichai.github.io/physics9702/pdfs/";
 
         let htmlContent = `
