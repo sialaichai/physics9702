@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable(filteredData);
     });
 
-   // 5. Logic for the "Create HTML" button
+// 5. Logic for the "Create HTML" button
 generateBtn.addEventListener('click', () => {
     // Get the *currently visible* (filtered) rows from the table
     const visibleRows = tableBody.querySelectorAll('tr');
