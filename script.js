@@ -1,4 +1,4 @@
-// Wait for the page to load 
+// Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
     
     const tableBody = document.getElementById('data-table-body');
@@ -30,7 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     filename: item.getElementsByTagName('Filename')[0].textContent,
                     year: item.getElementsByTagName('Year')[0].textContent,
                     paper: item.getElementsByTagName('Paper')[0].textContent,
+                    // ▼▼▼ THIS IS THE CORRECTED LINE ▼▼▼
                     question: item.getElementsByTagName('Question')[0].textContent,
+                    // ▲▲▲ THIS WAS THE BROKEN PART ▲▲▲
                     mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
                     otherTopics: otherTopics.join(', ') // Join other topics with a comma
                 });
@@ -56,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Add click event to row to show PDF
             tr.addEventListener('click', () => {
-                // Assumes PDFs are in a 'pdfs' folder!
-                pdfViewer.src = `pdfs/${rowData.filename}`;
+                // Use the public GitHub URL for the PDF viewer
+                pdfViewer.src = `https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/${rowData.filename}`;
             });
 
             tableBody.appendChild(tr);
@@ -77,80 +79,82 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable(filteredData);
     });
 
-// 5. Logic for the "Create HTML" button
-generateBtn.addEventListener('click', () => {
-    // Get the *currently visible* (filtered) rows from the table
-    const visibleRows = tableBody.querySelectorAll('tr');
-    
-    // THIS IS THE KEY: The public base URL for your PDF files on GitHub
-    const pdfBaseUrl = "https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/";
-
-    let htmlContent = `
-        <!DOCTYPE html>
-        <html lang='en'>
-        <head>
-          <meta charset='UTF-8'>
-          <title>Filtered PDF Report</title>
-          <style>
-            body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 20px; background: #f4f4f4; }
-            h1 { text-align: center; color: #333; }
-            .pdf-section { 
-                margin-bottom: 40px; 
-                background: #ffffff; 
-                padding: 15px; 
-                border-radius: 8px; 
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            }
-            .header-row { 
-                font-size: 1.2em; 
-                margin-bottom: 10px; 
-                padding-bottom: 5px;
-                border-bottom: 1px solid #eee;
-            }
-            .file-title { font-weight: bold; }
-            .topic-label { color: #555; }
-            embed { 
-                width: 100%; 
-                height: 800px; 
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-          </style>
-        </head>
-        <body>
-            <h1>Filtered PDF Report</h1>
-    `;
-
-    visibleRows.forEach(row => {
-        const filename = row.cells[0].textContent; // Get filename from first cell
-        const mainTopic = row.cells[4].textContent; // Get topic from 5th cell
-        const fullPdfUrl = pdfBaseUrl + filename;
+    // 5. Logic for the "Create HTML" button
+    generateBtn.addEventListener('click', () => {
+        // Get the *currently visible* (filtered) rows from the table
+        const visibleRows = tableBody.querySelectorAll('tr');
         
-        // This structure is similar to your 'Electric Field.html'
-        htmlContent += `
-            <div class='pdf-section'>
-                <div class='header-row'>
-                    <span class='file-title'>${filename}</span>
-                    <span class='topic-label'>(Category: ${mainTopic})</span>
-                </div>
-                <embed 
-                    src='${fullPdfUrl}' 
-                    type='application/pdf'
-                />
-            </div>
+        // The public base URL for your PDF files on GitHub
+        const pdfBaseUrl = "https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/";
+
+        let htmlContent = `
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+              <meta charset='UTF-8'>
+              <title>Filtered PDF Report</title>
+              <style>
+                body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 20px; background: #f4f4f4; }
+                h1 { text-align: center; color: #333; }
+                .pdf-section { 
+                    margin-bottom: 40px; 
+                    background: #ffffff; 
+                    padding: 15px; 
+                    border-radius: 8px; 
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+                }
+                .header-row { 
+                    font-size: 1.2em; 
+                    margin-bottom: 10px; 
+                    padding-bottom: 5px;
+                    border-bottom: 1px solid #eee;
+                }
+                .file-title { font-weight: bold; }
+                .topic-label { color: #555; }
+                embed { 
+                    width: 100%; 
+                    height: 800px; 
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+              </style>
+            </head>
+            <body>
+                <h1>Filtered PDF Report</h1>
         `;
+
+        visibleRows.forEach(row => {
+            const filename = row.cells[0].textContent; // Get filename from first cell
+            const mainTopic = row.cells[4].textContent; // Get topic from 5th cell
+            const fullPdfUrl = pdfBaseUrl + filename;
+            
+            // This structure is similar to your 'Electric Field.html'
+            htmlContent += `
+                <div class='pdf-section'>
+                    <div class='header-row'>
+                        <span class='file-title'>${filename}</span>
+                        <span class='topic-label'>(Category: ${mainTopic})</span>
+                    </div>
+                    <embed 
+                        src='${fullPdfUrl}' 
+                        type='application/pdf'
+                    />
+                </div>
+            `;
+        });
+
+        htmlContent += `
+            </body>
+            </html>
+        `;
+
+        // Create a file in-memory and trigger a download
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+        a.download = 'filtered_report.html'; // The suggested filename
+        a.click();
+        URL.revokeObjectURL(a.href);
     });
 
-    htmlContent += `
-        </body>
-        </html>
-    `;
-
-    // Create a file in-memory and trigger a download
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'filtered_report.html'; // The suggested filename
-    a.click();
-    URL.revokeObjectURL(a.href);
 });
