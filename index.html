@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer and Filter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="upper-panel">
+        <div id="controls">
+            <input type="text" id="filter-topic" placeholder="Filter by Topic...">
+            <input type="text" id="filter-year" placeholder="Filter by Year...">
+            <button id="generate-html-btn">Create Filtered HTML File</button>
+        </div>
+        <div id="pdf-viewer-container">
+            <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="lower-panel">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Year</th>
+                    <th>Paper</th>
+                    <th>Question</th>
+                    <th>Main Topic</th>
+                    <th>Other Topics</th>
+                </tr>
+            </thead>
+            <tbody id="data-table-body">
+                </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
