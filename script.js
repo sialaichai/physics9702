@@ -1,6 +1,6 @@
 // Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
-     
+    
     const tableBody = document.getElementById('data-table-body');
     const pdfViewer = document.getElementById('pdf-viewer');
     const generateBtn = document.getElementById('generate-html-btn');
@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     paper: item.getElementsByTagName('Paper')[0].textContent,
                     // ▼▼▼ THIS IS THE CORRECTED LINE ▼▼▼
                     question: item.getElementsByTagName('Question')[0].textContent,
-                    // ▲▲▲ THIS WAS THE BROKEN PART ▲▲▲
                     mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
                     otherTopics: otherTopics.join(', ') // Join other topics with a comma
                 });
@@ -56,11 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.otherTopics}</td>
             `;
 
+            // ▼▼▼ THIS IS THE SPLIT-FORM CODE YOU WANT ▼▼▼
             // 3. Add click event to row to show PDF
             tr.addEventListener('click', () => {
-                // Use the public GitHub URL for the PDF viewer
+                // This updates the top panel iframe, it does NOT download
                 pdfViewer.src = `https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/${rowData.filename}`;
             });
+            // ▲▲▲ THIS CODE IS CORRECT ▲▲▲
 
             tableBody.appendChild(tr);
         }
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable(filteredData);
     });
 
-    // 5. Logic for the "Create HTML" button
+    // 5. Logic for the "Create HTML" button (THIS causes the download)
     generateBtn.addEventListener('click', () => {
         // Get the *currently visible* (filtered) rows from the table
         const visibleRows = tableBody.querySelectorAll('tr');
@@ -151,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create a file in-memory and trigger a download
         const blob = new Blob([htmlContent], { type: 'text/html' });
         const a = document.createElement('a');
-a.href = URL.createObjectURL(blob);
+        a.href = URL.createObjectURL(blob);
         a.download = 'filtered_report.html'; // The suggested filename
         a.click();
         URL.revokeObjectURL(a.href);
