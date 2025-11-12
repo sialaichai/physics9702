@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     filename: item.getElementsByTagName('Filename')[0].textContent,
                     year: item.getElementsByTagName('Year')[0].textContent,
                     paper: item.getElementsByTagName('Paper')[0].textContent,
+                    // ▼▼▼ THIS IS THE CORRECTED LINE ▼▼▼
                     question: item.getElementsByTagName('Question')[0].textContent,
                     mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
                     otherTopics: otherTopics.join(', ')
