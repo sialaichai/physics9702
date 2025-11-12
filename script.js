@@ -1,6 +1,6 @@
 // Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
-    
+     
     const tableBody = document.getElementById('data-table-body');
     const pdfViewer = document.getElementById('pdf-viewer');
     const generateBtn = document.getElementById('generate-html-btn');
