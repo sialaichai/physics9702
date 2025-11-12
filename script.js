@@ -1,4 +1,3 @@
-// Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
     
     // Get references to all interactive elements
@@ -6,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pdfViewer = document.getElementById('pdf-viewer');
     const generateBtn = document.getElementById('generate-html-btn');
     
-    // Get references to the new drop-down filters
+    // Get references to the drop-down filters
     const topicFilter = document.getElementById('filter-topic');
     const yearFilter = document.getElementById('filter-year');
     const paperFilter = document.getElementById('filter-paper');
@@ -15,12 +14,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let allData = []; // To store all parsed data from XML
 
     // 1. Fetch and Parse the XML data
-    fetch('9702.xml')
-        .then(response => response.text())
+    fetch('9702.xml') // This fetch might be failing silently
+        .then(response => {
+            if (!response.ok) {
+                // This will trigger if 9702.xml is not found (e.g., 404 error)
+                throw new Error(`Failed to fetch 9702.xml - Status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
         .then(xmlData => {
+            // Check if the XML file itself has a parsing error
+            if (xmlData.getElementsByTagName('parsererror').length > 0) {
+                throw new Error('Failed to parse 9702.xml. The XML file may be corrupt.');
+            }
+
             const dataElements = xmlData.getElementsByTagName('Data');
             
+            // Check if any <Data> elements were found
+            if (dataElements.length === 0) {
+                throw new Error('XML file was loaded, but no <Data> elements were found inside it.');
+            }
+
             for (const item of dataElements) {
                 // Extract all categories
                 let otherTopics = [];
@@ -42,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // NEW: Populate the drop-down filters
+            // If we get here, data is loaded and parsed!
             populateDropdowns();
             
             // Add event listeners to the filters
@@ -53,9 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Initial render of the table
             renderTable(allData);
+        })
+        .catch(error => {
+            // ▼▼▼ THIS IS THE NEW ERROR CATCHER ▼▼▼
+            // If any of the steps above fail, this alert will show you the problem.
+            console.error('Error details:', error);
+            alert('A critical error occurred:\n\n' + error.message + 
+                  '\n\nThis is why the dropdowns are blank. Please ensure 9702.xml is in the same folder as index.html.');
         });
 
-    // 2. NEW: Function to populate the drop-down lists
+    // 2. Function to populate the drop-down lists
     function populateDropdowns() {
         // Use Sets to get unique values
         const topics = [...new Set(allData.map(item => item.mainTopic))].sort();
@@ -65,6 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Helper function to add options to a select
         const addOptions = (selectElement, options, defaultText) => {
+            if (!selectElement) {
+                console.error(`Error: The element for "${defaultText}" was not found.`);
+                return; // Stop if the HTML element doesn't exist
+            }
             selectElement.innerHTML = `<option value="all">All ${defaultText}</option>`; // Clear and add default
             options.forEach(optionValue => {
                 const option = document.createElement('option');
@@ -81,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addOptions(questionFilter, questions, 'Questions');
     }
 
-    // 3. NEW: Function to filter data based on all drop-downs
+    // 3. Function to filter data based on all drop-downs
     function applyFilters() {
         const selectedTopic = topicFilter.value;
         const selectedYear = yearFilter.value;
@@ -104,14 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
             filteredData = filteredData.filter(item => item.question === selectedQuestion);
         }
 
-        // Re-render the table with the filtered data
         renderTable(filteredData);
     }
 
-    // 4. Function to render the table rows (This is from before)
+    // 4. Function to render the table rows
     function renderTable(data) {
-        tableBody.innerHTML = ''; // Clear existing table
-        
+        tableBody.innerHTML = '';
         for (const rowData of data) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -122,82 +146,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.mainTopic}</td>
                 <td>${rowData.otherTopics}</td>
             `;
-
-            // "Click-to-view" split-form logic
             tr.addEventListener('click', () => {
                 pdfViewer.src = `https://sialaichai.github.io/physics9702/pdfs/${rowData.filename}`;
             });
-
             tableBody.appendChild(tr);
         }
     }
     
-    // 5. Logic for the "Create HTML" button (Unchanged)
+    // 5. Logic for the "Create HTML" button
     generateBtn.addEventListener('click', () => {
         const visibleRows = tableBody.querySelectorAll('tr');
         const pdfBaseUrl = "https://sialaichai.github.io/physics9702/pdfs/";
-
         let htmlContent = `
-            <!DOCTYPE html>
-            <html lang='en'>
-            <head>
-              <meta charset='UTF-8'>
-              <title>Filtered PDF Report</title>
-              <style>
+            <!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Filtered PDF Report</title>
+            <style>
                 body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 20px; background: #f4f4f4; }
-                h1 { text-align: center; color: #333; }
-                .pdf-section { 
-                    margin-bottom: 40px; 
-                    background: #ffffff; 
-                    padding: 15px; 
-                    border-radius: 8px; 
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-                }
-                .header-row { 
-                    font-size: 1.2em; 
-                    margin-bottom: 10px; 
-                    padding-bottom: 5px;
-                    border-bottom: 1px solid #eee;
-                }
-                .file-title { font-weight: bold; }
-                .topic-label { color: #555; }
-                embed { 
-                    width: 100%; 
-                    height: 800px; 
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                }
-              </style>
-            </head>
-            <body>
-                <h1>Filtered PDF Report</h1>
+                h1 { text-align: center; color: #333; } .pdf-section { margin-bottom: 40px; background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+                .header-row { font-size: 1.2em; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee; }
+                .file-title { font-weight: bold; } .topic-label { color: #555; }
+                embed { width: 100%; height: 800px; border: 1px solid #ccc; border-radius: 4px; }
+            </style></head><body><h1>Filtered PDF Report</h1>
         `;
-
         visibleRows.forEach(row => {
             const filename = row.cells[0].textContent;
             const mainTopic = row.cells[4].textContent;
             const fullPdfUrl = pdfBaseUrl + filename;
-            
             htmlContent += `
                 <div class='pdf-section'>
                     <div class='header-row'>
                         <span class='file-title'>${filename}</span>
                         <span class='topic-label'>(Category: ${mainTopic})</span>
                     </div>
-                    <embed 
-                        src='${fullPdfUrl}' 
-                        type='application/pdf'
-                    />
+                    <embed src='${fullPdfUrl}' type='application/pdf' />
                 </div>
             `;
         });
-
-        htmlContent += `
-            </body>
-            </html>
-        `;
-
-        // Create a file in-memory and trigger a download
+        htmlContent += `</body></html>`;
         const blob = new Blob([htmlContent], { type: 'text/html' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -205,5 +189,4 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         URL.revokeObjectURL(a.href);
     });
-
 });
