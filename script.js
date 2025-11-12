@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     filename: item.getElementsByTagName('Filename')[0].textContent,
                     year: item.getElementsByTagName('Year')[0].textContent,
                     paper: item.getElementsByTagName('Paper')[0].textContent,
-                    // ▼▼▼ THIS IS THE CORRECTED LINE THAT WAS BROKEN ▼▼▼
                     question: item.getElementsByTagName('Question')[0].textContent,
                     mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
                     otherTopics: otherTopics.join(', ') // Join other topics with a comma
@@ -55,14 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.otherTopics}</td>
             `;
 
-            // ▼▼▼ THIS IS THE SPLIT-FORM "CLICK-TO-VIEW" LOGIC ▼▼▼
-            // It has not changed. It updates the top panel.
-            // 3. Add click event to row to show PDF
+            // ▼▼▼ THIS IS THE CORRECTED "CLICK-TO-VIEW" LOGIC ▼▼▼
             tr.addEventListener('click', () => {
-                // This updates the top panel iframe, it does NOT download
-                pdfViewer.src = `https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/${rowData.filename}`;
+                // Use the correct GitHub Pages URL, not raw.githubusercontent.com
+                pdfViewer.src = `https://sialaichai.github.io/physics9702/pdfs/${rowData.filename}`;
             });
-            // ▲▲▲ THIS IS THE LOGIC YOU WANT ▲▲▲
+            // ▲▲▲ THIS WILL NOW WORK AS A SPLIT-FORM ▲▲▲
 
             tableBody.appendChild(tr);
         }
@@ -81,11 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable(filteredData);
     });
 
-    // 5. Logic for the "Create HTML" button (THIS causes the download)
-    // This code only runs when you click the BUTTON
+    // 5. Logic for the "Create HTML" button (This part is unchanged)
     generateBtn.addEventListener('click', () => {
         const visibleRows = tableBody.querySelectorAll('tr');
-        const pdfBaseUrl = "https://raw.githubusercontent.com/sialaichai/physics9702/main/pdfs/";
+        
+        // Use the GitHub Pages URL here as well
+        const pdfBaseUrl = "https://sialaichai.github.io/physics9702/pdfs/";
 
         let htmlContent = `
             <!DOCTYPE html>
