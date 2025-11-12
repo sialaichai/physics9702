@@ -13,31 +13,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allData = []; // To store all parsed data from XML
 
+    // ▼▼▼ NEW HELPER FUNCTION ▼▼▼
+    // This safely gets text from an XML tag, preventing the crash
+    function safeGetText(item, tagName) {
+        const element = item.getElementsByTagName(tagName)[0];
+        // If the element exists, return its text. If not, return an empty string.
+        return element ? element.textContent : '';
+    }
+
     // 1. Fetch and Parse the XML data
-    fetch('9702.xml') // This fetch might be failing silently
+    fetch('9702.xml')
         .then(response => {
             if (!response.ok) {
-                // This will trigger if 9702.xml is not found (e.g., 404 error)
                 throw new Error(`Failed to fetch 9702.xml - Status: ${response.status}`);
             }
             return response.text();
         })
         .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
         .then(xmlData => {
-            // Check if the XML file itself has a parsing error
             if (xmlData.getElementsByTagName('parsererror').length > 0) {
                 throw new Error('Failed to parse 9702.xml. The XML file may be corrupt.');
             }
 
             const dataElements = xmlData.getElementsByTagName('Data');
             
-            // Check if any <Data> elements were found
             if (dataElements.length === 0) {
                 throw new Error('XML file was loaded, but no <Data> elements were found inside it.');
             }
 
             for (const item of dataElements) {
-                // Extract all categories
+                // Extract "Other Topics" safely
                 let otherTopics = [];
                 for (let i = 1; i <= 5; i++) {
                     const topicNode = item.getElementsByTagName(`Other_x0020_Topic_x0020_Category_x0020_${i}`)[0];
@@ -46,18 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Store data as an object
+                // ▼▼▼ THIS BLOCK IS NOW USING THE SAFE HELPER FUNCTION ▼▼▼
+                // This prevents the "Cannot read properties of undefined" error
                 allData.push({
-                    filename: item.getElementsByTagName('Filename')[0].textContent,
-                    year: item.getElementsByTagName('Year')[0].textContent,
-                    paper: item.getElementsByTagName('Paper')[0].textContent,
-                    question: item.getElementsByTagName('Question')[0].textContent,
-                    mainTopic: item.getElementsByTagName('Topic_x0020_Category')[0].textContent,
+                    filename: safeGetText(item, 'Filename'),
+                    year: safeGetText(item, 'Year'),
+                    paper: safeGetText(item, 'Paper'),
+                    question: safeGetText(item, 'Question'),
+                    mainTopic: safeGetText(item, 'Topic_x0020_Category'),
                     otherTopics: otherTopics.join(', ')
                 });
             }
 
-            // If we get here, data is loaded and parsed!
+            // Data is loaded, now populate the dropdowns
             populateDropdowns();
             
             // Add event listeners to the filters
@@ -70,28 +76,25 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable(allData);
         })
         .catch(error => {
-            // ▼▼▼ THIS IS THE NEW ERROR CATCHER ▼▼▼
-            // If any of the steps above fail, this alert will show you the problem.
             console.error('Error details:', error);
-            alert('A critical error occurred:\n\n' + error.message + 
-                  '\n\nThis is why the dropdowns are blank. Please ensure 9702.xml is in the same folder as index.html.');
+            alert('A critical error occurred:\n\n' + error.message);
         });
 
     // 2. Function to populate the drop-down lists
     function populateDropdowns() {
-        // Use Sets to get unique values
-        const topics = [...new Set(allData.map(item => item.mainTopic))].sort();
-        const years = [...new Set(allData.map(item => item.year))].sort((a, b) => b - a); // Sort years descending
-        const papers = [...new Set(allData.map(item => item.paper))].sort();
-        const questions = [...new Set(allData.map(item => item.question))].sort();
+        // Use Sets to get unique values. Filter out empty strings ("")
+        const topics = [...new Set(allData.map(item => item.mainTopic).filter(Boolean))].sort();
+        const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a);
+        const papers = [...new Set(allData.map(item => item.paper).filter(Boolean))].sort();
+        const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort();
 
         // Helper function to add options to a select
         const addOptions = (selectElement, options, defaultText) => {
             if (!selectElement) {
                 console.error(`Error: The element for "${defaultText}" was not found.`);
-                return; // Stop if the HTML element doesn't exist
+                return;
             }
-            selectElement.innerHTML = `<option value="all">All ${defaultText}</option>`; // Clear and add default
+            selectElement.innerHTML = `<option value="all">All ${defaultText}</option>`;
             options.forEach(optionValue => {
                 const option = document.createElement('option');
                 option.value = optionValue;
