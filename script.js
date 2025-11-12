@@ -1,4 +1,4 @@
-// Wait for the page to load
+// Wait for the page to load 
 document.addEventListener('DOMContentLoaded', () => {
     
     const tableBody = document.getElementById('data-table-body');
