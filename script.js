@@ -13,13 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allData = []; // To store all parsed data from XML
 
-    // ▼▼▼ NEW HELPER FUNCTION ▼▼▼
-    // This safely gets text from an XML tag, preventing the crash
+    // ▼▼▼ THIS IS THE FIX ▼▼▼
+    // The .trim() function removes hidden whitespace from the start and end
     function safeGetText(item, tagName) {
         const element = item.getElementsByTagName(tagName)[0];
-        // If the element exists, return its text. If not, return an empty string.
-        return element ? element.textContent : '';
+        // If the element exists, return its text *after trimming whitespace*.
+        return element ? element.textContent.trim() : ''; 
     }
+    // ▲▲▲ ▲▲▲ ▲▲▲
 
     // 1. Fetch and Parse the XML data
     fetch('9702.xml')
@@ -45,14 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Extract "Other Topics" safely
                 let otherTopics = [];
                 for (let i = 1; i <= 5; i++) {
-                    const topicNode = item.getElementsByTagName(`Other_x0020_Topic_x0020_Category_x0020_${i}`)[0];
-                    if (topicNode) {
-                        otherTopics.push(topicNode.textContent);
+                    // Use safeGetText for other topics too
+                    const topicText = safeGetText(item, `Other_x0020_Topic_x0020_Category_x0020_${i}`);
+                    if (topicText) { // Check if the trimmed text is not empty
+                        otherTopics.push(topicText);
                     }
                 }
 
-                // ▼▼▼ THIS BLOCK IS NOW USING THE SAFE HELPER FUNCTION ▼▼▼
-                // This prevents the "Cannot read properties of undefined" error
+                // All data added here will now be clean
                 allData.push({
                     filename: safeGetText(item, 'Filename'),
                     year: safeGetText(item, 'Year'),
@@ -83,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Function to populate the drop-down lists
     function populateDropdowns() {
         // Use Sets to get unique values. Filter out empty strings ("")
+        // This logic is now working with clean, trimmed data
         const topics = [...new Set(allData.map(item => item.mainTopic).filter(Boolean))].sort();
         const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a);
         const papers = [...new Set(allData.map(item => item.paper).filter(Boolean))].sort();
