@@ -42,3 +42,15 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
     background-color: #004085;
     transform: translateY(1px);
 }
+
+/* Style for the dropdowns in the control bar */
+#controls select {
+    padding: 8px 10px;         /* Matches the button's vertical padding */
+    font-size: 14px;           /* Matches the button's font size */
+    min-width: 180px;          /* Set this to whatever width you like */
+    border: 1px solid #ccc;    /* A clean, light border */
+    border-radius: 4px;        /* Matches the button's rounded corners */
+    background-color: white;   /* Ensures a white background */
+    height: 36px;              /* Explicitly sets height to match button */
+    box-sizing: border-box;    /* Makes height and padding work together */
+}
