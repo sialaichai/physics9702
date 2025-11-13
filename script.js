@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     year: safeGetText(item, 'Year'),
                     paper: safeGetText(item, 'Paper'),
                     question: safeGetText(item, 'Question'),
-                    mainTopic: safeGetText(item, 'Topic_x0020_Category'),
+                    mainTopic: safeGetText(item, 'Topic_x0020_Category'), // This will still contain the "dirty" data
                     otherTopics: otherTopics
                 });
             }
@@ -83,8 +83,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. Populate Dropdowns AND Checkbox Lists ---
     function populateDropdowns() {
-        // Get unique, filtered, sorted values
-        const topics = [...new Set(allData.flatMap(item => [item.mainTopic, ...item.otherTopics]).filter(Boolean))].sort();
+        
+        // --- ▼▼▼ THIS IS THE FIX ▼▼▼ ---
+        // 1. Get ALL topic strings, including main and other
+        const allTopicStrings = allData.flatMap(item => [item.mainTopic, ...item.otherTopics]);
+
+        // 2. Split any strings that contain ";" or ",", then trim whitespace
+        const allCleanTopics = allTopicStrings
+            .flatMap(topicStr => topicStr.split(/[;,]/)) // Split by ; or ,
+            .map(s => s.trim()); // Trim whitespace
+
+        // 3. Now, get the unique, non-empty, sorted list from the CLEAN data
+        const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
+        // --- ▲▲▲ END OF FIX ▲▲▲ ---
+
+        // Get unique, filtered, sorted values (for other filters)
         const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a); // Sort desc
         const papers = [...new Set(allData.map(item => item.paper).filter(Boolean))].sort();
         const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort();
@@ -121,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addOptions(questionFilter, questions, 'Questions');
 
         // Populate Checkbox Lists
-        addCheckboxes(topicFilterList, topics, 'topic-checkbox');
+        addCheckboxes(topicFilterList, topics, 'topic-checkbox'); // This now uses the clean 'topics' list
         addCheckboxes(yearFilterList, years, 'year-checkbox');
         addCheckboxes(paperFilterList, papers, 'paper-checkbox');
     }
@@ -176,9 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Apply Topic Filter
         if (selectedTopics.size > 0) {
             filteredData = filteredData.filter(item => {
-                if (selectedTopics.has(item.mainTopic)) return true;
-                for (const otherTopic of item.otherTopics) {
-                    if (selectedTopics.has(otherTopic)) return true;
+                // We must also split the data here to match
+                const allItemTopics = [item.mainTopic, ...item.otherTopics]
+                    .flatMap(topicStr => topicStr.split(/[;,]/))
+                    .map(s => s.trim());
+
+                for (const topic of allItemTopics) {
+                    if (selectedTopics.has(topic)) {
+                        return true;
+                    }
                 }
                 return false;
             });
