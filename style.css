@@ -47,7 +47,7 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
 #controls select {
     padding: 8px 10px;         /* Matches the button's vertical padding */
     font-size: 14px;           /* Matches the button's font size */
-    min-width: 180px;          /* Set this to whatever width you like */
+    min-width: 120px;          /* Set this to whatever width you like */
     border: 1px solid #ccc;    /* A clean, light border */
     border-radius: 4px;        /* Matches the button's rounded corners */
     background-color: white;   /* Ensures a white background */
@@ -72,7 +72,7 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
     height: 36px;
     box-sizing: border-box;
 
-    min-width: 240px;            /* NEW: Set this to your desired width */
+   
     display: flex;               /* NEW: Allows for better alignment */
     justify-content: space-between; /* NEW: Puts "Topic" on the left and "(0)" on the right */
 }
@@ -125,4 +125,17 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
 
 .apply-button:hover {
     background-color: #0056b3;
+}
+
+/* --- Custom Filter Widths --- */
+
+/* Half-width for Year, Paper (and Question, which you changed above) */
+#year-filter-btn,
+#paper-filter-btn {
+    min-width: 120px; 
+}
+
+/* Double-width for Topic */
+#topic-filter-btn {
+    min-width: 480px;
 }
