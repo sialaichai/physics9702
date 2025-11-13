@@ -54,3 +54,71 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
     height: 36px;              /* Explicitly sets height to match button */
     box-sizing: border-box;    /* Makes height and padding work together */
 }
+
+/* Styles for the new dropdown checkbox filter */
+.dropdown-check-container {
+    position: relative; /* Required for the panel to pop up correctly */
+    display: inline-block;
+}
+
+.filter-button {
+    /* Make this button look like the other controls */
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    height: 36px;
+    box-sizing: border-box;
+}
+
+.dropdown-panel {
+    display: none; /* Hidden by default */
+    position: absolute; /* Pops up over the page content */
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    min-width: 250px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.dropdown-list {
+    max-height: 200px; /* Makes the list scrollable */
+    overflow-y: auto;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.dropdown-list label {
+    display: block; /* Makes each checkbox on a new line */
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.dropdown-list label:hover {
+    background-color: #f4f4f4;
+}
+
+.dropdown-list input {
+    margin-right: 8px;
+}
+
+.apply-button {
+    /* A small apply button for the panel */
+    width: 100%;
+    padding: 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.apply-button:hover {
+    background-color: #0056b3;
+}
