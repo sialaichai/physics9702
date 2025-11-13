@@ -151,8 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.mainTopic}</td>
                 <td>${rowData.otherTopics}</td>
             `;
+            // "Click-to-view" split-form logic
             tr.addEventListener('click', () => {
-                pdfViewer.src = `https://sialaichai.github.io/physics9702/pdfs/${rowData.filename}`;
+                // This now builds the path using the row's 'year' data
+                pdfViewer.src = `https://sialaichai.github.io/physics9702/pdfs/${rowData.year}/${rowData.filename}`;
             });
             tableBody.appendChild(tr);
         }
@@ -161,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Logic for the "Create HTML" button
     generateBtn.addEventListener('click', () => {
         const visibleRows = tableBody.querySelectorAll('tr');
+        // The base URL is now just the root of the pdfs folder
         const pdfBaseUrl = "https://sialaichai.github.io/physics9702/pdfs/";
         let htmlContent = `
             <!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Filtered PDF Report</title>
@@ -173,9 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </style></head><body><h1>Filtered PDF Report</h1>
         `;
         visibleRows.forEach(row => {
-            const filename = row.cells[0].textContent;
-            const mainTopic = row.cells[4].textContent;
-            const fullPdfUrl = pdfBaseUrl + filename;
+                const filename = row.cells[0].textContent;
+                const year = row.cells[1].textContent; // Get the year from the table
+                const mainTopic = row.cells[4].textContent;
+        
+        // This line now builds the correct path with the 'year' subfolder
+        const fullPdfUrl = `${pdfBaseUrl}${year}/${filename}`;
             htmlContent += `
                 <div class='pdf-section'>
                     <div class='header-row'>
