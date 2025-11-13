@@ -6,19 +6,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateBtn = document.getElementById('generate-html-btn');
     
     // Standard filters
-    const yearFilter = document.getElementById('filter-year');
-    const paperFilter = document.getElementById('filter-paper');
     const questionFilter = document.getElementById('filter-question');
 
-    // New Topic Filter elements
+    // Topic Filter elements
     const topicFilterBtn = document.getElementById('topic-filter-btn');
     const topicFilterPanel = document.getElementById('topic-filter-panel');
     const topicFilterList = document.getElementById('topic-filter-list');
     const topicFilterApply = document.getElementById('topic-filter-apply');
     const topicFilterCount = document.getElementById('topic-filter-count');
 
+    // Year Filter elements
+    const yearFilterBtn = document.getElementById('year-filter-btn');
+    const yearFilterPanel = document.getElementById('year-filter-panel');
+    const yearFilterList = document.getElementById('year-filter-list');
+    const yearFilterApply = document.getElementById('year-filter-apply');
+    const yearFilterCount = document.getElementById('year-filter-count');
+
+    // Paper Filter elements
+    const paperFilterBtn = document.getElementById('paper-filter-btn');
+    const paperFilterPanel = document.getElementById('paper-filter-panel');
+    const paperFilterList = document.getElementById('paper-filter-list');
+    const paperFilterApply = document.getElementById('paper-filter-apply');
+    const paperFilterCount = document.getElementById('paper-filter-count');
+
     let allData = []; // To store all parsed data from XML
-    let selectedTopics = new Set(); // To store the list of checked topics
+    
+    // --- State for selected filters ---
+    let selectedTopics = new Set();
+    let selectedYears = new Set();
+    let selectedPapers = new Set();
 
     // --- Helper function to safely get and trim text from XML ---
     function safeGetText(item, tagName) {
@@ -37,11 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (xmlData.getElementsByTagName('parsererror').length > 0) {
                 throw new Error('Failed to parse 9702.xml. The XML file may be corrupt.');
             }
-
             const dataElements = xmlData.getElementsByTagName('Data');
-            if (dataElements.length === 0) {
-                throw new Error('XML file was loaded, but no <Data> elements were found.');
-            }
+            if (dataElements.length === 0) throw new Error('XML file was loaded, but no <Data> elements were found.');
 
             for (const item of dataElements) {
                 let otherTopics = [];
@@ -49,24 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     const topicText = safeGetText(item, `Other_x0020_Topic_x0020_Category_x0020_${i}`);
                     if (topicText) otherTopics.push(topicText);
                 }
-
                 allData.push({
                     filename: safeGetText(item, 'Filename'),
                     year: safeGetText(item, 'Year'),
                     paper: safeGetText(item, 'Paper'),
                     question: safeGetText(item, 'Question'),
                     mainTopic: safeGetText(item, 'Topic_x0020_Category'),
-                    otherTopics: otherTopics // Store as an array
+                    otherTopics: otherTopics
                 });
             }
 
-            // Data is loaded, populate the dropdowns
             populateDropdowns();
-            
-            // Add event listeners
             setupEventListeners();
-
-            // Initial render of the table
             renderTable(allData);
         })
         .catch(error => {
@@ -74,15 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('A critical error occurred:\n\n' + error.message);
         });
 
-    // --- 2. Populate Dropdowns AND Checkbox List ---
+    // --- 2. Populate Dropdowns AND Checkbox Lists ---
     function populateDropdowns() {
-        // Use Sets to get unique values. Filter out empty strings ("")
+        // Get unique, filtered, sorted values
         const topics = [...new Set(allData.flatMap(item => [item.mainTopic, ...item.otherTopics]).filter(Boolean))].sort();
-        const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a);
+        const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a); // Sort desc
         const papers = [...new Set(allData.map(item => item.paper).filter(Boolean))].sort();
         const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort();
 
-        // Helper function to add options to a select
+        // Helper: Add <option> to <select>
         const addOptions = (selectElement, options, defaultText) => {
             if (!selectElement) return;
             selectElement.innerHTML = `<option value="all">All ${defaultText}</option>`;
@@ -94,106 +101,104 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        // Populate standard dropdowns
-        addOptions(yearFilter, years, 'Years');
-        addOptions(paperFilter, papers, 'Papers');
+        // Helper: Add Checkboxes to a list
+        const addCheckboxes = (listElement, values, className) => {
+            listElement.innerHTML = ''; // Clear list
+            values.forEach(value => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = className;
+                checkbox.value = value;
+                
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(' ' + value));
+                listElement.appendChild(label);
+            });
+        };
+
+        // Populate standard dropdown (Question)
         addOptions(questionFilter, questions, 'Questions');
 
-        // NEW: Populate Topic Checkbox List
-        topicFilterList.innerHTML = ''; // Clear list
-        topics.forEach(topic => {
-            const label = document.createElement('label');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.className = 'topic-checkbox';
-            checkbox.value = topic;
-            
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(' ' + topic));
-            topicFilterList.appendChild(label);
-        });
+        // Populate Checkbox Lists
+        addCheckboxes(topicFilterList, topics, 'topic-checkbox');
+        addCheckboxes(yearFilterList, years, 'year-checkbox');
+        addCheckboxes(paperFilterList, papers, 'paper-checkbox');
     }
     
     // --- 3. Setup Event Listeners ---
     function setupEventListeners() {
-        // Standard filter changes
-        yearFilter.addEventListener('change', applyFilters);
-        paperFilter.addEventListener('change', applyFilters);
+        // Standard filter change
         questionFilter.addEventListener('change', applyFilters);
 
-        // Show/Hide Topic Panel
-        topicFilterBtn.addEventListener('click', () => {
-            const isVisible = topicFilterPanel.style.display === 'block';
-            topicFilterPanel.style.display = isVisible ? 'none' : 'block';
-        });
-
-        // Apply Topic Filter
-        topicFilterApply.addEventListener('click', () => {
-            selectedTopics.clear(); // Clear the set
-            
-            // Find all checked checkboxes
-            const checkedBoxes = topicFilterList.querySelectorAll('.topic-checkbox:checked');
-            
-            // Add their values to the Set
-            checkedBoxes.forEach(box => {
-                selectedTopics.add(box.value);
+        // Helper function to manage a checkbox filter panel
+        const setupFilterPanel = (btn, panel, list, applyBtn, selectedSet, countElement, checkboxClass) => {
+            // Show/Hide Panel
+            btn.addEventListener('click', () => {
+                const isVisible = panel.style.display === 'block';
+                panel.style.display = isVisible ? 'none' : 'block';
             });
 
-            // Update the button count
-            topicFilterCount.textContent = selectedTopics.size;
-            
-            // Hide the panel
-            topicFilterPanel.style.display = 'none';
-            
-            // Run the main filter function
-            applyFilters();
-        });
+            // Apply Filter
+            applyBtn.addEventListener('click', () => {
+                selectedSet.clear(); // Clear the set
+                const checkedBoxes = list.querySelectorAll(`.${checkboxClass}:checked`);
+                checkedBoxes.forEach(box => selectedSet.add(box.value));
+                countElement.textContent = selectedSet.size; // Update count
+                panel.style.display = 'none'; // Hide panel
+                applyFilters(); // Run main filter
+            });
+        };
 
-        // Close panel if clicking outside
+        // Setup all three checkbox filters
+        setupFilterPanel(topicFilterBtn, topicFilterPanel, topicFilterList, topicFilterApply, selectedTopics, topicFilterCount, 'topic-checkbox');
+        setupFilterPanel(yearFilterBtn, yearFilterPanel, yearFilterList, yearFilterApply, selectedYears, yearFilterCount, 'year-checkbox');
+        setupFilterPanel(paperFilterBtn, paperFilterPanel, paperFilterList, paperFilterApply, selectedPapers, paperFilterCount, 'paper-checkbox');
+
+        // Close panels if clicking outside
         document.addEventListener('click', (event) => {
-            if (!topicFilterBtn.contains(event.target) && !topicFilterPanel.contains(event.target)) {
-                topicFilterPanel.style.display = 'none';
+            const panels = [topicFilterPanel, yearFilterPanel, paperFilterPanel];
+            const buttons = [topicFilterBtn, yearFilterBtn, paperFilterBtn];
+
+            // Check if the click is outside all panels and all buttons
+            if (!panels.some(p => p.contains(event.target)) && !buttons.some(b => b.contains(event.target))) {
+                panels.forEach(p => p.style.display = 'none');
             }
         });
     }
 
-    // --- 4. Function to filter data based on all drop-downs ---
+    // --- 4. Function to filter data based on all filters ---
     function applyFilters() {
-        const selectedYear = yearFilter.value;
-        const selectedPaper = paperFilter.value;
         const selectedQuestion = questionFilter.value;
 
         let filteredData = allData;
 
-        // Apply Topic Filter (using the Set)
+        // Apply Topic Filter
         if (selectedTopics.size > 0) {
             filteredData = filteredData.filter(item => {
-                // Check main topic
-                if (selectedTopics.has(item.mainTopic)) {
-                    return true;
-                }
-                // Check other topics
+                if (selectedTopics.has(item.mainTopic)) return true;
                 for (const otherTopic of item.otherTopics) {
-                    if (selectedTopics.has(otherTopic)) {
-                        return true;
-                    }
+                    if (selectedTopics.has(otherTopic)) return true;
                 }
                 return false;
             });
         }
 
-        // Apply standard filters
-        if (selectedYear !== 'all') {
-            filteredData = filteredData.filter(item => item.year === selectedYear);
+        // Apply Year Filter
+        if (selectedYears.size > 0) {
+            filteredData = filteredData.filter(item => selectedYears.has(item.year));
         }
-        if (selectedPaper !== 'all') {
-            filteredData = filteredData.filter(item => item.paper === selectedPaper);
+
+        // Apply Paper Filter
+        if (selectedPapers.size > 0) {
+            filteredData = filteredData.filter(item => selectedPapers.has(item.paper));
         }
+
+        // Apply Question Filter
         if (selectedQuestion !== 'all') {
             filteredData = filteredData.filter(item => item.question === selectedQuestion);
         }
 
-        // Re-render the table with the filtered data
         renderTable(filteredData);
     }
 
@@ -208,8 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.paper}</td>
                 <td>${rowData.question}</td>
                 <td>${rowData.mainTopic}</td>
-                <td>${rowData.otherTopics.join(', ')}</td> `;
-            // "Click-to-view" split-form logic (with subfolder)
+                <td>${rowData.otherTopics.join(', ')}</td>
+            `;
             tr.addEventListener('click', () => {
                 pdfViewer.src = `https://sialaichai.github.io/physics9702/pdfs/${rowData.year}/${rowData.filename}`;
             });
@@ -233,9 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         visibleRows.forEach(row => {
             const filename = row.cells[0].textContent;
-            const year = row.cells[1].textContent; // Get year for subfolder
+            const year = row.cells[1].textContent;
             const mainTopic = row.cells[4].textContent;
-            const fullPdfUrl = `${pdfBaseUrl}${year}/${filename}`; // Build correct path
+            const fullPdfUrl = `${pdfBaseUrl}${year}/${filename}`;
             
             htmlContent += `
                 <div class='pdf-section'>
