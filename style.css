@@ -10,3 +10,35 @@ th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
 th { background-color: #f2f2f2; cursor: pointer; }
 tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
  
+/* Style for the controls area */
+#controls {
+    display: flex; /* Aligns items in a row */
+    align-items: center; /* Vertically centers the items */
+    gap: 10px; /* Adds a nice space between your dropdowns and the button */
+}
+
+/* This targets any <button> inside the #controls div.
+  This is what makes it look like a button!
+*/
+#controls button {
+    background-color: #007bff; /* A nice blue background */
+    color: white;              /* White text */
+    padding: 8px 12px;         /* Adds space inside the button (top/bottom, left/right) */
+    border: none;              /* Removes the ugly default border */
+    border-radius: 4px;        /* Gives it slightly rounded corners */
+    cursor: pointer;           /* Shows the "hand" cursor on hover */
+    font-weight: bold;         /* Makes the text bold */
+    font-size: 14px;           /* Sets a clean font size */
+    transition: background-color 0.2s; /* Makes the color change smooth */
+}
+
+/* This makes the button slightly darker when you hover over it */
+#controls button:hover {
+    background-color: #0056b3;
+}
+
+/* This makes the button look "pressed" when you click it */
+#controls button:active {
+    background-color: #004085;
+    transform: translateY(1px);
+}
