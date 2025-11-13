@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Viewer and Filter</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.3.1">
 </head>
 <body>
 
@@ -13,16 +13,34 @@
             
             <div class="dropdown-check-container">
                 <button id="topic-filter-btn" class="filter-button">
-                    Filter by Topic (<span id="topic-filter-count">0</span>)
+                    Topic (<span id="topic-filter-count">0</span>)
                 </button>
                 <div id="topic-filter-panel" class="dropdown-panel">
-                    <div id="topic-filter-list" class="dropdown-list">
-                        </div>
+                    <div id="topic-filter-list" class="dropdown-list"></div>
                     <button id="topic-filter-apply" class="apply-button">Apply</button>
                 </div>
             </div>
-            <select id="filter-year"></select>
-            <select id="filter-paper"></select>
+
+            <div class="dropdown-check-container">
+                <button id="year-filter-btn" class="filter-button">
+                    Year (<span id="year-filter-count">0</span>)
+                </button>
+                <div id="year-filter-panel" class="dropdown-panel">
+                    <div id="year-filter-list" class="dropdown-list"></div>
+                    <button id="year-filter-apply" class="apply-button">Apply</button>
+                </div>
+            </div>
+
+            <div class="dropdown-check-container">
+                <button id="paper-filter-btn" class="filter-button">
+                    Paper (<span id="paper-filter-count">0</span>)
+                </button>
+                <div id="paper-filter-panel" class="dropdown-panel">
+                    <div id="paper-filter-list" class="dropdown-list"></div>
+                    <button id="paper-filter-apply" class="apply-button">Apply</button>
+                </div>
+            </div>
+            
             <select id="filter-question"></select>
             
             <button id="generate-html-btn">Create Filtered HTML File</button>
@@ -49,5 +67,5 @@
         </table>
     </div>
 
-    <script src="script.js?v=1.3.0"></script> </body>
+    <script src="script.js?v=1.3.1"></script> </body>
 </html>
