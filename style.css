@@ -71,6 +71,10 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
     cursor: pointer;
     height: 36px;
     box-sizing: border-box;
+
+    min-width: 240px;            /* NEW: Set this to your desired width */
+    display: flex;               /* NEW: Allows for better alignment */
+    justify-content: space-between; /* NEW: Puts "Topic" on the left and "(0)" on the right */
 }
 
 .dropdown-panel {
