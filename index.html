@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Viewer and Filter</title>
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="upper-panel">
         <div id="controls">
-            <select id="filter-topic"></select>
+            
+            <div class="dropdown-check-container">
+                <button id="topic-filter-btn" class="filter-button">
+                    Filter by Topic (<span id="topic-filter-count">0</span>)
+                </button>
+                <div id="topic-filter-panel" class="dropdown-panel">
+                    <div id="topic-filter-list" class="dropdown-list">
+                        </div>
+                    <button id="topic-filter-apply" class="apply-button">Apply</button>
+                </div>
+            </div>
             <select id="filter-year"></select>
             <select id="filter-paper"></select>
             <select id="filter-question"></select>
@@ -39,6 +49,5 @@
         </table>
     </div>
 
-    <script src="script.js?v=1.2.9"></script>
-</body>
+    <script src="script.js?v=1.3.0"></script> </body>
 </html>
