@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     year: safeGetText(item, 'Year'),
                     paper: safeGetText(item, 'Paper'),
                     question: safeGetText(item, 'Question'),
-                    mainTopic: safeGetText(item, 'Topic_x0020_Category'), // This will still contain the "dirty" data
+                    mainTopic: safeGetText(item, 'Topic_x0020_Category'),
                     otherTopics: otherTopics
                 });
             }
@@ -84,18 +84,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. Populate Dropdowns AND Checkbox Lists ---
     function populateDropdowns() {
         
-        // --- ▼▼▼ THIS IS THE FIX ▼▼▼ ---
         // 1. Get ALL topic strings, including main and other
         const allTopicStrings = allData.flatMap(item => [item.mainTopic, ...item.otherTopics]);
-
         // 2. Split any strings that contain ";" or ",", then trim whitespace
         const allCleanTopics = allTopicStrings
             .flatMap(topicStr => topicStr.split(/[;,]/)) // Split by ; or ,
             .map(s => s.trim()); // Trim whitespace
-
         // 3. Now, get the unique, non-empty, sorted list from the CLEAN data
         const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
-        // --- ▲▲▲ END OF FIX ▲▲▲ ---
 
         // Get unique, filtered, sorted values (for other filters)
         const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a); // Sort desc
@@ -134,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addOptions(questionFilter, questions, 'Questions');
 
         // Populate Checkbox Lists
-        addCheckboxes(topicFilterList, topics, 'topic-checkbox'); // This now uses the clean 'topics' list
+        addCheckboxes(topicFilterList, topics, 'topic-checkbox');
         addCheckboxes(yearFilterList, years, 'year-checkbox');
         addCheckboxes(paperFilterList, papers, 'paper-checkbox');
     }
@@ -230,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.filename}</td>
                 <td>${rowData.year}</td>
                 <td>${rowData.paper}</td>
+                
                 <td>${rowData.question}</td>
                 <td>${rowData.mainTopic}</td>
                 <td>${rowData.otherTopics.join(', ')}</td>
@@ -279,44 +276,41 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         URL.revokeObjectURL(a.href);
     });
-    
+
     // --- 7. Draggable Resizer Logic ---
-        const dragger = document.getElementById('dragger');
-        const lowerPanel = document.getElementById('lower-panel');
-        const upperPanel = document.getElementById('upper-panel');
-    
-        let isDragging = false;
-    
-        dragger.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            // Add classes to prevent text selection/iframe issues while dragging
-            document.body.style.userSelect = 'none';
-            pdfViewer.style.pointerEvents = 'none';
-        });
-    
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            // Remove preventative styles
-            document.body.style.userSelect = 'auto';
-            pdfViewer.style.pointerEvents = 'auto';
-        });
-    
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-    
-            // Calculate new height of the lower panel
-            const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
-    
-            // Get min/max heights
-            const minHeight = 100; // Must match min-height in CSS
-            const maxHeight = window.innerHeight - 150; // (window height) - (upper panel min-height)
-    
-            // Apply constraints
-            if (newHeight > minHeight && newHeight < maxHeight) {
-                lowerPanel.style.height = `${newHeight}px`;
-            }
-        });
-    
-    }); // <-- This is the final closing parenthesis of the whole file. Your new code goes *before* this.
-        
-});
+    const dragger = document.getElementById('dragger');
+    const lowerPanel = document.getElementById('lower-panel');
+
+    let isDragging = false;
+
+    dragger.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        // Add classes to prevent text selection/iframe issues while dragging
+        document.body.style.userSelect = 'none';
+        pdfViewer.style.pointerEvents = 'none';
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        // Remove preventative styles
+        document.body.style.userSelect = 'auto';
+        pdfViewer.style.pointerEvents = 'auto';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        // Calculate new height of the lower panel
+        const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
+
+        // Get min/max heights
+        const minHeight = 100; // Must match min-height in CSS
+        const maxHeight = window.innerHeight - 150; // (window height) - (upper panel min-height)
+
+        // Apply constraints
+        if (newHeight > minHeight && newHeight < maxHeight) {
+            lowerPanel.style.height = `${newHeight}px`;
+        }
+    });
+
+}); // <-- This is the final closing parenthesis.
