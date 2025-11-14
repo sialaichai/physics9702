@@ -1,15 +1,44 @@
 /* Basic split-form layout */
-body { font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; }
-#upper-panel { flex: 1; display: flex; flex-direction: column; border-bottom: 2px solid #ccc; }
+/* Basic layout */
+body { 
+    font-family: sans-serif; 
+    margin: 0; 
+    overflow: hidden; /* Prevents whole page from scrolling */
+}
+
+#main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+
+/* #upper-panel { flex: 1; display: flex; flex-direction: column; border-bottom: 2px solid #ccc; }  */
 #controls { padding: 10px; background: #f4f4f4; }
 #pdf-viewer-container { flex: 1; }
 #pdf-viewer { width: 100%; height: 100%; border: none; }
-#lower-panel { height: 300px; overflow-y: auto; } /* Scrollable lower panel */
+/* #lower-panel { height: 300px; overflow-y: auto; } */
 table { width: 100%; border-collapse: collapse; }
 th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
 th { background-color: #f2f2f2; cursor: pointer; }
 tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
- 
+
+#upper-panel { 
+    flex: 1; /* This makes it take up the remaining space */
+    display: flex; 
+    flex-direction: column; 
+    min-height: 150px; /* Prevents resizing too small */
+}
+
+#lower-panel { 
+    height: 300px; /* Initial height */
+    min-height: 100px; /* Prevents resizing too small */
+    overflow-y: auto; 
+    background: white; /* Ensures it's not transparent */
+}
+
+
+
 /* Style for the controls area */
 #controls {
     display: flex; /* Aligns items in a row */
@@ -138,4 +167,13 @@ tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
 /* Double-width for Topic */
 #topic-filter-btn {
     min-width: 350px;
+}
+
+/* --- Dragger Styles --- */
+#dragger {
+    height: 5px;
+    background: #ccc;
+    cursor: ns-resize; /* North-South resize cursor */
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
 }
