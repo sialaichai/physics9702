@@ -4,68 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Viewer and Filter</title>
-    <link rel="stylesheet" href="style.css?v=1.3.3">
+    <link rel="stylesheet" href="style.css?v=1.3.4">
 </head>
 <body>
 
-    <div id="upper-panel">
-        <div id="controls">
-            
-            <div class="dropdown-check-container">
-                <button id="year-filter-btn" class="filter-button">
-                    Year (<span id="year-filter-count">0</span>)
-                </button>
-                <div id="year-filter-panel" class="dropdown-panel">
-                    <div id="year-filter-list" class="dropdown-list"></div>
-                    <button id="year-filter-apply" class="apply-button">Apply</button>
+    <div id="main-container">
+        <div id="upper-panel">
+            <div id="controls">
+                
+                <div class="dropdown-check-container">
+                    <button id="year-filter-btn" class="filter-button">
+                        Year (<span id="year-filter-count">0</span>)
+                    </button>
+                    <div id="year-filter-panel" class="dropdown-panel">
+                        <div id="year-filter-list" class="dropdown-list"></div>
+                        <button id="year-filter-apply" class="apply-button">Apply</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="dropdown-check-container">
-                <button id="paper-filter-btn" class="filter-button">
-                    Paper (<span id="paper-filter-count">0</span>)
-                </button>
-                <div id="paper-filter-panel" class="dropdown-panel">
-                    <div id="paper-filter-list" class="dropdown-list"></div>
-                    <button id="paper-filter-apply" class="apply-button">Apply</button>
+                <div class="dropdown-check-container">
+                    <button id="paper-filter-btn" class="filter-button">
+                        Paper (<span id="paper-filter-count">0</span>)
+                    </button>
+                    <div id="paper-filter-panel" class="dropdown-panel">
+                        <div id="paper-filter-list" class="dropdown-list"></div>
+                        <button id="paper-filter-apply" class="apply-button">Apply</button>
+                    </div>
                 </div>
-            </div>
-            
-            <select id="filter-question"></select>
-            
-            <div class="dropdown-check-container">
-                <button id="topic-filter-btn" class="filter-button">
-                    Topic (<span id="topic-filter-count">0</span>)
-                </button>
-                <div id="topic-filter-panel" class="dropdown-panel">
-                    <div id="topic-filter-list" class="dropdown-list"></div>
-                    <button id="topic-filter-apply" class="apply-button">Apply</button>
+                
+                <select id="filter-question"></select>
+                
+                <div class="dropdown-check-container">
+                    <button id="topic-filter-btn" class="filter-button">
+                        Topic (<span id="topic-filter-count">0</span>)
+                    </button>
+                    <div id="topic-filter-panel" class="dropdown-panel">
+                        <div id="topic-filter-list" class="dropdown-list"></div>
+                        <button id="topic-filter-apply" class="apply-button">Apply</button>
+                    </div>
                 </div>
+                
+                <button id="generate-html-btn">Create Filtered HTML File</button>
             </div>
-            
-            <button id="generate-html-btn">Create Filtered HTML File</button>
+            <div id="pdf-viewer-container">
+                <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
+            </div>
         </div>
-        <div id="pdf-viewer-container">
-            <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
+
+        <div id="dragger"></div>
+
+        <div id="lower-panel">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Year</th>
+                        <th>Paper</th>
+                        <th>Question</th>
+                        <th>Main Topic</th>
+                        <th>Other Topics</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    </tbody>
+            </table>
         </div>
-    </div>
-
-    <div id="lower-panel">
-        <table id="data-table">
-            <thead>
-                <tr>
-                    <th>Filename</th>
-                    <th>Year</th>
-                    <th>Paper</th>
-                    <th>Question</th>
-                    <th>Main Topic</th>
-                    <th>Other Topics</th>
-                </tr>
-            </thead>
-            <tbody id="data-table-body">
-                </tbody>
-        </table>
-    </div>
-
-    <script src="script.js?v=1.3.5"></script> </body>
+    </div> <script src="script.js?v=1.3.4"></script> </body>
 </html>
