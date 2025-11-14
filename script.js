@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('data-table-body');
     const pdfViewer = document.getElementById('pdf-viewer');
     const generateBtn = document.getElementById('generate-html-btn');
-    const fileCountDisplay = document.getElementById('file-count-display'); // <-- ADD THIS
+    const fileCountDisplay = document.getElementById('file-count-display');
     
     // Standard filters
     const questionFilter = document.getElementById('filter-question');
@@ -85,14 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. Populate Dropdowns AND Checkbox Lists ---
     function populateDropdowns() {
         
-        // 1. Get ALL topic strings, including main and other
-        const allTopicStrings = allData.flatMap(item => [item.mainTopic, ...item.otherTopics]);
+        // --- ▼▼▼ MODIFIED SECTION ▼▼▼ ---
+        // 1. Get ALL topic strings from mainTopic ONLY
+        const allTopicStrings = allData.map(item => item.mainTopic);
+
         // 2. Split any strings that contain ";" or ",", then trim whitespace
         const allCleanTopics = allTopicStrings
             .flatMap(topicStr => topicStr.split(/[;,]/)) // Split by ; or ,
             .map(s => s.trim()); // Trim whitespace
+
         // 3. Now, get the unique, non-empty, sorted list from the CLEAN data
         const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
+        // --- ▲▲▲ END OF MODIFICATION ▲▲▲ ---
 
         // Get unique, filtered, sorted values (for other filters)
         const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a); // Sort desc
@@ -131,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addOptions(questionFilter, questions, 'Questions');
 
         // Populate Checkbox Lists
-        addCheckboxes(topicFilterList, topics, 'topic-checkbox');
+        addCheckboxes(topicFilterList, topics, 'topic-checkbox'); // This now uses the clean 'topics' list
         addCheckboxes(yearFilterList, years, 'year-checkbox');
         addCheckboxes(paperFilterList, papers, 'paper-checkbox');
     }
@@ -183,15 +187,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let filteredData = allData;
 
+        // --- ▼▼▼ MODIFIED SECTION ▼▼▼ ---
         // Apply Topic Filter
         if (selectedTopics.size > 0) {
             filteredData = filteredData.filter(item => {
-                // We must also split the data here to match
-                const allItemTopics = [item.mainTopic, ...item.otherTopics]
-                    .flatMap(topicStr => topicStr.split(/[;,]/))
+                // We only check the mainTopic field now
+                const itemTopics = item.mainTopic
+                    .split(/[;,]/)
                     .map(s => s.trim());
 
-                for (const topic of allItemTopics) {
+                for (const topic of itemTopics) {
                     if (selectedTopics.has(topic)) {
                         return true;
                     }
@@ -199,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             });
         }
+        // --- ▲▲▲ END OF MODIFICATION ▲▲▲ ---
 
         // Apply Year Filter
         if (selectedYears.size > 0) {
@@ -227,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${rowData.filename}</td>
                 <td>${rowData.year}</td>
                 <td>${rowData.paper}</td>
-                
                 <td>${rowData.question}</td>
                 <td>${rowData.mainTopic}</td>
                 <td>${rowData.otherTopics.join(', ')}</td>
@@ -237,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             tableBody.appendChild(tr);
         }
-        // ▼▼▼ ADD THIS LINE ▼▼▼
+        // Update file count
         fileCountDisplay.textContent = `${data.length} files found`;
     }
     
@@ -283,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 7. Draggable Resizer Logic ---
     const dragger = document.getElementById('dragger');
     const lowerPanel = document.getElementById('lower-panel');
+    const pdfViewer = document.getElementById('pdf-viewer'); // Make sure pdfViewer is defined up top
 
     let isDragging = false;
 
@@ -290,14 +296,14 @@ document.addEventListener('DOMContentLoaded', () => {
         isDragging = true;
         // Add classes to prevent text selection/iframe issues while dragging
         document.body.style.userSelect = 'none';
-        pdfViewer.style.pointerEvents = 'none';
+        if (pdfViewer) pdfViewer.style.pointerEvents = 'none'; // Check if pdfViewer exists
     });
 
     document.addEventListener('mouseup', () => {
         isDragging = false;
         // Remove preventative styles
         document.body.style.userSelect = 'auto';
-        pdfViewer.style.pointerEvents = 'auto';
+        if (pdfViewer) pdfViewer.style.pointerEvents = 'auto'; // Check if pdfViewer exists
     });
 
     document.addEventListener('mousemove', (e) => {
