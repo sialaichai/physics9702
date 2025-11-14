@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('data-table-body');
     const pdfViewer = document.getElementById('pdf-viewer');
     const generateBtn = document.getElementById('generate-html-btn');
+    const fileCountDisplay = document.getElementById('file-count-display'); // <-- ADD THIS
     
     // Standard filters
     const questionFilter = document.getElementById('filter-question');
@@ -236,6 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             tableBody.appendChild(tr);
         }
+        // ▼▼▼ ADD THIS LINE ▼▼▼
+        fileCountDisplay.textContent = `${data.length} files found`;
     }
     
     // --- 6. Logic for the "Create HTML" button ---
