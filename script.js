@@ -85,14 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. Populate Dropdowns AND Checkbox Lists ---
     function populateDropdowns() {
         
-        // --- ▼▼▼ MODIFIED SECTION ▼▼▼ ---
+        // --- ▼▼▼ MODIFIED SECTION (USING SAFER CODE) ▼▼▼ ---
         // 1. Get ALL topic strings from mainTopic ONLY
         const allTopicStrings = allData.map(item => item.mainTopic);
 
-        // 2. Split any strings that contain ";" or ",", then trim whitespace
+        // 2. Split any strings that contain ";" or ",", then trim whitespace (safer method)
         const allCleanTopics = allTopicStrings
-            .flatMap(topicStr => topicStr.split(/[;,]/)) // Split by ; or ,
-            .map(s => s.trim()); // Trim whitespace
+            .map(topicStr => topicStr.split(/[;,]/))      // Creates an array of arrays
+            .reduce((acc, val) => acc.concat(val), [])  // Flattens to a single array
+            .map(s => s.trim());                          // Trims whitespace
 
         // 3. Now, get the unique, non-empty, sorted list from the CLEAN data
         const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
@@ -135,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addOptions(questionFilter, questions, 'Questions');
 
         // Populate Checkbox Lists
-        addCheckboxes(topicFilterList, topics, 'topic-checkbox'); // This now uses the clean 'topics' list
+        addCheckboxes(topicFilterList, topics, 'topic-checkbox');
         addCheckboxes(yearFilterList, years, 'year-checkbox');
         addCheckboxes(paperFilterList, papers, 'paper-checkbox');
     }
@@ -187,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let filteredData = allData;
 
-        // --- ▼▼▼ MODIFIED SECTION ▼▼▼ ---
         // Apply Topic Filter
         if (selectedTopics.size > 0) {
             filteredData = filteredData.filter(item => {
@@ -204,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             });
         }
-        // --- ▲▲▲ END OF MODIFICATION ▲▲▲ ---
 
         // Apply Year Filter
         if (selectedYears.size > 0) {
@@ -269,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlContent += `
                 <div class='pdf-section'>
                     <div class='header-row'>
-                        <span class='file-title'>${filename}</span>
+                        <span class'file-title'>${filename}</span>
                         <span class='topic-label'>(Category: ${mainTopic})</span>
                     </div>
                     <embed src='${fullPdfUrl}' type='application/pdf' />
@@ -288,38 +287,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 7. Draggable Resizer Logic ---
     const dragger = document.getElementById('dragger');
     const lowerPanel = document.getElementById('lower-panel');
-    const pdfViewer = document.getElementById('pdf-viewer'); // Make sure pdfViewer is defined up top
 
     let isDragging = false;
 
     dragger.addEventListener('mousedown', (e) => {
         isDragging = true;
-        // Add classes to prevent text selection/iframe issues while dragging
         document.body.style.userSelect = 'none';
-        if (pdfViewer) pdfViewer.style.pointerEvents = 'none'; // Check if pdfViewer exists
+        if (pdfViewer) pdfViewer.style.pointerEvents = 'none';
     });
 
     document.addEventListener('mouseup', () => {
         isDragging = false;
-        // Remove preventative styles
         document.body.style.userSelect = 'auto';
-        if (pdfViewer) pdfViewer.style.pointerEvents = 'auto'; // Check if pdfViewer exists
+        if (pdfViewer) pdfViewer.style.pointerEvents = 'auto';
     });
 
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
 
-        // Calculate new height of the lower panel
         const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
-
-        // Get min/max heights
         const minHeight = 100; // Must match min-height in CSS
         const maxHeight = window.innerHeight - 150; // (window height) - (upper panel min-height)
 
-        // Apply constraints
         if (newHeight > minHeight && newHeight < maxHeight) {
             lowerPanel.style.height = `${newHeight}px`;
         }
     });
 
-}); // <-- This is the final closing parenthesis.
+}); // <-- Final closing parenthesis
