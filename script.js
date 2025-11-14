@@ -279,4 +279,44 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         URL.revokeObjectURL(a.href);
     });
+    
+    // --- 7. Draggable Resizer Logic ---
+        const dragger = document.getElementById('dragger');
+        const lowerPanel = document.getElementById('lower-panel');
+        const upperPanel = document.getElementById('upper-panel');
+    
+        let isDragging = false;
+    
+        dragger.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            // Add classes to prevent text selection/iframe issues while dragging
+            document.body.style.userSelect = 'none';
+            pdfViewer.style.pointerEvents = 'none';
+        });
+    
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            // Remove preventative styles
+            document.body.style.userSelect = 'auto';
+            pdfViewer.style.pointerEvents = 'auto';
+        });
+    
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+    
+            // Calculate new height of the lower panel
+            const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
+    
+            // Get min/max heights
+            const minHeight = 100; // Must match min-height in CSS
+            const maxHeight = window.innerHeight - 150; // (window height) - (upper panel min-height)
+    
+            // Apply constraints
+            if (newHeight > minHeight && newHeight < maxHeight) {
+                lowerPanel.style.height = `${newHeight}px`;
+            }
+        });
+    
+    }); // <-- This is the final closing parenthesis of the whole file. Your new code goes *before* this.
+        
 });
