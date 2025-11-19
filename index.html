@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Viewer and Filter</title>
-    <link rel="stylesheet" href="style.css?v=1.2.7">
+    <title>9702 Physics Viewer</title>
+    <link rel="stylesheet" href="style.css?v=1.4.1">
 </head>
 <body>
 
@@ -32,7 +32,15 @@
                     </div>
                 </div>
                 
-                <select id="filter-question"></select>
+                <div class="dropdown-check-container">
+                    <button id="question-filter-btn" class="filter-button">
+                        Question (<span id="question-filter-count">0</span>)
+                    </button>
+                    <div id="question-filter-panel" class="dropdown-panel">
+                        <div id="question-filter-list" class="dropdown-list"></div>
+                        <button id="question-filter-apply" class="apply-button">Apply</button>
+                    </div>
+                </div>
                 
                 <div class="dropdown-check-container">
                     <button id="topic-filter-btn" class="filter-button">
@@ -46,6 +54,8 @@
                 
                 <button id="generate-html-btn">Create Filtered HTML File</button>
                 <span id="file-count-display"></span>
+                <a href="https://sialaichai.github.io/physics9702/" class="nav-link">9702</a>
+                <a href="https://sialaichai.github.io/physicseab/" class="nav-link">SEAB</a>
             </div>
             <div id="pdf-viewer-container">
                 <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
@@ -70,5 +80,7 @@
                     </tbody>
             </table>
         </div>
-    </div> <script src="script.js?v=1.3.9"></script> </body>
+    </div> 
+    <script src="script.js?v=1.6.1"></script> 
+</body>
 </html>
