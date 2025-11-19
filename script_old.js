@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .map(topicStr => topicStr.split(/[;,]/))      // Creates an array of arrays
             .reduce((acc, val) => acc.concat(val), [])  // Flattens to a single array
             .map(s => s.trim());                          // Trims whitespace
-
+ 
         // 3. Now, get the unique, non-empty, sorted list from the CLEAN data
         const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
         // --- ▲▲▲ END OF MODIFICATION ▲▲▲ ---
