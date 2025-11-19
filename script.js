@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ======================================================
     // 1. PASSWORD PROTECTION
     // ======================================================
-    const correctHash = "2095256207"; // Password: 12345
+    const correctHash = "2095256207"; 
 
     function simpleHash(str) {
         let hash = 0;
@@ -104,30 +104,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateBtn = document.getElementById('generate-html-btn');
     const fileCountDisplay = document.getElementById('file-count-display');
     
-    // --- Filter References ---
+    // --- Filter Elements ---
     
-    // Topic
+    // Topics
     const topicFilterBtn = document.getElementById('topic-filter-btn');
     const topicFilterPanel = document.getElementById('topic-filter-panel');
     const topicFilterList = document.getElementById('topic-filter-list');
     const topicFilterApply = document.getElementById('topic-filter-apply');
     const topicFilterCount = document.getElementById('topic-filter-count');
 
-    // Year
+    // Years
     const yearFilterBtn = document.getElementById('year-filter-btn');
     const yearFilterPanel = document.getElementById('year-filter-panel');
     const yearFilterList = document.getElementById('year-filter-list');
     const yearFilterApply = document.getElementById('year-filter-apply');
     const yearFilterCount = document.getElementById('year-filter-count');
 
-    // Paper
+    // Papers
     const paperFilterBtn = document.getElementById('paper-filter-btn');
     const paperFilterPanel = document.getElementById('paper-filter-panel');
     const paperFilterList = document.getElementById('paper-filter-list');
     const paperFilterApply = document.getElementById('paper-filter-apply');
     const paperFilterCount = document.getElementById('paper-filter-count');
 
-    // Question (NEW CHECKBOX FILTER)
+    // Questions
     const questionFilterBtn = document.getElementById('question-filter-btn');
     const questionFilterPanel = document.getElementById('question-filter-panel');
     const questionFilterList = document.getElementById('question-filter-list');
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedTopics = new Set();
     let selectedYears = new Set();
     let selectedPapers = new Set();
-    let selectedQuestions = new Set(); // NEW
+    let selectedQuestions = new Set(); 
 
     // --- 1. Fetch JSON ---
     fetch('9702Phy.json')
@@ -150,21 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(jsonData => {
-            // --- 1b. CLEAN DATA & NORMALIZE QUESTIONS ---
+            // --- 1b. CLEAN DATA ---
             allData = jsonData.map(item => {
-                // 1. Basic trim
+                // Clean Question field
                 let q = (item.question || '').trim();
-                
-                // 2. Remove ".pdf" (just in case)
                 q = q.replace(/\.pdf$/i, '');
-                
-                // 3. Normalize "q08" -> "q8" (Remove leading zero after q)
-                q = q.replace(/^q0+(\d)/i, 'q$1');
+                q = q.replace(/^q0+(\d)/i, 'q$1'); // Normalize q08 -> q8
 
                 return {
                     filename: (item.filename || '').trim(),
                     year: (item.year || '').trim(),
-                    // jc field removed
+                    // JC field ignored
                     paper: (item.paper || '').trim(),
                     question: q, 
                     mainTopic: (item.mainTopic || '').trim(),
@@ -197,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort(naturalSort);
 
         const addCheckboxes = (listElement, values, className) => {
+            if (!listElement) return; // Safety Check
             listElement.innerHTML = ''; 
             values.forEach(value => {
                 const label = document.createElement('label');
@@ -210,11 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        // Populate all lists as checkboxes now
         addCheckboxes(topicFilterList, topics, 'topic-checkbox');
         addCheckboxes(yearFilterList, years, 'year-checkbox');
         addCheckboxes(paperFilterList, papers, 'paper-checkbox');
-        addCheckboxes(questionFilterList, questions, 'question-checkbox'); // NEW
+        addCheckboxes(questionFilterList, questions, 'question-checkbox');
     }
     
     function naturalSort(a, b) {
@@ -225,6 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupEventListeners() {
         
         const setupFilterPanel = (btn, panel, list, applyBtn, selectedSet, countElement, checkboxClass) => {
+            if (!btn || !panel || !list || !applyBtn) return; // Safety check
+
             btn.addEventListener('click', () => {
                 const isVisible = panel.style.display === 'block';
                 panel.style.display = isVisible ? 'none' : 'block';
@@ -243,12 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setupFilterPanel(topicFilterBtn, topicFilterPanel, topicFilterList, topicFilterApply, selectedTopics, topicFilterCount, 'topic-checkbox');
         setupFilterPanel(yearFilterBtn, yearFilterPanel, yearFilterList, yearFilterApply, selectedYears, yearFilterCount, 'year-checkbox');
         setupFilterPanel(paperFilterBtn, paperFilterPanel, paperFilterList, paperFilterApply, selectedPapers, paperFilterCount, 'paper-checkbox');
-        setupFilterPanel(questionFilterBtn, questionFilterPanel, questionFilterList, questionFilterApply, selectedQuestions, questionFilterCount, 'question-checkbox'); // NEW
+        setupFilterPanel(questionFilterBtn, questionFilterPanel, questionFilterList, questionFilterApply, selectedQuestions, questionFilterCount, 'question-checkbox');
 
         // Close panels when clicking outside
         document.addEventListener('click', (event) => {
-            const panels = [topicFilterPanel, yearFilterPanel, paperFilterPanel, questionFilterPanel];
-            const buttons = [topicFilterBtn, yearFilterBtn, paperFilterBtn, questionFilterBtn];
+            const panels = [topicFilterPanel, yearFilterPanel, paperFilterPanel, questionFilterPanel].filter(Boolean);
+            const buttons = [topicFilterBtn, yearFilterBtn, paperFilterBtn, questionFilterBtn].filter(Boolean);
             
             if (!panels.some(p => p.contains(event.target)) && !buttons.some(b => b.contains(event.target))) {
                 panels.forEach(p => p.style.display = 'none');
@@ -273,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedYears.size > 0) filteredData = filteredData.filter(item => selectedYears.has(item.year));
         // 3. Papers
         if (selectedPapers.size > 0) filteredData = filteredData.filter(item => selectedPapers.has(item.paper));
-        // 4. Questions (NEW)
+        // 4. Questions
         if (selectedQuestions.size > 0) filteredData = filteredData.filter(item => selectedQuestions.has(item.question));
 
         renderTable(filteredData);
@@ -281,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. Render Table ---
     function renderTable(data) {
+        if (!tableBody) return;
         tableBody.innerHTML = '';
         const fragment = document.createDocumentFragment();
         
@@ -303,71 +302,75 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         tableBody.appendChild(fragment);
         
-        if (data.length > 500) {
-            fileCountDisplay.textContent = `Showing first 500 of ${data.length} files`;
-        } else {
-            fileCountDisplay.textContent = `${data.length} files found`;
+        if (fileCountDisplay) {
+            if (data.length > 500) {
+                fileCountDisplay.textContent = `Showing first 500 of ${data.length} files`;
+            } else {
+                fileCountDisplay.textContent = `${data.length} files found`;
+            }
         }
     }
     
     // --- 6. Generate HTML Report ---
-    generateBtn.addEventListener('click', () => {
-        const visibleRows = tableBody.querySelectorAll('tr');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', () => {
+            const visibleRows = tableBody.querySelectorAll('tr');
 
-        if (visibleRows.length > 100) {
-            const userConfirmed = confirm(`Warning: Generating a report with ${visibleRows.length} files. Browser may not load properly. Continue?`);
-            if (!userConfirmed) return; 
-        }
+            if (visibleRows.length > 100) {
+                const userConfirmed = confirm(`Warning: Generating a report with ${visibleRows.length} files. Browser may not load properly. Continue?`);
+                if (!userConfirmed) return; 
+            }
 
-        const pdfBaseUrl = "https://sialaichai.github.io/physicsprelim/pdfs/";
-        let htmlContent = `
-            <!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Filtered PDF Report</title>
-            <style>
-                body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 20px; background: #f4f4f4; }
-                h1 { text-align: center; color: #333; } .pdf-section { margin-bottom: 40px; background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-                .header-row { font-size: 1.2em; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee; }
-                .file-title { font-weight: bold; } .topic-label { color: #555; }
-                embed { width: 100%; height: 800px; border: 1px solid #ccc; border-radius: 4px; }
-            </style></head><body><h1>Filtered PDF Report</h1>
-        `;
-        visibleRows.forEach(row => {
-            const filename = row.cells[0].textContent;
-            const year = row.cells[1].textContent;
-            const mainTopic = row.cells[4].textContent; // Adjusted index for Topic since School column was removed
-            const fullPdfUrl = `${pdfBaseUrl}${year}/${filename}`;
-            
-            htmlContent += `
-                <div class='pdf-section'>
-                    <div class='header-row'>
-                        <span class'file-title'>${filename}</span>
-                        <span class='topic-label'>(Category: ${mainTopic})</span>
-                    </div>
-                    <embed src='${fullPdfUrl}' type='application/pdf' />
-                </div>
+            const pdfBaseUrl = "https://sialaichai.github.io/physics9702/pdfs/";
+            let htmlContent = `
+                <!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Filtered PDF Report</title>
+                <style>
+                    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 20px; background: #f4f4f4; }
+                    h1 { text-align: center; color: #333; } .pdf-section { margin-bottom: 40px; background: #ffffff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+                    .header-row { font-size: 1.2em; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee; }
+                    .file-title { font-weight: bold; } .topic-label { color: #555; }
+                    embed { width: 100%; height: 800px; border: 1px solid #ccc; border-radius: 4px; }
+                </style></head><body><h1>Filtered PDF Report</h1>
             `;
+            visibleRows.forEach(row => {
+                const filename = row.cells[0].textContent;
+                const year = row.cells[1].textContent;
+                const mainTopic = row.cells[4].textContent; 
+                const fullPdfUrl = `${pdfBaseUrl}${year}/${filename}`;
+                
+                htmlContent += `
+                    <div class='pdf-section'>
+                        <div class='header-row'>
+                            <span class'file-title'>${filename}</span>
+                            <span class='topic-label'>(Category: ${mainTopic})</span>
+                        </div>
+                        <embed src='${fullPdfUrl}' type='application/pdf' />
+                    </div>
+                `;
+            });
+            htmlContent += `</body></html>`;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'filtered_report.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
         });
-        htmlContent += `</body></html>`;
-        const blob = new Blob([htmlContent], { type: 'text/html' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'filtered_report.html';
-        a.click();
-        URL.revokeObjectURL(a.href);
-    });
+    }
 
     // --- 7. Draggable Resizer ---
     const dragger = document.getElementById('dragger');
     const lowerPanel = document.getElementById('lower-panel');
-    let isDragging = false;
-
-    dragger.addEventListener('mousedown', () => { isDragging = true; document.body.style.userSelect = 'none'; if (pdfViewer) pdfViewer.style.pointerEvents = 'none'; });
-    document.addEventListener('mouseup', () => { isDragging = false; document.body.style.userSelect = 'auto'; if (pdfViewer) pdfViewer.style.pointerEvents = 'auto'; });
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
-        if (newHeight > 100 && newHeight < window.innerHeight - 150) {
-            lowerPanel.style.height = `${newHeight}px`;
-        }
-    });
-
+    if (dragger && lowerPanel) {
+        let isDragging = false;
+        dragger.addEventListener('mousedown', () => { isDragging = true; document.body.style.userSelect = 'none'; if (pdfViewer) pdfViewer.style.pointerEvents = 'none'; });
+        document.addEventListener('mouseup', () => { isDragging = false; document.body.style.userSelect = 'auto'; if (pdfViewer) pdfViewer.style.pointerEvents = 'auto'; });
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
+            if (newHeight > 100 && newHeight < window.innerHeight - 150) {
+                lowerPanel.style.height = `${newHeight}px`;
+            }
+        });
+    }
 });
