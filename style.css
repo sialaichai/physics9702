@@ -1,0 +1,231 @@
+/* --- Basic Layout --- */
+body { 
+    font-family: sans-serif; 
+    margin: 0; 
+    overflow: hidden; /* Prevents whole page from scrolling */
+}
+
+#main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#upper-panel { 
+    flex: 1; /* This makes it take up the remaining space */
+    display: flex; 
+    flex-direction: column; 
+    min-height: 150px; /* Prevents resizing too small */
+}
+
+#lower-panel { 
+    height: 300px; /* Initial height */
+    min-height: 100px; /* Prevents resizing too small */
+    overflow-y: auto; 
+    background: white; /* Ensures it's not transparent */
+}
+
+/* --- Dragger Styles --- */
+#dragger {
+    height: 5px;
+    background: #ccc;
+    cursor: ns-resize; /* North-South resize cursor */
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
+/* --- Controls Bar --- */
+#controls { 
+    padding: 10px; 
+    background: #f4f4f4; 
+    display: flex; /* Aligns items in a row */
+    align-items: center; /* Vertically centers the items */
+    gap: 10px; /* Adds a nice space between items */
+}
+
+#pdf-viewer-container { 
+    flex: 1; 
+}
+
+#pdf-viewer { 
+    width: 100%; 
+    height: 100%; 
+    border: none; 
+}
+
+/* --- Table Styles --- */
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+}
+
+th, td { 
+    border: 1px solid #ddd; 
+    padding: 8px; 
+    text-align: left; 
+}
+
+th { 
+    background-color: #f2f2f2; 
+    cursor: pointer; 
+}
+
+tbody tr:hover { 
+    background-color: #f9f9f9; 
+    cursor: pointer; 
+}
+
+/* --- Button Styles --- */
+#generate-html-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    height: 36px;
+    box-sizing: border-box;
+}
+
+#generate-html-btn:hover {
+    background-color: #0056b3;
+}
+
+#generate-html-btn:active {
+    background-color: #004085;
+    transform: translateY(1px);
+}
+
+/* --- Checkbox Filter Styles --- */
+.dropdown-check-container {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-button {
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    height: 36px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centers text vertically */
+}
+
+.dropdown-panel {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    min-width: 150px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.dropdown-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.dropdown-list label {
+    display: block;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.dropdown-list label:hover {
+    background-color: #f4f4f4;
+}
+
+.dropdown-list input {
+    margin-right: 8px;
+}
+
+.apply-button {
+    width: 100%;
+    padding: 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.apply-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Custom Filter Widths --- */
+#controls select {
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    height: 36px;
+    box-sizing: border-box;
+    min-width: 80px; /* Half width */
+}
+
+#year-filter-btn,
+#paper-filter-btn {
+    min-width: 120px; /* Half width */
+}
+
+#topic-filter-btn {
+    min-width: 320px; /* Double width */
+}
+
+/* --- File Count Display --- */
+#file-count-display {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff0000;
+    background-color: #e9e9e9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 36px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+/* --- Table Column Widths --- */
+#data-table th:nth-child(1), #data-table td:nth-child(1) { width: 15%; } /* Filename */
+#data-table th:nth-child(2), #data-table td:nth-child(2) { width: 5%; } /* Year */
+#data-table th:nth-child(3), #data-table td:nth-child(3) { width: 5%; } /* School (NEW) */
+#data-table th:nth-child(4), #data-table td:nth-child(4) { width: 5%; } /* Paper */
+#data-table th:nth-child(5), #data-table td:nth-child(5) { width: 5%; } /* Question */
+#data-table th:nth-child(6), #data-table td:nth-child(6) { width: 20%; } /* Main Topic */
+#data-table th:nth-child(7), #data-table td:nth-child(7) { width: 20%; } /* Other Topics */
+
+/* --- Navigation Links --- */
+.nav-link {
+    text-decoration: none;
+    color: #333;
+    background-color: #e0e0e0; /* Light grey background */
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: #d0d0d0; /* Darker grey on hover */
+    color: #000;
+}
