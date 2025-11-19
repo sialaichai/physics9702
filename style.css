@@ -207,11 +207,10 @@ tbody tr:hover {
 /* --- Table Column Widths --- */
 #data-table th:nth-child(1), #data-table td:nth-child(1) { width: 15%; } /* Filename */
 #data-table th:nth-child(2), #data-table td:nth-child(2) { width: 5%; } /* Year */
-#data-table th:nth-child(3), #data-table td:nth-child(3) { width: 5%; } /* School (NEW) */
-#data-table th:nth-child(4), #data-table td:nth-child(4) { width: 5%; } /* Paper */
-#data-table th:nth-child(5), #data-table td:nth-child(5) { width: 5%; } /* Question */
-#data-table th:nth-child(6), #data-table td:nth-child(6) { width: 20%; } /* Main Topic */
-#data-table th:nth-child(7), #data-table td:nth-child(7) { width: 20%; } /* Other Topics */
+#data-table th:nth-child(3), #data-table td:nth-child(4) { width: 5%; } /* Paper */
+#data-table th:nth-child(4), #data-table td:nth-child(5) { width: 5%; } /* Question */
+#data-table th:nth-child(5), #data-table td:nth-child(6) { width: 20%; } /* Main Topic */
+#data-table th:nth-child(6), #data-table td:nth-child(7) { width: 20%; } /* Other Topics */
 
 /* --- Navigation Links --- */
 .nav-link {
