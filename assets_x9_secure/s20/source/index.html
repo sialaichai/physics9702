@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9702 Physics Viewer</title>
+    <link rel="stylesheet" href="style.css?v=1.4.1">
+</head>
+<body>
+
+    <div id="main-container">
+        <div id="upper-panel">
+            <div id="controls">
+                
+                <div class="dropdown-check-container">
+                    <button id="year-filter-btn" class="filter-button">
+                        Year (<span id="year-filter-count">0</span>)
+                    </button>
+                    <div id="year-filter-panel" class="dropdown-panel">
+                        <div id="year-filter-list" class="dropdown-list"></div>
+                        <button id="year-filter-apply" class="apply-button">Apply</button>
+                    </div>
+                </div>
+
+                <div class="dropdown-check-container">
+                    <button id="paper-filter-btn" class="filter-button">
+                        Paper (<span id="paper-filter-count">0</span>)
+                    </button>
+                    <div id="paper-filter-panel" class="dropdown-panel">
+                        <div id="paper-filter-list" class="dropdown-list"></div>
+                        <button id="paper-filter-apply" class="apply-button">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="dropdown-check-container">
+                    <button id="question-filter-btn" class="filter-button">
+                        Question (<span id="question-filter-count">0</span>)
+                    </button>
+                    <div id="question-filter-panel" class="dropdown-panel">
+                        <div id="question-filter-list" class="dropdown-list"></div>
+                        <button id="question-filter-apply" class="apply-button">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="dropdown-check-container">
+                    <button id="topic-filter-btn" class="filter-button">
+                        Topic (<span id="topic-filter-count">0</span>)
+                    </button>
+                    <div id="topic-filter-panel" class="dropdown-panel">
+                        <div id="topic-filter-list" class="dropdown-list"></div>
+                        <button id="topic-filter-apply" class="apply-button">Apply</button>
+                    </div>
+                </div>
+                
+                <button id="generate-html-btn">Create Filtered HTML File</button>
+                <span id="file-count-display"></span>
+                <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link">Prelim</a>
+                <a href="https://sialaichai.github.io/physicsseab/" class="nav-link">SEAB</a>
+            </div>
+            <div id="pdf-viewer-container">
+                <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <div id="dragger"></div>
+
+        <div id="lower-panel">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Year</th>
+                        <th>Paper</th>
+                        <th>Question</th>
+                        <th>Main Topic</th>
+                        <th>Other Topics</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div> 
+    <script src="script.js?v=1.6.2"></script> 
+</body>
+</html>
