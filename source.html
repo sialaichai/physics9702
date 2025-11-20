@@ -152,7 +152,18 @@
         let selectedQuestions = new Set(); 
 
         // --- 1. Fetch JSON (Using NEW Secure Name) ---
-        fetch(JSON_FILE)
+        console.log("Attempting to fetch:", JSON_FILE);
+            fetch(JSON_FILE)
+                .then(response => {
+                    console.log("Response Status:", response.status);
+                    return response.text(); // Get text first to inspect it
+                })
+                .then(text => {
+                    console.log("Received Data Length:", text.length);
+                    console.log("First 50 chars:", text.substring(0, 50));
+                    if (text.length === 0) throw new Error("File is empty!");
+                    return JSON.parse(text); // Manually parse it
+                })
             .then(response => {
                 if (!response.ok) throw new Error(`Failed to fetch ${JSON_FILE} - Status: ${response.status}`);
                 return response.json();
@@ -330,4 +341,5 @@
     });
     </script>
 </body>
+
 </html>
