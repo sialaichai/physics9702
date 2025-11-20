@@ -1,87 +1,65 @@
-b<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9702 Physics Viewer</title>
+    <title>9702 Physics Viewer (Debug Mode)</title>
     <style>
         /* =========================================
-           COPIED FROM YOUR style.css (v1.4.1)
+           1. CSS STYLES
            ========================================= */
         body { font-family: sans-serif; margin: 0; overflow: hidden; }
         #main-container { display: flex; flex-direction: column; height: 100vh; }
         #upper-panel { flex: 1; display: flex; flex-direction: column; min-height: 150px; }
         #lower-panel { height: 300px; min-height: 100px; overflow-y: auto; background: white; }
         #dragger { height: 5px; background: #ccc; cursor: ns-resize; border-top: 1px solid #aaa; border-bottom: 1px solid #aaa; }
-        #controls { padding: 10px; background: #f4f4f4; display: flex; align-items: center; gap: 10px; }
+        #controls { padding: 10px; background: #f4f4f4; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         #pdf-viewer-container { flex: 1; }
         #pdf-viewer { width: 100%; height: 100%; border: none; }
+        
+        /* Table Styles */
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; cursor: pointer; }
         tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
-        #generate-html-btn { background-color: #007bff; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; height: 36px; box-sizing: border-box; }
+        
+        /* Buttons & Inputs */
+        button { cursor: pointer; }
+        #generate-html-btn { background-color: #007bff; color: white; padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold; }
         #generate-html-btn:hover { background-color: #0056b3; }
+        
+        /* Dropdowns */
         .dropdown-check-container { position: relative; display: inline-block; }
-        .filter-button { padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; background-color: white; cursor: pointer; height: 36px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; }
-        .dropdown-panel { display: none; position: absolute; background-color: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 100; min-width: 150px; padding: 10px; border-radius: 4px; }
-        .dropdown-list { max-height: 200px; overflow-y: auto; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; }
-        .dropdown-list label { display: block; padding: 5px; cursor: pointer; border-radius: 4px; }
+        .filter-button { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; background: white; min-width: 120px; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-panel { display: none; position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 100; min-width: 150px; padding: 10px; }
+        .dropdown-list { max-height: 200px; overflow-y: auto; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .dropdown-list label { display: block; padding: 5px; cursor: pointer; }
         .dropdown-list label:hover { background-color: #f4f4f4; }
-        .dropdown-list input { margin-right: 8px; }
-        .apply-button { width: 100%; padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .apply-button:hover { background-color: #0056b3; }
-        #year-filter-btn, #paper-filter-btn, #question-filter-btn { min-width: 120px; }
-        #topic-filter-btn { min-width: 320px; }
-        #file-count-display { padding: 8px 12px; font-size: 14px; font-weight: bold; color: #ff0000; background-color: #e9e9e9; border: 1px solid #ccc; border-radius: 4px; height: 36px; box-sizing: border-box; display: flex; align-items: center; }
-        #data-table th:nth-child(1), #data-table td:nth-child(1) { width: 15%; } 
-        #data-table th:nth-child(2), #data-table td:nth-child(2) { width: 5%; }  
-        #data-table th:nth-child(3), #data-table td:nth-child(3) { width: 5%; }  
-        #data-table th:nth-child(4), #data-table td:nth-child(4) { width: 5%; }  
-        #data-table th:nth-child(5), #data-table td:nth-child(5) { width: 20%; } 
-        #data-table th:nth-child(6), #data-table td:nth-child(6) { width: 20%; } 
-        .nav-link { text-decoration: none; color: #333; background-color: #e0e0e0; padding: 8px 12px; border-radius: 4px; font-weight: bold; border: 1px solid #ccc; transition: background-color 0.2s; }
-        .nav-link:hover { background-color: #d0d0d0; color: #000; }
+        .apply-button { width: 100%; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; }
+
+        /* Debug Box */
+        #debug-log { 
+            display: none; /* Hidden by default, shown on error */
+            background: #ffebeb; border: 2px solid #ff0000; color: #d80000; 
+            padding: 20px; margin: 20px; white-space: pre-wrap; font-family: monospace; 
+        }
     </style>
 </head>
 <body>
 
+    <div id="debug-log"></div>
+
     <div id="main-container">
         <div id="upper-panel">
             <div id="controls">
-                <div class="dropdown-check-container">
-                    <button id="year-filter-btn" class="filter-button">Year (<span id="year-filter-count">0</span>)</button>
-                    <div id="year-filter-panel" class="dropdown-panel">
-                        <div id="year-filter-list" class="dropdown-list"></div>
-                        <button id="year-filter-apply" class="apply-button">Apply</button>
-                    </div>
-                </div>
-                <div class="dropdown-check-container">
-                    <button id="paper-filter-btn" class="filter-button">Paper (<span id="paper-filter-count">0</span>)</button>
-                    <div id="paper-filter-panel" class="dropdown-panel">
-                        <div id="paper-filter-list" class="dropdown-list"></div>
-                        <button id="paper-filter-apply" class="apply-button">Apply</button>
-                    </div>
-                </div>
-                <div class="dropdown-check-container">
-                    <button id="question-filter-btn" class="filter-button">Question (<span id="question-filter-count">0</span>)</button>
-                    <div id="question-filter-panel" class="dropdown-panel">
-                        <div id="question-filter-list" class="dropdown-list"></div>
-                        <button id="question-filter-apply" class="apply-button">Apply</button>
-                    </div>
-                </div>
-                <div class="dropdown-check-container">
-                    <button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button>
-                    <div id="topic-filter-panel" class="dropdown-panel">
-                        <div id="topic-filter-list" class="dropdown-list"></div>
-                        <button id="topic-filter-apply" class="apply-button">Apply</button>
-                    </div>
-                </div>
+                <div class="dropdown-check-container"><button id="year-filter-btn" class="filter-button">Year (<span id="year-filter-count">0</span>)</button><div id="year-filter-panel" class="dropdown-panel"><div id="year-filter-list" class="dropdown-list"></div><button id="year-filter-apply" class="apply-button">Apply</button></div></div>
+                <div class="dropdown-check-container"><button id="paper-filter-btn" class="filter-button">Paper (<span id="paper-filter-count">0</span>)</button><div id="paper-filter-panel" class="dropdown-panel"><div id="paper-filter-list" class="dropdown-list"></div><button id="paper-filter-apply" class="apply-button">Apply</button></div></div>
+                <div class="dropdown-check-container"><button id="question-filter-btn" class="filter-button">Question (<span id="question-filter-count">0</span>)</button><div id="question-filter-panel" class="dropdown-panel"><div id="question-filter-list" class="dropdown-list"></div><button id="question-filter-apply" class="apply-button">Apply</button></div></div>
+                <div class="dropdown-check-container"><button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button><div id="topic-filter-panel" class="dropdown-panel"><div id="topic-filter-list" class="dropdown-list"></div><button id="topic-filter-apply" class="apply-button">Apply</button></div></div>
                 
                 <button id="generate-html-btn">Create Filtered HTML File</button>
-                <span id="file-count-display"></span>
-                <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link">Prelim</a>
-                <a href="https://sialaichai.github.io/physicsseab/" class="nav-link">SEAB</a>
+                <span id="file-count-display">Loading...</span>
+                <a href="https://sialaichai.github.io/physics9702/" class="nav-link" style="margin-left:auto;">Home</a>
             </div>
             <div id="pdf-viewer-container">
                 <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
@@ -104,15 +82,23 @@ b<!DOCTYPE html>
     document.addEventListener('DOMContentLoaded', () => {
         
         // ======================================================
-        // SECURITY CONFIGURATION (UPDATED)
+        // 2. CONFIGURATION & DEBUGGING
         // ======================================================
-        // simpleHash is REMOVED because PageCrypt handles the password.
-        const JSON_FILE = 'https://sialaichai.github.io/physics9702/data_v8_hidden.json';
-        //hconst JSON_FILE = 'data_v8_hidden.json'; // Renamed from 9702Phy.json
-        const PDF_FOLDER = 'assets_x9_secure';   // Renamed from pdfs
+        
+        // I have hardcoded the absolute URL here to prevent path errors.
+        const JSON_FILE = 'https://sialaichai.github.io/physics9702/data_v8_hidden.json'; 
+        const PDF_FOLDER = 'assets_x9_secure';
+
+        const debugBox = document.getElementById('debug-log');
+
+        function showError(title, details) {
+            debugBox.style.display = 'block';
+            debugBox.innerHTML += `<strong>${title}</strong><br>${details}<br><br>`;
+            console.error(title, details);
+        }
 
         // ======================================================
-        // MAIN LOGIC (Copied from your script.js v1.6.2)
+        // 3. MAIN LOGIC
         // ======================================================
 
         const tableBody = document.getElementById('data-table-body');
@@ -120,59 +106,37 @@ b<!DOCTYPE html>
         const generateBtn = document.getElementById('generate-html-btn');
         const fileCountDisplay = document.getElementById('file-count-display');
         
-        // Filter Elements
-        const topicFilterBtn = document.getElementById('topic-filter-btn');
-        const topicFilterPanel = document.getElementById('topic-filter-panel');
-        const topicFilterList = document.getElementById('topic-filter-list');
-        const topicFilterApply = document.getElementById('topic-filter-apply');
-        const topicFilterCount = document.getElementById('topic-filter-count');
-
-        const yearFilterBtn = document.getElementById('year-filter-btn');
-        const yearFilterPanel = document.getElementById('year-filter-panel');
-        const yearFilterList = document.getElementById('year-filter-list');
-        const yearFilterApply = document.getElementById('year-filter-apply');
-        const yearFilterCount = document.getElementById('year-filter-count');
-
-        const paperFilterBtn = document.getElementById('paper-filter-btn');
-        const paperFilterPanel = document.getElementById('paper-filter-panel');
-        const paperFilterList = document.getElementById('paper-filter-list');
-        const paperFilterApply = document.getElementById('paper-filter-apply');
-        const paperFilterCount = document.getElementById('paper-filter-count');
-
-        const questionFilterBtn = document.getElementById('question-filter-btn');
-        const questionFilterPanel = document.getElementById('question-filter-panel');
-        const questionFilterList = document.getElementById('question-filter-list');
-        const questionFilterApply = document.getElementById('question-filter-apply');
-        const questionFilterCount = document.getElementById('question-filter-count');
-
         let allData = [];
         let selectedTopics = new Set();
         let selectedYears = new Set();
         let selectedPapers = new Set();
         let selectedQuestions = new Set(); 
 
-        // --- 1. Fetch JSON (Using NEW Secure Name) ---
-        console.log("Attempting to fetch:", JSON_FILE);
-            fetch(JSON_FILE)
-                .then(response => {
-                    console.log("Response Status:", response.status);
-                    return response.text(); // Get text first to inspect it
-                })
-                .then(text => {
-                    console.log("Received Data Length:", text.length);
-                    console.log("First 50 chars:", text.substring(0, 50));
-                    if (text.length === 0) throw new Error("File is empty!");
-                    return JSON.parse(text); // Manually parse it
-                })
+        // --- Fetch Data ---
+        console.log("Starting fetch for:", JSON_FILE);
+        
+        fetch(JSON_FILE)
             .then(response => {
-                if (!response.ok) throw new Error(`Failed to fetch ${JSON_FILE} - Status: ${response.status}`);
-                return response.json();
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+                }
+                return response.text(); // Get text first to check for empty files
+            })
+            .then(text => {
+                if (!text || text.trim().length === 0) {
+                    throw new Error("The JSON file was found, but it is EMPTY (0 bytes). Please re-upload it.");
+                }
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error("JSON Syntax Error: The file exists but contains bad data. " + e.message);
+                }
             })
             .then(jsonData => {
+                // Success! Process data
                 allData = jsonData.map(item => {
                     let q = (item.question || '').trim();
-                    q = q.replace(/\.pdf$/i, '');
-                    q = q.replace(/^q0+(\d)/i, 'q$1'); 
+                    q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
                     return {
                         filename: (item.filename || '').trim(),
                         year: (item.year || '').trim(),
@@ -182,165 +146,121 @@ b<!DOCTYPE html>
                         otherTopics: Array.isArray(item.otherTopics) ? item.otherTopics.map(t => t.trim()).filter(t => t !== "") : []
                     };
                 });
-                populateDropdowns();
-                setupEventListeners();
-                renderTable(allData);
+
+                if (allData.length === 0) {
+                    showError("Data Warning", "The JSON file is valid but contains 0 items (empty list).");
+                } else {
+                    populateDropdowns();
+                    setupEventListeners();
+                    renderTable(allData);
+                }
             })
             .catch(error => {
-                console.error('Error details:', error);
-                alert('Error loading data:\n\n' + error.message);
+                showError("CRITICAL LOADING ERROR", error.message + "\n\nURL attempted: " + JSON_FILE);
             });
 
+        // --- Helper Functions ---
         function populateDropdowns() {
-            const allTopicStrings = allData.map(item => item.mainTopic);
-            const allCleanTopics = allTopicStrings.map(topicStr => topicStr.split(/[;,]/)).reduce((acc, val) => acc.concat(val), []).map(s => s.trim());
+            const allCleanTopics = allData.map(item => item.mainTopic).map(s => s.split(/[;,]/)).reduce((acc, val) => acc.concat(val), []).map(s => s.trim());
             const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
-
             const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => {
                 const numA = parseInt(a.replace(/\D/g, '')) || 0;
                 const numB = parseInt(b.replace(/\D/g, '')) || 0;
-                if (numA !== numB) return numB - numA;
-                return b.localeCompare(a);
+                return numA !== numB ? numB - numA : b.localeCompare(a);
             });
-
             const papers = [...new Set(allData.map(item => item.paper).filter(Boolean))].sort();
-            const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort(naturalSort);
+            const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
-            const addCheckboxes = (listElement, values, className) => {
-                if (!listElement) return; 
-                listElement.innerHTML = ''; 
-                values.forEach(value => {
-                    const label = document.createElement('label');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.className = className;
-                    checkbox.value = value;
-                    label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(' ' + value));
-                    listElement.appendChild(label);
+            const setupList = (id, arr, cls) => {
+                const el = document.getElementById(id);
+                if(!el) return; el.innerHTML = '';
+                arr.forEach(v => {
+                    const l = document.createElement('label');
+                    const c = document.createElement('input'); c.type='checkbox'; c.className=cls; c.value=v;
+                    l.appendChild(c); l.appendChild(document.createTextNode(' '+v)); el.appendChild(l);
                 });
-            };
-
-            addCheckboxes(topicFilterList, topics, 'topic-checkbox');
-            addCheckboxes(yearFilterList, years, 'year-checkbox');
-            addCheckboxes(paperFilterList, papers, 'paper-checkbox');
-            addCheckboxes(questionFilterList, questions, 'question-checkbox');
-        }
-        
-        function naturalSort(a, b) {
-            return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            }
+            setupList('topic-filter-list', topics, 'topic-checkbox');
+            setupList('year-filter-list', years, 'year-checkbox');
+            setupList('paper-filter-list', papers, 'paper-checkbox');
+            setupList('question-filter-list', questions, 'question-checkbox');
         }
 
         function setupEventListeners() {
-            const setupFilterPanel = (btn, panel, list, applyBtn, selectedSet, countElement, checkboxClass) => {
-                if (!btn || !panel || !list || !applyBtn) return; 
-                btn.addEventListener('click', () => {
-                    const isVisible = panel.style.display === 'block';
-                    panel.style.display = isVisible ? 'none' : 'block';
-                });
-                applyBtn.addEventListener('click', () => {
-                    selectedSet.clear(); 
-                    const checkedBoxes = list.querySelectorAll(`.${checkboxClass}:checked`);
-                    checkedBoxes.forEach(box => selectedSet.add(box.value));
-                    countElement.textContent = selectedSet.size; 
-                    panel.style.display = 'none'; 
-                    applyFilters(); 
+            const setup = (btnId, panelId, listId, applyId, set, countId, cls) => {
+                const btn = document.getElementById(btnId), panel = document.getElementById(panelId);
+                const list = document.getElementById(listId), apply = document.getElementById(applyId);
+                const count = document.getElementById(countId);
+                if(!btn) return;
+                btn.addEventListener('click', () => panel.style.display = panel.style.display === 'block' ? 'none' : 'block');
+                apply.addEventListener('click', () => {
+                    set.clear(); list.querySelectorAll(`.${cls}:checked`).forEach(b => set.add(b.value));
+                    count.textContent = set.size; panel.style.display = 'none'; applyFilters();
                 });
             };
+            setup('topic-filter-btn', 'topic-filter-panel', 'topic-filter-list', 'topic-filter-apply', selectedTopics, 'topic-filter-count', 'topic-checkbox');
+            setup('year-filter-btn', 'year-filter-panel', 'year-filter-list', 'year-filter-apply', selectedYears, 'year-filter-count', 'year-checkbox');
+            setup('paper-filter-btn', 'paper-filter-panel', 'paper-filter-list', 'paper-filter-apply', selectedPapers, 'paper-filter-count', 'paper-checkbox');
+            setup('question-filter-btn', 'question-filter-panel', 'question-filter-list', 'question-filter-apply', selectedQuestions, 'question-filter-count', 'question-checkbox');
 
-            setupFilterPanel(topicFilterBtn, topicFilterPanel, topicFilterList, topicFilterApply, selectedTopics, topicFilterCount, 'topic-checkbox');
-            setupFilterPanel(yearFilterBtn, yearFilterPanel, yearFilterList, yearFilterApply, selectedYears, yearFilterCount, 'year-checkbox');
-            setupFilterPanel(paperFilterBtn, paperFilterPanel, paperFilterList, paperFilterApply, selectedPapers, paperFilterCount, 'paper-checkbox');
-            setupFilterPanel(questionFilterBtn, questionFilterPanel, questionFilterList, questionFilterApply, selectedQuestions, questionFilterCount, 'question-checkbox');
-
-            document.addEventListener('click', (event) => {
-                const panels = [topicFilterPanel, yearFilterPanel, paperFilterPanel, questionFilterPanel].filter(Boolean);
-                const buttons = [topicFilterBtn, yearFilterBtn, paperFilterBtn, questionFilterBtn].filter(Boolean);
-                if (!panels.some(p => p.contains(event.target)) && !buttons.some(b => b.contains(event.target))) {
-                    panels.forEach(p => p.style.display = 'none');
-                }
+            document.addEventListener('click', (e) => {
+                ['topic-filter-panel', 'year-filter-panel', 'paper-filter-panel', 'question-filter-panel'].forEach(id => {
+                    const p = document.getElementById(id);
+                    if(p && !p.contains(e.target) && !e.target.closest('.filter-button')) p.style.display='none';
+                });
             });
         }
 
         function applyFilters() {
-            let filteredData = allData;
-            if (selectedTopics.size > 0) {
-                filteredData = filteredData.filter(item => {
-                    if (!item.mainTopic) return false;
-                    const itemTopics = item.mainTopic.split(/[;,]/).map(s => s.trim());
-                    return itemTopics.some(topic => selectedTopics.has(topic));
-                });
-            }
-            if (selectedYears.size > 0) filteredData = filteredData.filter(item => selectedYears.has(item.year));
-            if (selectedPapers.size > 0) filteredData = filteredData.filter(item => selectedPapers.has(item.paper));
-            if (selectedQuestions.size > 0) filteredData = filteredData.filter(item => selectedQuestions.has(item.question));
-            renderTable(filteredData);
+            let fd = allData;
+            if(selectedTopics.size > 0) fd = fd.filter(i => i.mainTopic.split(/[;,]/).map(s=>s.trim()).some(t => selectedTopics.has(t)));
+            if(selectedYears.size > 0) fd = fd.filter(i => selectedYears.has(i.year));
+            if(selectedPapers.size > 0) fd = fd.filter(i => selectedPapers.has(i.paper));
+            if(selectedQuestions.size > 0) fd = fd.filter(i => selectedQuestions.has(i.question));
+            renderTable(fd);
         }
 
         function renderTable(data) {
-            if (!tableBody) return;
             tableBody.innerHTML = '';
             const fragment = document.createDocumentFragment();
-            const displayData = data.length > 500 ? data.slice(0, 500) : data; 
-
-            for (const rowData of displayData) {
+            const displayData = data.length > 500 ? data.slice(0, 500) : data;
+            displayData.forEach(r => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${rowData.filename}</td><td>${rowData.year}</td><td>${rowData.paper}</td><td>${rowData.question}</td><td>${rowData.mainTopic}</td><td>${rowData.otherTopics.join(', ')}</td>`;
-                tr.addEventListener('click', () => {
-                    // UPDATED PDF PATH to use Secure Folder
-                    pdfViewer.src = `${PDF_FOLDER}/${rowData.year}/${rowData.filename}`;
-                });
+                tr.innerHTML = `<td>${r.filename}</td><td>${r.year}</td><td>${r.paper}</td><td>${r.question}</td><td>${r.mainTopic}</td><td>${r.otherTopics.join(', ')}</td>`;
+                tr.addEventListener('click', () => pdfViewer.src = `${PDF_FOLDER}/${r.year}/${r.filename}`);
                 fragment.appendChild(tr);
-            }
+            });
             tableBody.appendChild(fragment);
-            if (fileCountDisplay) {
-                fileCountDisplay.textContent = data.length > 500 ? `Showing first 500 of ${data.length} files` : `${data.length} files found`;
-            }
+            fileCountDisplay.textContent = data.length > 500 ? `Showing first 500 of ${data.length} files` : `${data.length} files found`;
         }
-        
-        if (generateBtn) {
+
+        // Report Generator
+        if(generateBtn) {
             generateBtn.addEventListener('click', () => {
-                const visibleRows = tableBody.querySelectorAll('tr');
-                if (visibleRows.length > 100) {
-                    if (!confirm(`Warning: Generating a report with ${visibleRows.length} files. Browser may not load properly. Continue?`)) return; 
-                }
-                // UPDATED REPORT URL to use Secure Folder
+                const rows = tableBody.querySelectorAll('tr');
+                if(rows.length > 100 && !confirm(`Generate report for ${rows.length} files?`)) return;
                 const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
-                let htmlContent = `<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Filtered PDF Report</title><style>body{font-family:'Segoe UI',Tahoma,sans-serif;margin:20px;background:#f4f4f4}h1{text-align:center;color:#333}.pdf-section{margin-bottom:40px;background:#ffffff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.header-row{font-size:1.2em;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #eee}.file-title{font-weight:bold}.topic-label{color:#555}embed{width:100%;height:800px;border:1px solid #ccc;border-radius:4px}</style></head><body><h1>Filtered PDF Report</h1>`;
-                visibleRows.forEach(row => {
-                    const filename = row.cells[0].textContent;
-                    const year = row.cells[1].textContent;
-                    const mainTopic = row.cells[4].textContent; 
-                    const fullPdfUrl = `${pdfBaseUrl}${year}/${filename}`;
-                    htmlContent += `<div class='pdf-section'><div class='header-row'><span class'file-title'>${filename}</span> <span class='topic-label'>(Category: ${mainTopic})</span></div><embed src='${fullPdfUrl}' type='application/pdf' /></div>`;
+                let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px}embed{width:100%;height:800px;border:1px solid #ccc;margin-bottom:40px}</style></head><body><h1>PDF Report</h1>`;
+                rows.forEach(r => {
+                    html += `<div><h3>${r.cells[0].textContent}</h3><embed src='${pdfBaseUrl}${r.cells[1].textContent}/${r.cells[0].textContent}' type='application/pdf' /></div>`;
                 });
-                htmlContent += `</body></html>`;
-                const blob = new Blob([htmlContent], { type: 'text/html' });
+                html += `</body></html>`;
                 const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'filtered_report.html';
-                a.click();
-                URL.revokeObjectURL(a.href);
+                a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+                a.download = 'report.html'; a.click();
             });
         }
 
+        // Dragger
         const dragger = document.getElementById('dragger');
         const lowerPanel = document.getElementById('lower-panel');
-        if (dragger && lowerPanel) {
-            let isDragging = false;
-            dragger.addEventListener('mousedown', () => { isDragging = true; document.body.style.userSelect = 'none'; if (pdfViewer) pdfViewer.style.pointerEvents = 'none'; });
-            document.addEventListener('mouseup', () => { isDragging = false; document.body.style.userSelect = 'auto'; if (pdfViewer) pdfViewer.style.pointerEvents = 'auto'; });
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const newHeight = window.innerHeight - e.clientY - (dragger.offsetHeight / 2);
-                if (newHeight > 100 && newHeight < window.innerHeight - 150) {
-                    lowerPanel.style.height = `${newHeight}px`;
-                }
-            });
+        if(dragger && lowerPanel) {
+            let isD = false;
+            dragger.addEventListener('mousedown', () => { isD = true; document.body.style.userSelect = 'none'; if(pdfViewer) pdfViewer.style.pointerEvents = 'none'; });
+            document.addEventListener('mouseup', () => { isD = false; document.body.style.userSelect = 'auto'; if(pdfViewer) pdfViewer.style.pointerEvents = 'auto'; });
+            document.addEventListener('mousemove', (e) => { if(isD) lowerPanel.style.height = `${window.innerHeight - e.clientY - 2.5}px`; });
         }
     });
     </script>
 </body>
-
 </html>
-
