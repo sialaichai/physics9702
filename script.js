@@ -15,19 +15,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return hash.toString();
     }
 
-    function checkSessionAndLogin() {
-        if (sessionStorage.getItem('accessGranted') === 'true') {
-            document.getElementById('main-container').style.display = 'flex';
-            return; 
-        }
-        if (correctHash === "") {
-            const setupPass = prompt("SETUP MODE: Enter password to hash:");
-            if (setupPass) alert(simpleHash(setupPass));
-            return;
-        }
-        createLoginModal();
-    }
+  
+// inside script.js - replace the checkSessionAndLogin function
 
+function checkSessionAndLogin() {
+    // If logged in, SHOW the container
+    if (sessionStorage.getItem('accessGranted') === 'true') {
+        document.getElementById('main-container').style.display = 'flex';
+        return; 
+    }
+    
+    // If NOT logged in, the container is already hidden by HTML style="display:none"
+    // Just show the password setup/modal
+    if (correctHash === "") {
+        const setupPass = prompt("SETUP MODE: Enter password to hash:");
+        if (setupPass) alert(simpleHash(setupPass));
+        return;
+    }
+    createLoginModal();
+}
+
+
+    
     function createLoginModal() {
         const overlay = document.createElement('div');
         overlay.id = 'login-overlay';
