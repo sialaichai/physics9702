@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9702 Physics Viewer (Debug Mode)</title>
+    <style>
+        /* =========================================
+           1. CSS STYLES
+           ========================================= */
+        body { font-family: sans-serif; margin: 0; overflow: hidden; }
+        #main-container { display: flex; flex-direction: column; height: 100vh; }
+        #upper-panel { flex: 1; display: flex; flex-direction: column; min-height: 150px; }
+        #lower-panel { height: 300px; min-height: 100px; overflow-y: auto; background: white; }
+        #dragger { height: 5px; background: #ccc; cursor: ns-resize; border-top: 1px solid #aaa; border-bottom: 1px solid #aaa; }
+        #controls { padding: 10px; background: #f4f4f4; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        #pdf-viewer-container { flex: 1; }
+        #pdf-viewer { width: 100%; height: 100%; border: none; }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; cursor: pointer; }
+        tbody tr:hover { background-color: #f9f9f9; cursor: pointer; }
+        
+        /* Buttons & Inputs */
+        button { cursor: pointer; }
+        #generate-html-btn { background-color: #007bff; color: white; padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold; }
+        #generate-html-btn:hover { background-color: #0056b3; }
+        
+        /* Dropdowns */
+        .dropdown-check-container { position: relative; display: inline-block; }
+        .filter-button { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; background: white; min-width: 120px; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-panel { display: none; position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 100; min-width: 150px; padding: 10px; }
+        .dropdown-list { max-height: 200px; overflow-y: auto; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .dropdown-list label { display: block; padding: 5px; cursor: pointer; }
+        .dropdown-list label:hover { background-color: #f4f4f4; }
+        .apply-button { width: 100%; padding: 8px; background: #007bff; color: white; border: none; border-radius: 4px; }
+
+        /* Debug Box */
+        #debug-log { 
+            display: none; /* Hidden by default, shown on error */
+            background: #ffebeb; border: 2px solid #ff0000; color: #d80000; 
+            padding: 20px; margin: 20px; white-space: pre-wrap; font-family: monospace; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="debug-log"></div>
+
+    <div id="main-container">
+        <div id="upper-panel">
+            <div id="controls">
+                <div class="dropdown-check-container"><button id="year-filter-btn" class="filter-button">Year (<span id="year-filter-count">0</span>)</button><div id="year-filter-panel" class="dropdown-panel"><div id="year-filter-list" class="dropdown-list"></div><button id="year-filter-apply" class="apply-button">Apply</button></div></div>
+                <div class="dropdown-check-container"><button id="paper-filter-btn" class="filter-button">Paper (<span id="paper-filter-count">0</span>)</button><div id="paper-filter-panel" class="dropdown-panel"><div id="paper-filter-list" class="dropdown-list"></div><button id="paper-filter-apply" class="apply-button">Apply</button></div></div>
+                <div class="dropdown-check-container"><button id="question-filter-btn" class="filter-button">Question (<span id="question-filter-count">0</span>)</button><div id="question-filter-panel" class="dropdown-panel"><div id="question-filter-list" class="dropdown-list"></div><button id="question-filter-apply" class="apply-button">Apply</button></div></div>
+                <div class="dropdown-check-container"><button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button><div id="topic-filter-panel" class="dropdown-panel"><div id="topic-filter-list" class="dropdown-list"></div><button id="topic-filter-apply" class="apply-button">Apply</button></div></div>
+                
+                <button id="generate-html-btn">Create Filtered HTML File</button>
+                <span id="file-count-display">Loading...</span>
+                <a href="https://sialaichai.github.io/physics9702/" class="nav-link" style="margin-left:auto;">Home</a>
+            </div>
+            <div id="pdf-viewer-container">
+                <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <div id="dragger"></div>
+
+        <div id="lower-panel">
+            <table id="data-table">
+                <thead>
+                    <tr><th>Filename</th><th>Year</th><th>Paper</th><th>Question</th><th>Main Topic</th><th>Other Topics</th></tr>
+                </thead>
+                <tbody id="data-table-body"></tbody>
+            </table>
+        </div>
+    </div> 
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // ======================================================
+        // 2. CONFIGURATION & DEBUGGING
+        // ======================================================
+        
+        // I have hardcoded the absolute URL here to prevent path errors.
+        const JSON_FILE = 'https://sialaichai.github.io/physics9702/data_v8_hidden.json'; 
+        const PDF_FOLDER = 'assets_x9_secure';
+
+        const debugBox = document.getElementById('debug-log');
+
+        function showError(title, details) {
+            debugBox.style.display = 'block';
+            debugBox.innerHTML += `<strong>${title}</strong><br>${details}<br><br>`;
+            console.error(title, details);
+        }
+
+        // ======================================================
+        // 3. MAIN LOGIC
+        // ======================================================
+
+        const tableBody = document.getElementById('data-table-body');
+        const pdfViewer = document.getElementById('pdf-viewer');
+        const generateBtn = document.getElementById('generate-html-btn');
+        const fileCountDisplay = document.getElementById('file-count-display');
+        
+        let allData = [];
+        let selectedTopics = new Set();
+        let selectedYears = new Set();
+        let selectedPapers = new Set();
+        let selectedQuestions = new Set(); 
+
+        // --- Fetch Data ---
+        console.log("Starting fetch for:", JSON_FILE);
+        
+        fetch(JSON_FILE)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+                }
+                return response.text(); // Get text first to check for empty files
+            })
+            .then(text => {
+                if (!text || text.trim().length === 0) {
+                    throw new Error("The JSON file was found, but it is EMPTY (0 bytes). Please re-upload it.");
+                }
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error("JSON Syntax Error: The file exists but contains bad data. " + e.message);
+                }
+            })
+            .then(jsonData => {
+                // Success! Process data
+                allData = jsonData.map(item => {
+                    let q = (item.question || '').trim();
+                    q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
+                    return {
+                        filename: (item.filename || '').trim(),
+                        year: (item.year || '').trim(),
+                        paper: (item.paper || '').trim(),
+                        question: q, 
+                        mainTopic: (item.mainTopic || '').trim(),
+                        otherTopics: Array.isArray(item.otherTopics) ? item.otherTopics.map(t => t.trim()).filter(t => t !== "") : []
+                    };
+                });
+
+                if (allData.length === 0) {
+                    showError("Data Warning", "The JSON file is valid but contains 0 items (empty list).");
+                } else {
+                    populateDropdowns();
+                    setupEventListeners();
+                    renderTable(allData);
+                }
+            })
+            .catch(error => {
+                showError("CRITICAL LOADING ERROR", error.message + "\n\nURL attempted: " + JSON_FILE);
+            });
+
+        // --- Helper Functions ---
+        function populateDropdowns() {
+            const allCleanTopics = allData.map(item => item.mainTopic).map(s => s.split(/[;,]/)).reduce((acc, val) => acc.concat(val), []).map(s => s.trim());
+            const topics = [...new Set(allCleanTopics.filter(Boolean))].sort();
+            const years = [...new Set(allData.map(item => item.year).filter(Boolean))].sort((a, b) => {
+                const numA = parseInt(a.replace(/\D/g, '')) || 0;
+                const numB = parseInt(b.replace(/\D/g, '')) || 0;
+                return numA !== numB ? numB - numA : b.localeCompare(a);
+            });
+            const papers = [...new Set(allData.map(item => item.paper).filter(Boolean))].sort();
+            const questions = [...new Set(allData.map(item => item.question).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+            const setupList = (id, arr, cls) => {
+                const el = document.getElementById(id);
+                if(!el) return; el.innerHTML = '';
+                arr.forEach(v => {
+                    const l = document.createElement('label');
+                    const c = document.createElement('input'); c.type='checkbox'; c.className=cls; c.value=v;
+                    l.appendChild(c); l.appendChild(document.createTextNode(' '+v)); el.appendChild(l);
+                });
+            }
+            setupList('topic-filter-list', topics, 'topic-checkbox');
+            setupList('year-filter-list', years, 'year-checkbox');
+            setupList('paper-filter-list', papers, 'paper-checkbox');
+            setupList('question-filter-list', questions, 'question-checkbox');
+        }
+
+        function setupEventListeners() {
+            const setup = (btnId, panelId, listId, applyId, set, countId, cls) => {
+                const btn = document.getElementById(btnId), panel = document.getElementById(panelId);
+                const list = document.getElementById(listId), apply = document.getElementById(applyId);
+                const count = document.getElementById(countId);
+                if(!btn) return;
+                btn.addEventListener('click', () => panel.style.display = panel.style.display === 'block' ? 'none' : 'block');
+                apply.addEventListener('click', () => {
+                    set.clear(); list.querySelectorAll(`.${cls}:checked`).forEach(b => set.add(b.value));
+                    count.textContent = set.size; panel.style.display = 'none'; applyFilters();
+                });
+            };
+            setup('topic-filter-btn', 'topic-filter-panel', 'topic-filter-list', 'topic-filter-apply', selectedTopics, 'topic-filter-count', 'topic-checkbox');
+            setup('year-filter-btn', 'year-filter-panel', 'year-filter-list', 'year-filter-apply', selectedYears, 'year-filter-count', 'year-checkbox');
+            setup('paper-filter-btn', 'paper-filter-panel', 'paper-filter-list', 'paper-filter-apply', selectedPapers, 'paper-filter-count', 'paper-checkbox');
+            setup('question-filter-btn', 'question-filter-panel', 'question-filter-list', 'question-filter-apply', selectedQuestions, 'question-filter-count', 'question-checkbox');
+
+            document.addEventListener('click', (e) => {
+                ['topic-filter-panel', 'year-filter-panel', 'paper-filter-panel', 'question-filter-panel'].forEach(id => {
+                    const p = document.getElementById(id);
+                    if(p && !p.contains(e.target) && !e.target.closest('.filter-button')) p.style.display='none';
+                });
+            });
+        }
+
+        function applyFilters() {
+            let fd = allData;
+            if(selectedTopics.size > 0) fd = fd.filter(i => i.mainTopic.split(/[;,]/).map(s=>s.trim()).some(t => selectedTopics.has(t)));
+            if(selectedYears.size > 0) fd = fd.filter(i => selectedYears.has(i.year));
+            if(selectedPapers.size > 0) fd = fd.filter(i => selectedPapers.has(i.paper));
+            if(selectedQuestions.size > 0) fd = fd.filter(i => selectedQuestions.has(i.question));
+            renderTable(fd);
+        }
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            const displayData = data.length > 500 ? data.slice(0, 500) : data;
+            displayData.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${r.filename}</td><td>${r.year}</td><td>${r.paper}</td><td>${r.question}</td><td>${r.mainTopic}</td><td>${r.otherTopics.join(', ')}</td>`;
+                tr.addEventListener('click', () => pdfViewer.src = `${PDF_FOLDER}/${r.year}/${r.filename}`);
+                fragment.appendChild(tr);
+            });
+            tableBody.appendChild(fragment);
+            fileCountDisplay.textContent = data.length > 500 ? `Showing first 500 of ${data.length} files` : `${data.length} files found`;
+        }
+
+        // Report Generator
+        if(generateBtn) {
+            generateBtn.addEventListener('click', () => {
+                const rows = tableBody.querySelectorAll('tr');
+                if(rows.length > 100 && !confirm(`Generate report for ${rows.length} files?`)) return;
+                const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
+                let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px}embed{width:100%;height:800px;border:1px solid #ccc;margin-bottom:40px}</style></head><body><h1>PDF Report</h1>`;
+                rows.forEach(r => {
+                    html += `<div><h3>${r.cells[0].textContent}</h3><embed src='${pdfBaseUrl}${r.cells[1].textContent}/${r.cells[0].textContent}' type='application/pdf' /></div>`;
+                });
+                html += `</body></html>`;
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+                a.download = 'report.html'; a.click();
+            });
+        }
+
+        // Dragger
+        const dragger = document.getElementById('dragger');
+        const lowerPanel = document.getElementById('lower-panel');
+        if(dragger && lowerPanel) {
+            let isD = false;
+            dragger.addEventListener('mousedown', () => { isD = true; document.body.style.userSelect = 'none'; if(pdfViewer) pdfViewer.style.pointerEvents = 'none'; });
+            document.addEventListener('mouseup', () => { isD = false; document.body.style.userSelect = 'auto'; if(pdfViewer) pdfViewer.style.pointerEvents = 'auto'; });
+            document.addEventListener('mousemove', (e) => { if(isD) lowerPanel.style.height = `${window.innerHeight - e.clientY - 2.5}px`; });
+        }
+    });
+    </script>
+</body>
+</html>
