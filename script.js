@@ -322,7 +322,7 @@ function checkSessionAndLogin() {
         
         if (fileCountDisplay) {
             if (data.length > 500) {
-                fileCountDisplay.textContent = `Showing first 500 of ${data.length} files`;
+                fileCountDisplay.textContent = `Top 500 of ${data.length} files`;
             } else {
                 fileCountDisplay.textContent = `${data.length} files found`;
             }
