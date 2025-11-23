@@ -58,16 +58,10 @@
         .dropdown-check-container { position: relative; display: inline-block; }
         
         /* Default Button Style */
-        .filter-button { 
-            padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; 
-            background: white; min-width: 120px; /* Standard Width */
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
+        .filter-button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; background: white; min-width: 120px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
         
-        /* --- WIDER TOPIC BUTTON --- */
-        #topic-filter-btn {
-            min-width: 320px; /* Increased width for Topics */
-        }
+        /* Wider Topic Button */
+        #topic-filter-btn { min-width: 350px; }
 
         .dropdown-panel { display: none; position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 100; min-width: 200px; padding: 10px; border-radius: 4px; }
         .dropdown-list { max-height: 250px; overflow-y: auto; border-bottom: 1px solid #eee; margin-bottom: 10px; }
@@ -107,7 +101,7 @@
                 
                 <div class="dropdown-check-container"><button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button><div id="topic-filter-panel" class="dropdown-panel"><div id="topic-filter-list" class="dropdown-list"></div><button id="topic-filter-apply" class="apply-button">Apply</button></div></div>
                 
-                <button id="generate-html-btn">Create HTML</button>
+                <button id="generate-html-btn">Create Report</button>
                 <span id="file-count-display"></span>
                 
                 <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link" style="margin-left:auto;">Prelim</a>
@@ -127,7 +121,7 @@
     <script>
     // CONFIGURATION
     const PAYLOAD_FILE = '9702payload.enc';
-    const UPDATES_FILE = 'updates.json'; // Plaintext updates file
+    const UPDATES_FILE = 'updates.json'; 
     
     let PDF_FOLDER = ''; 
     let ENCRYPTED_TEXT = '';
@@ -206,7 +200,7 @@
                 
                 fetch(UPDATES_FILE)
                     .then(res => {
-                        if (res.status === 404) return []; // No updates yet
+                        if (res.status === 404) return []; 
                         if (!res.ok) throw new Error("Update check failed");
                         return res.json();
                     })
@@ -324,16 +318,30 @@
                 });
             });
 
-            // Generate Button
+            // Generate Button (UPDATED to include Main Topic)
             const genBtn = document.getElementById('generate-html-btn');
             genBtn.addEventListener('click', () => {
                 const rows = tableBody.querySelectorAll('tr');
                 if(rows.length > 100 && !confirm(`Generate report for ${rows.length} files?`)) return;
+                
                 const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
-                let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px}embed{width:100%;height:800px;border:1px solid #ccc;margin-bottom:40px}</style></head><body><h1>PDF Report</h1>`;
+                let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px;background:#f4f4f4}h1{text-align:center}.pdf-section{margin-bottom:40px;background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.header-row{font-size:1.2em;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px}embed{width:100%;height:800px;border:1px solid #ccc}</style></head><body><h1>Filtered PDF Report</h1>`;
+                
                 rows.forEach(r => {
-                    html += `<div><h3>${r.cells[0].textContent}</h3><embed src='${pdfBaseUrl}${r.cells[1].textContent}/${r.cells[0].textContent}' type='application/pdf' /></div>`;
+                    const fname = r.cells[0].textContent;
+                    const year = r.cells[1].textContent;
+                    const mainTopic = r.cells[4].textContent; // Column 4 is Main Topic
+                    
+                    html += `
+                        <div class='pdf-section'>
+                            <div class='header-row'>
+                                <b>${fname}</b> <span style="color:#666; font-size:0.9em;">(${mainTopic})</span>
+                            </div>
+                            <embed src='${pdfBaseUrl}${year}/${fname}' type='application/pdf' />
+                        </div>
+                    `;
                 });
+                
                 html += `</body></html>`;
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
@@ -361,7 +369,7 @@
                 fragment.appendChild(tr);
             });
             tableBody.appendChild(fragment);
-            fileCountDisplay.textContent = data.length > 500 ? `Top 500 of ${data.length} files` : `${data.length} files found`;
+            fileCountDisplay.textContent = data.length > 500 ? `Showing first 500 of ${data.length} files` : `${data.length} files found`;
         }
 
         // Dragger
@@ -376,6 +384,9 @@
     }
     </script>
 </body>
+</html>
+</body>
 
 </html>
+
 
