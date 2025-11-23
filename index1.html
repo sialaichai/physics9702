@@ -61,7 +61,7 @@
         .filter-button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; background: white; min-width: 120px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
         
         /* Wider Topic Button */
-        #topic-filter-btn { min-width: 350px; }
+        #topic-filter-btn { min-width: 320px; }
 
         .dropdown-panel { display: none; position: absolute; background: white; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 100; min-width: 200px; padding: 10px; border-radius: 4px; }
         .dropdown-list { max-height: 250px; overflow-y: auto; border-bottom: 1px solid #eee; margin-bottom: 10px; }
@@ -101,7 +101,7 @@
                 
                 <div class="dropdown-check-container"><button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button><div id="topic-filter-panel" class="dropdown-panel"><div id="topic-filter-list" class="dropdown-list"></div><button id="topic-filter-apply" class="apply-button">Apply</button></div></div>
                 
-                <button id="generate-html-btn">Create Report</button>
+                <button id="generate-html-btn">Create HTML</button>
                 <span id="file-count-display"></span>
                 
                 <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link" style="margin-left:auto;">Prelim</a>
@@ -369,7 +369,7 @@
                 fragment.appendChild(tr);
             });
             tableBody.appendChild(fragment);
-            fileCountDisplay.textContent = data.length > 500 ? `Showing first 500 of ${data.length} files` : `${data.length} files found`;
+            fileCountDisplay.textContent = data.length > 500 ? `Top 500 of ${data.length} files` : `${data.length} files found`;
         }
 
         // Dragger
@@ -388,5 +388,6 @@
 </body>
 
 </html>
+
 
 
