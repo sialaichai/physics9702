@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Encryptor Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
+        button { margin-top: 20px; width: 100%; padding: 15px; background: #28a745; color: white; border: none; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Step 1: Create Your Locked Data</h2>
+        
+        <label>1. Secret PDF Folder Name:</label>
+        <input type="text" id="folderName" value="pdfs">
+        
+        <label>2. Select your physics_data.json:</label>
+        <input type="file" id="fileInput">
+
+        <label>3. Set an Access Password:</label>
+        <input type="password" id="password" placeholder="Enter a strong password">
+
+        <button onclick="processAndEncrypt()">Generate payload.enc</button>
+        <p id="status" style="margin-top:15px; color:blue;"></p>
+    </div>
+
+    <script>
+        function processAndEncrypt() {
+            const folder = document.getElementById('folderName').value.trim();
+            const pass = document.getElementById('password').value;
+            const fileInput = document.getElementById('fileInput');
+
+            if (!folder || !pass || !fileInput.files[0]) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    // 1. Read and Clean JSON
+                    let rawText = e.target.result;
+                    // Remove hidden BOM characters if present
+                    if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.slice(1);
+                    
+                    const jsonData = JSON.parse(rawText);
+
+                    // 2. Bundle Folder + Data
+                    const bundle = {
+                        secure_folder: folder,
+                        data: jsonData
+                    };
+
+                    // 3. Encrypt
+                    const encrypted = CryptoJS.AES.encrypt(JSON.stringify(bundle), pass).toString();
+                    
+                    // 4. Download
+                    download("payload.enc", encrypted);
+                    document.getElementById('status').innerText = "Success! 'payload.enc' downloaded. Upload it to GitHub.";
+
+                } catch (err) {
+                    alert("Error parsing JSON file: " + err.message);
+                }
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function download(filename, text) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
