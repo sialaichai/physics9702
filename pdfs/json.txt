@@ -1,0 +1,53 @@
+JSON For 9702
+Categorise all the pdf file except 9478_y26_sy.pdf, which consists of physics questions based on the syllabus file 9478_y26_sy.pdf. 
+The output of the categorization is to be displayed as a Single-row data JSON file with multiple fields. Start the JSON file with '['.
+The first field is "filename" whose value is the pdf filename. 
+The second field is "year" whose value is the text between the 1st underscore and second underscore of the filename. 
+The third field is "paper" whose value is the text between the third underscore and fourth underscore of the filename. 
+The fourth field is "question" whose value is the text between the fourth underscore and the period of the filename but do not include '.pdf'.
+The fifth field is "mainTopic" whose value is the topic category of the question, the topic category is obtained from the file 9478_y26.pdf where the topic category is identified by the bold character 1 to 20. E.g. 1 Quantities and Measurement, .. 20 Nuclear Physics. 
+The sixth field is "otherTopics" whose values consist of other topic categories, if any, also covered by this question. If more than one other topic is found, separate them by a comma. 
+After the closing "}," insert a character return to start a new line.
+Only use the categories from 9478_y26.pdf, including the leading numerical character. Do not create your own categories. 
+Do not need to make reference to the pdf document in the output document. 
+Leave the column blank if no category fits. E.g. of JSON format is shown here:
+[ {"filename":"9702_m24_qp_22_q1.pdf","year":"m24","paper":"22","question":"q1","mainTopic":"1 Quantities and Measurement","otherTopics":["10 Wave Motion","4 Energy and Fields"]},
+  {"filename":"9702_m24_qp_22_q5.pdf","year":"m24","paper":"22","question":"q5","mainTopic":"10 Wave Motion","otherTopics":[]}]
+
+
+JSON For JCPrelim
+Categorise all the pdf file except 9478_y26_sy.pdf, which consists of physics questions based on the syllabus file 9478_y26_sy.pdf. 
+The output of the categorization is to be displayed as a Single-row data JSON file with multiple fields. Start the JSON file with '['.
+The first field is "filename" whose value is the pdf filename. 
+The second field is "year" whose value is the text before the first underscore of the filename. 
+The third field is "jc" whose value is the text between the first underscore and second underscore of the filename. 
+The fourth field is "paper" whose value is the text between the second underscore and third underscore of the filename. 
+The fifth field is "question" whose value is the text between the third underscore and the period of the filename but do not include '.pdf'.
+The sixth field is "mainTopic" whose value is the topic category of the question, the topic category is obtained from the file 9478_y26.pdf where the topic category is identified by the bold character 1 to 20. E.g. 1 Quantities and Measurement, .. 20 Nuclear Physics. 
+The seventh field is "otherTopics" whose values consist of other topic categories, if any, also covered by this question. If more than one other topic is found, separate them by a comma. 
+After the closing "}," insert a character return to start a new line.
+Only use the categories from 9478_y26.pdf, including the leading numerical character. Do not create your own categories. 
+Do not need to make reference to the pdf document in the output document. 
+Leave the column blank if no category fits. E.g. of JSON format is shown here:
+﻿[  {"filename":"2024_ACJC_MCQ_q1.pdf","year":"2024","jc":"ACJC","paper":"MCQ","question":"q1","mainTopic":"1 Quantities and Measurement","otherTopics":[]},
+  {"filename":"2024_ACJC_MCQ_q10.pdf","year":"2024","jc":"ACJC","paper":"MCQ","question":"q10","mainTopic":"7 Circular Motion","otherTopics":[]}]
+
+
+JSON For SEAB
+Categorise all the pdf file except 9478_y26_sy.pdf, which consists of physics questions based on the syllabus file 9478_y26_sy.pdf. 
+The output of the categorization is to be displayed as a Single-row data JSON file with multiple fields. Start the JSON file with '['.
+The first field is "filename" whose value is the pdf filename. 
+The second field is "year" whose value is the text before the first underscore of the filename. 
+The third field is "pcode" whose value is the text between the first underscore and second underscore of the filename. 
+The fourth field is "paper" whose value is the text between the second underscore and third underscore of the filename. 
+The fifth field is "question" whose value is the text between the third underscore and the period of the filename but do not include '.pdf'.
+The sixth field is "mainTopic" whose value is the topic category of the question, the topic category is obtained from the file 9478_y26.pdf where the topic category is identified by the bold character 1 to 20. E.g. 1 Quantities and Measurement, .. 20 Nuclear Physics. 
+The seventh field is "otherTopics" whose values consist of other topic categories, if any, also covered by this question. If more than one other topic is found, separate them by a comma. 
+After the closing "}," insert a character return to start a new line.
+Only use the categories from 9478_y26.pdf, including the leading numerical character. Do not create your own categories. 
+Do not need to make reference to the pdf document in the output document. 
+Leave the column blank if no category fits. E.g. of JSON format is shown here:
+
+﻿[{"filename":"2025_9749H2_P3_q8.pdf","year":"2025","pcode":"9749H2","paper":"P3","question":"q8","mainTopic":"18 Electromagnetic Induction","otherTopics":["17 Electromagnetic Forces","16 Circuits"]},
+{"filename":"2025_9749H2_P3_q9.pdf","year":"2025","pcode":"9749H2","paper":"P3","question":"q9","mainTopic":"8 Gravitational Fields","otherTopics":["4 Energy and Fields","14 Electric Fields"]}
+]
