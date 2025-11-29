@@ -323,8 +323,8 @@
             const genBtn = document.getElementById('generate-html-btn');
             genBtn.addEventListener('click', () => {
                 const rows = tableBody.querySelectorAll('tr');
-                if(rows.length > 100 && !confirm(`Generate report for ${rows.length} files?`)) return;
-                
+                if(rows.length > 100 && !confirm(`Generate report for ${rows.length} files? Browser may crash due to large number of files. Safer to keep < 100 files.`)) return;
+                 
                 const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
                 let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px;background:#f4f4f4}h1{text-align:center}.pdf-section{margin-bottom:40px;background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.header-row{font-size:1.2em;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px}embed{width:100%;height:800px;border:1px solid #ccc}</style></head><body><h1>Filtered PDF Report</h1>`;
                 
