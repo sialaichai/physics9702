@@ -33,7 +33,7 @@ config = {
                 'email': 'sialaichai@gmail.com',
                 'name': 'Sialai Chai',
                 # ⬅️ PASTE YOUR 60-CHARACTER BCRYPT HASH HERE. No quotes needed in Python dict.
-                'password': $2b$12$cbcnx5YAVy/3Rtpx01H9IOZLP7lfI960NV4BN39fmo8dYxqw8A0OW 
+                'password': '$2b$12$cbcnx5YAVy/3Rtpx01H9IOZLP7lfI960NV4BN39fmo8dYxqw8A0OW' 
             }
         }
     },
