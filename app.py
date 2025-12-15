@@ -1,15 +1,14 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import base64
 import json
-from Crypto.Cipher import AES # <-- FIXED: Changed from 'Crypto' to 'Cryptodome'
-from Crypto.Util.Padding import unpad # <-- FIXED: Changed from 'Crypto' to 'Cryptodome'
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import unpad
 import io
 import os
 import re
 import hashlib
-
+import plotly.express as px
 
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"  # originally .enc
@@ -34,7 +33,7 @@ def derive_key_and_iv(password, salt, key_len, iv_len, hash_algo=hashlib.md5):
     return d[:key_len], d[key_len:key_len + iv_len]
 
 # ====================================================================
-# === DECRYPTION (CORRECTED WITH KDF AND KEY SIZE TESTING) ===
+# === DECRYPTION ===
 # ====================================================================
 
 @st.cache_data
@@ -56,21 +55,13 @@ def decrypt_payload(password: str, encrypted_b64: str) -> dict | None:
         
         last_error = None
         
-        # 3. Iterate through possible hash algorithms and key sizes
         for algo_name, hash_func in HASH_ALGOS.items():
             for key_size in KEY_SIZES:
                 try:
-                    # Derive Key and IV using the current hash function
                     key, iv = derive_key_and_iv(password, salt, key_size, IV_SIZE, hash_func)
-                
-                    # Decrypt using CBC mode
                     cipher = AES.new(key, AES.MODE_CBC, iv)
                     decrypted_padded = cipher.decrypt(ciphertext)
-                    
-                    # Unpad and decode JSON (raises ValueError on wrong key/IV)
                     decrypted_bytes = unpad(decrypted_padded, AES.block_size)
-                    
-                    # Success! Parse JSON result
                     decrypted_bundle = json.loads(decrypted_bytes.decode('utf-8'))
                     
                     if 'data' not in decrypted_bundle:
@@ -80,20 +71,16 @@ def decrypt_payload(password: str, encrypted_b64: str) -> dict | None:
                     return decrypted_bundle
                     
                 except ValueError as e:
-                    # Catches bad padding/wrong key/IV (ValueError from unpad) or bad JSON
                     last_error = f"{algo_name}/AES-{key_size*8} failed (Bad Key/IV/Padding): {str(e)}"
-                    continue # Try next combination
+                    continue
                 except Exception as e:
-                    # Catch any other system errors (e.g., unexpected encoding)
                     last_error = f"{algo_name}/AES-{key_size*8} system failure: {type(e).__name__} {str(e)}"
                     continue
 
-        # If the entire loop finishes without success
         st.error(f"Login Failed. All KDF/AES combinations failed. Last attempt error: {last_error}")
         return None
         
     except Exception as e:
-        # Catch errors outside the loop (e.g., Base64 decoding failure)
         st.error(f"A fatal error occurred during initialization: {type(e).__name__}: {str(e)}")
         return None
         
@@ -113,7 +100,53 @@ def load_updates():
             return json.load(f)
     return []
 
-# === ANALYTICS DISPLAY FUNCTION (FIXED: Topic Trends Data Processing) ===
+# ====================================================================
+# === NEW DATA NORMALIZATION FUNCTION ===
+# ====================================================================
+
+@st.cache_data
+def normalize_data(data_list):
+    """Splits raw year ('m24') into year_numeric (2024) and session ('m')."""
+    normalized = []
+    for item in data_list:
+        raw_year = str(item.get("year", "")).strip()
+        
+        # Logic to split 'm24', 's24', 'w24'
+        match = re.match(r'([msw])(\d{2})', raw_year, re.IGNORECASE)
+        if match:
+            session_code = match.group(1).upper() # M, S, or W
+            # Assuming current century (20xx)
+            year_code = '20' + match.group(2) 
+        else:
+            # Handle standard numeric years or unparsed data
+            session_code = 'OTHER' 
+            year_code = raw_year
+            
+        try:
+            year_numeric = int(year_code)
+        except ValueError:
+            year_numeric = None # Set to None if year conversion fails (will be ignored by filters/plots)
+
+        q = str(item.get("question", "")).strip()
+        q = re.sub(r'^q0+(\d)', r'q\1', re.sub(r'\.pdf$', '', q, flags=re.IGNORECASE), flags=re.IGNORECASE)
+        
+        normalized.append({
+            "filename": str(item.get("filename", "")).strip(),
+            "raw_year": raw_year, # Kept for reference
+            "year_numeric": year_numeric, # NEW: Year (e.g., 2024)
+            "session": session_code, # NEW: Session (e.g., 'M')
+            "paper": str(item.get("paper", "")).strip(),
+            "question": q,
+            "mainTopic": str(item.get("mainTopic", "")).strip(),
+            "otherTopics": [t.strip() for t in (item.get("otherTopics") or []) if t.strip()]
+        })
+    df = pd.DataFrame(normalized)
+    # Ensure year_numeric is integer type where possible
+    df['year_numeric'] = pd.to_numeric(df['year_numeric'], errors='coerce', downcast='integer')
+    return df
+
+
+# === ANALYTICS DISPLAY FUNCTION (Updated to use year_numeric and include Session chart) ===
 
 def display_analytics(df: pd.DataFrame):
     st.header("📊 Question Analytics")
@@ -124,22 +157,51 @@ def display_analytics(df: pd.DataFrame):
         return
 
     # --- 1. Total Questions Per Year (Bar Chart) ---
-    year_counts = df['year'].value_counts().sort_index(ascending=False).reset_index()
+    st.subheader("Total Questions by Year")
+    
+    # Use the new 'year_numeric' column
+    year_counts = df['year_numeric'].value_counts().sort_index(ascending=False).reset_index()
     year_counts.columns = ['Year', 'Count']
-    # Ensure this bar chart's year data is also numeric for robust plotting
-    year_counts['Year'] = pd.to_numeric(year_counts['Year'], errors='coerce')
+    
+    # Robustness Check 1: Drop invalid years
     year_counts = year_counts.dropna(subset=['Year'])
     
-    fig_year = px.bar(
-        year_counts,
-        x='Year',
-        y='Count',
-        title='Total Questions by Year',
-        labels={'Count': 'Number of Questions'},
-        color='Year'
-    )
-    st.plotly_chart(fig_year, use_container_width=True)
+    if year_counts.empty:
+        st.warning("No valid year data found to generate the Year Count chart.")
+    else:
+        fig_year = px.bar(
+            year_counts,
+            x='Year',
+            y='Count',
+            title='Total Questions by Year',
+            labels={'Count': 'Number of Questions'},
+            color='Year'
+        )
+        fig_year.update_layout(xaxis=dict(tickmode='linear', dtick=1))
+        st.plotly_chart(fig_year, use_container_width=True)
 
+    st.markdown("---")
+    
+    # --- 1b. Session Breakdown (New Chart) ---
+    st.subheader("Distribution by Exam Session (M/S/W)")
+    
+    session_counts = df['session'].value_counts().reset_index()
+    session_counts.columns = ['Session', 'Count']
+    
+    # Exclude the 'OTHER' category from the pie chart
+    session_counts = session_counts[session_counts['Session'] != 'OTHER']
+    
+    if session_counts.empty:
+        st.warning("No valid session data (M, S, W) found to generate the Session chart.")
+    else:
+        fig_session = px.pie(
+            session_counts,
+            values='Count',
+            names='Session',
+            title='Distribution by Exam Session',
+        )
+        st.plotly_chart(fig_session, use_container_width=False)
+        
     st.markdown("---")
 
     # --- 2. Main Topic Trends Over Years (Up to 20 Line Charts) ---
@@ -153,54 +215,54 @@ def display_analytics(df: pd.DataFrame):
         st.info("No main topics found in the filtered data to show trends.")
     else:
         # 2. Create a long DataFrame for trending analysis
-        topic_df = df[['year', 'mainTopic']].copy()
+        # Use the already cleaned 'year_numeric' column
+        topic_df = df[['year_numeric', 'mainTopic']].copy()
+        topic_df = topic_df.rename(columns={'year_numeric': 'year'}) # Rename for generic plotting
         
-        # 💥 FIX: Convert year to numeric and drop invalid years immediately
-        topic_df['year'] = pd.to_numeric(topic_df['year'], errors='coerce')
-        topic_df = topic_df.dropna(subset=['year']) # Drop rows where year conversion failed
-        # ---------------------------------------------------------------------
+        # Drop rows where year is None/NaN (which happens for invalid raw years)
+        topic_df = topic_df.dropna(subset=['year']) 
+        
+        if topic_df.empty:
+            st.warning("Valid year data is required for trend charts, but none was found.")
+        else:
+            topic_df['topic'] = topic_df['mainTopic'].str.split(';')
+            topic_df_long = topic_df.explode('topic')
+            topic_df_long['topic'] = topic_df_long['topic'].str.strip()
+            topic_df_long = topic_df_long.dropna(subset=['topic'])
 
-        topic_df['topic'] = topic_df['mainTopic'].str.split(';')
-        topic_df_long = topic_df.explode('topic')
-        topic_df_long['topic'] = topic_df_long['topic'].str.strip()
-        topic_df_long = topic_df_long.dropna(subset=['topic'])
-
-        # Filter the long data to only include the top 20 topics
-        trending_df = topic_df_long[topic_df_long['topic'].isin(top_20_topics)]
-        
-        # 3. Group by Year and Topic and count the frequency
-        topic_year_counts = trending_df.groupby(['year', 'topic']).size().reset_index(name='Count')
-        
-        # The year column is already numeric due to the fix above, just sort
-        topic_year_counts = topic_year_counts.sort_values('year')
-
-        # 4. Iterate and Chart for each topic in a 2-column layout
-        st.subheader(f"Showing Trends for Top {len(top_20_topics)} Topics:")
-        cols = st.columns(2)
-        col_index = 0
-        
-        for topic in top_20_topics:
-            topic_data = topic_year_counts[topic_year_counts['topic'] == topic]
+            trending_df = topic_df_long[topic_df_long['topic'].isin(top_20_topics)]
             
-            if topic_data.empty:
-                continue
+            # 3. Group by Year and Topic and count the frequency
+            topic_year_counts = trending_df.groupby(['year', 'topic']).size().reset_index(name='Count')
+            topic_year_counts = topic_year_counts.sort_values('year')
+
+            # 4. Iterate and Chart for each topic in a 2-column layout
+            st.subheader(f"Showing Trends for Top {len(top_20_topics)} Topics:")
+            cols = st.columns(2)
+            col_index = 0
+            
+            for topic in top_20_topics:
+                topic_data = topic_year_counts[topic_year_counts['topic'] == topic]
                 
-            with cols[col_index % 2]:
-                fig = px.line(
-                    topic_data,
-                    x='year',
-                    y='Count',
-                    title=f'{topic}',
-                    markers=True,
-                    labels={'year': 'Year', 'Count': 'Frequency'},
-                )
-                fig.update_layout(
-                    xaxis=dict(tickmode='linear', dtick=1), 
-                    yaxis=dict(rangemode='tozero')
-                )
-                st.plotly_chart(fig, use_container_width=True)
-                
-            col_index += 1
+                if topic_data.empty:
+                    continue
+                    
+                with cols[col_index % 2]:
+                    fig = px.line(
+                        topic_data,
+                        x='year',
+                        y='Count',
+                        title=f'{topic}',
+                        markers=True,
+                        labels={'year': 'Year', 'Count': 'Frequency'},
+                    )
+                    fig.update_layout(
+                        xaxis=dict(tickmode='linear', dtick=1), 
+                        yaxis=dict(rangemode='tozero')
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                col_index += 1
             
     st.markdown("---")
 
@@ -241,28 +303,28 @@ def display_analytics(df: pd.DataFrame):
         title='Distribution of Questions by Custom Paper Groups',
     )
     st.plotly_chart(fig_paper, use_container_width=False)
-    
+
+
 # === MAIN APP ===
 def main():
     st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
     st.title("🔐 9702 Physics Past Paper Viewer")
 
-    # Load encrypted payload once
     encrypted_text = load_encrypted_data()
     if not encrypted_text:
         return
 
-    # Session state initialization remains the same
+    # Session state initialization
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
         st.session_state.data = None
         st.session_state.folder = ""
-        # NEW: Initialize page state
-        st.session_state.page_number = 1
-        
+        st.session_state.page_number = 1 
+    if 'view_mode' not in st.session_state:
+        st.session_state.view_mode = 'table' 
+
     # === LOGIN SCREEN ===
     if not st.session_state.authenticated:
-        # Login logic remains the same (omitted here for brevity)
         with st.form("login"):
             password = st.text_input("Enter password", type="password")
             submitted = st.form_submit_button("Unlock")
@@ -271,57 +333,60 @@ def main():
                 if bundle:
                     st.session_state.authenticated = True
                     st.session_state.folder = bundle.get("secure_folder", "")
+                    
+                    # 💥 UPDATED: Use the new normalize_data function
                     main_data = bundle.get("data", [])
                     updates = load_updates()
                     if updates:
                         main_data.extend(updates)
                     
-                    normalized = []
-                    for item in main_data:
-                        q = str(item.get("question", "")).strip()
-                        q = re.sub(r'^q0+(\d)', r'q\1', re.sub(r'\.pdf$', '', q, flags=re.IGNORECASE), flags=re.IGNORECASE)
-                        normalized.append({
-                            "filename": str(item.get("filename", "")).strip(),
-                            "year": str(item.get("year", "")).strip(),
-                            "paper": str(item.get("paper", "")).strip(),
-                            "question": q,
-                            "mainTopic": str(item.get("mainTopic", "")).strip(),
-                            "otherTopics": [t.strip() for t in (item.get("otherTopics") or []) if t.strip()]
-                        })
-                    st.session_state.data = pd.DataFrame(normalized)
+                    st.session_state.data = normalize_data(main_data)
                     st.rerun()
                 else:
                     st.error("Incorrect password (or decryption failed, see error above).")
         return
 
-# === MAIN INTERFACE ===
+    # === MAIN INTERFACE ===
     df = st.session_state.data
     if df is None or df.empty:
-        # ... (Error checking remains the same) ...
+        st.warning("No data loaded.")
+        if st.button("Logout"):
+            st.session_state.authenticated = False
+            st.rerun()
         return
 
-    # --- 1. FILTERS (Remain in the main panel for easy access) ---
+    # --- 1. FILTERS (Custom Width Columns) ---
     st.header("🔍 Filter Questions")
     
-    # Define custom column widths: [Year, Paper, Question, Main Topic]
-    col1, col2, col_q, col3 = st.columns([0.6, 0.6, 0.6, 3.3])
+    # Define custom column widths: [Year, Session, Paper, Question, Main Topic]
+    col_yr, col_sess, col2, col_q, col3 = st.columns([1, 1, 1, 1, 3.4])
     
-    # 1. Year Filter
-    with col1:
-        all_years = sorted(df["year"].dropna().unique(), reverse=True)
-        selected_years = st.multiselect("Year", options=all_years, key="filter_year")
-    
-    # 2. Paper Filter
+    # 1a. Year Filter (NEW)
+    with col_yr:
+        # Use the new year_numeric column for filtering
+        all_years = sorted(df["year_numeric"].dropna().unique(), reverse=True)
+        # Convert to int for display (as pandas returns float for unique values if NaN is present)
+        all_years_display = [int(y) for y in all_years]
+        selected_years = st.multiselect("Year", options=all_years_display, key="filter_year")
+
+    # 1b. Session Filter (NEW)
+    with col_sess:
+        # Use the new session column for filtering
+        all_sessions = sorted(df["session"].dropna().unique())
+        all_sessions = [s for s in all_sessions if s in ['M', 'S', 'W']] # Only show M, S, W options
+        selected_sessions = st.multiselect("Session", options=all_sessions, key="filter_session")
+        
+    # 2. Paper Filter (Small)
     with col2:
         all_papers = sorted(df["paper"].dropna().unique())
         selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
         
-    # 3. Question Number Filter
+    # 3. Question Number Filter (Medium-Small)
     with col_q:
         all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
         selected_questions = st.multiselect("Q#", options=all_questions, key="filter_question")
         
-    # 4. Main Topic Filter
+    # 4. Main Topic Filter (Widest)
     with col3:
         def extract_main_topics(series):
             topics = set()
@@ -335,11 +400,16 @@ def main():
 
     st.markdown("---") 
 
-    # --- 2. APPLY FILTERS (Calculation remains the same) ---
+    # --- 2. APPLY FILTERS ---
     filtered_df = df.copy()
     
+    # Apply filters based on the selections made above
     if selected_years:
-        filtered_df = filtered_df[filtered_df["year"].isin(selected_years)]
+        # Filter based on the new 'year_numeric' column
+        filtered_df = filtered_df[filtered_df["year_numeric"].isin(selected_years)]
+    if selected_sessions:
+        # Filter based on the new 'session' column
+        filtered_df = filtered_df[filtered_df["session"].isin(selected_sessions)]
     if selected_papers:
         filtered_df = filtered_df[filtered_df["paper"].isin(selected_papers)]
     if selected_questions:
@@ -353,12 +423,9 @@ def main():
     tab1, tab2 = st.tabs(["📄 Data Table", "📊 Analytics"])
 
     with tab1:
-        # --- Data Table View (Content previously in the main body) ---
-        
-        # --- DOWNLOAD BUTTON ---
+        # --- Download Button expander remains the same ---
         with st.expander(f"📥 Generate & Download Report ({len(filtered_df)} files match filters)", expanded=False):
             
-            # Define the content generation function inline (omitted for brevity)
             def generate_html_report_content(filtered_df, folder):
                 # ... (Content generation logic remains here) ...
                 if len(filtered_df) > 100:
@@ -366,18 +433,42 @@ def main():
                         return None
                 
                 # ... (rest of HTML generation) ...
-                # Placeholder for actual HTML generation returning string
-                return "<html>...</html>" if filtered_df is not None else None
+                html_content = f"""<!DOCTYPE html>
+<html><head><title>Physics Report</title>
+<style>
+body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
+h1 {{ text-align: center; }}
+.pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
+.header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
+embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
+</style></head><body><h1>Filtered PDF Report</h1>"""
+                
+                for _, row in filtered_df.iterrows():
+                    url = f"{PDF_BASE_URL}{folder}/{row['raw_year']}/{row['filename']}" # USE RAW_YEAR FOR FOLDER PATH
+                    html_content += f"""
+                    <div class='pdf-section'>
+                        <div class='header-row'>
+                            <b>{row['filename']}</b> 
+                            <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
+                        </div>
+                        <embed src='{url}' type='application/pdf' />
+                    </div>"""
+                
+                html_content += "</body></html>"
+                return html_content
 
-            # Call the function and generate the download link
             html_result = generate_html_report_content(filtered_df, st.session_state.folder)
             
-            if html_result and html_result != "<html>...</html>": # Check for placeholder/valid result
+            if html_result and not html_result.startswith('<!'): # Simple check to skip if checkbox was hit but content wasn't generated
+                pass 
+            elif html_result:
                 b64 = base64.b64encode(html_result.encode()).decode()
                 href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
                 st.markdown(href, unsafe_allow_html=True)
-                
-# --- 4. DISPLAY PAGINATED RESULTS TABLE ---
+        
+        st.markdown("---")
+
+        # --- 4. DISPLAY PAGINATED RESULTS TABLE ---
         st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
         
         TOTAL_ROWS = len(filtered_df)
@@ -385,20 +476,17 @@ def main():
         
         if TOTAL_ROWS == 0:
             st.info("No entries match the current filters.")
-            return # Exit if no data
+            # Use return instead of break here
+            return 
         
-        # Calculate total number of pages
-        total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE # Ceiling division
+        total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE
         
-        # --- Pagination Controls ---
-        # Ensure page number is valid after filtering (it might change dramatically)
         if st.session_state.page_number > total_pages:
             st.session_state.page_number = 1
             
         st.markdown(f"**Viewing Page {st.session_state.page_number} of {total_pages}**")
 
-        # Use columns for page navigation buttons
-        nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 6])
+        nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 1])
         
         with nav_col1:
             if st.button("⬅️ Previous", key="prev_page", 
@@ -414,28 +502,26 @@ def main():
 
         st.markdown("---")
         
-        # --- Slice the DataFrame ---
         start_row = (st.session_state.page_number - 1) * ROWS_PER_PAGE
         end_row = start_row + ROWS_PER_PAGE
         
-        # This is the small subset of data we will display
         paginated_df = filtered_df.iloc[start_row:end_row]
 
-        # --- Display Logic for the Paginated Data ---
         if not paginated_df.empty:
-            # Make filename clickable to PDF
             def make_pdf_link(row):
-                url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
+                # Use raw_year for the link generation, as the folder structure likely uses it
+                url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['raw_year']}/{row['filename']}" 
                 return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
             
-            display_df = paginated_df.copy() # Use the paginated_df here
+            display_df = paginated_df.copy()
             display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
             display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
             
-            # Select and rename columns for display
-            display_cols = ["Link", "year", "paper", "question", "mainTopic", "otherTopics"]
+            # 💥 UPDATED DISPLAY COLUMNS
+            display_cols = ["Link", "year_numeric", "session", "paper", "question", "mainTopic", "otherTopics"]
             display_df = display_df[display_cols].rename(columns={
-                "year": "Year", 
+                "year_numeric": "Year", # Uses the numeric year
+                "session": "Session", # NEW Session column
                 "paper": "Paper", 
                 "question": "Q#", 
                 "mainTopic": "Main Topic", 
@@ -443,17 +529,17 @@ def main():
                 "Link": "Filename"
             })
             
-            # Display the paginated table
             st.write(
                 display_df
                 .to_html(escape=False, index=False),
                 unsafe_allow_html=True
             )
-        # Note: No 'else' needed here since we handle empty data at the top.
+        else:
+            st.info("No entries match the current filters.") # This will be hit only if paginated_df is empty when filtered_df is not (unlikely with fixed logic)
 
     with tab2:
         # --- Analytics View ---
-        display_analytics(filtered_df) # This function will use the full width of the tab.
+        display_analytics(filtered_df) 
 
 if __name__ == "__main__":
     main()
