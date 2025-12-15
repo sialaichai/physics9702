@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 import base64
 import json
 from Crypto.Cipher import AES # <-- FIXED: Changed from 'Crypto' to 'Cryptodome'
@@ -8,7 +9,7 @@ import io
 import os
 import re
 import hashlib
-import plotly.express as px # <-- NEW: Import Plotly for graphing
+
 
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"  # originally .enc
@@ -112,7 +113,7 @@ def load_updates():
             return json.load(f)
     return []
 
-# === ANALYTICS DISPLAY FUNCTION (Revised for Top 20 Topics & Custom Paper Grouping) ===
+# === ANALYTICS DISPLAY FUNCTION (Revised for Topic Trending Charts) ===
 
 def display_analytics(df: pd.DataFrame):
     st.header("📊 Question Analytics")
@@ -137,27 +138,65 @@ def display_analytics(df: pd.DataFrame):
 
     st.markdown("---")
 
-    # --- 2. Top Main Topics (Horizontal Bar Chart) ---
-    # Explode semi-colon separated topics for accurate counting
-    topic_list = df['mainTopic'].str.split(';').explode().str.strip()
-    
-    # 💥 CHANGE HERE: Show nlargest(20) instead of nlargest(10)
-    topic_counts = topic_list.value_counts().nlargest(20).reset_index()
-    topic_counts.columns = ['Main Topic', 'Count']
-    
-    # Sort by count for a horizontal bar chart
-    fig_topic = px.bar(
-        topic_counts.sort_values('Count', ascending=True),
-        x='Count',
-        y='Main Topic',
-        orientation='h',
-        # Updated chart title to reflect the change
-        title=f'Main Topics by Question Count (Top {len(topic_counts)})',
-        labels={'Count': 'Number of Questions'},
-        color='Main Topic'
-    )
-    st.plotly_chart(fig_topic, use_container_width=True)
+    # --- 2. Main Topic Trends Over Years (Up to 20 Line Charts) ---
+    st.header("📈 Main Topic Trends Over Years")
 
+    # 1. Explode topics and get the top 20 list based on current filters
+    topic_list_exploded = df['mainTopic'].str.split(';').explode().str.strip().dropna()
+    top_20_topics = topic_list_exploded.value_counts().nlargest(20).index.tolist()
+    
+    if not top_20_topics:
+        st.info("No main topics found in the filtered data to show trends.")
+    else:
+        # 2. Create a long DataFrame for trending analysis
+        topic_df = df[['year', 'mainTopic']].copy()
+        topic_df['topic'] = topic_df['mainTopic'].str.split(';')
+        topic_df_long = topic_df.explode('topic')
+        topic_df_long['topic'] = topic_df_long['topic'].str.strip()
+        topic_df_long = topic_df_long.dropna(subset=['topic'])
+
+        # Filter the long data to only include the top 20 topics
+        trending_df = topic_df_long[topic_df_long['topic'].isin(top_20_topics)]
+        
+        # 3. Group by Year and Topic and count the frequency
+        topic_year_counts = trending_df.groupby(['year', 'topic']).size().reset_index(name='Count')
+        
+        # Ensure Year is numeric for correct sorting in charts
+        topic_year_counts['year'] = pd.to_numeric(topic_year_counts['year'], errors='coerce')
+        topic_year_counts = topic_year_counts.sort_values('year')
+
+        # 4. Iterate and Chart for each topic in a 2-column layout
+        st.subheader(f"Showing Trends for Top {len(top_20_topics)} Topics:")
+        cols = st.columns(2)
+        col_index = 0
+        
+        for topic in top_20_topics:
+            topic_data = topic_year_counts[topic_year_counts['topic'] == topic]
+            
+            # Ensure we have data for this specific topic
+            if topic_data.empty:
+                continue
+                
+            # Create a chart inside one of the two columns
+            with cols[col_index % 2]:
+                fig = px.line(
+                    topic_data,
+                    x='year',
+                    y='Count',
+                    title=f'{topic}',
+                    markers=True,
+                    labels={'year': 'Year', 'Count': 'Frequency'},
+                )
+                # Ensure the X-axis (Year) is treated as a linear sequence for proper markers/ticks
+                # Ensure Y-axis starts at zero
+                fig.update_layout(
+                    xaxis=dict(tickmode='linear', dtick=1), 
+                    yaxis=dict(rangemode='tozero')
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+            col_index += 1
+            
     st.markdown("---")
 
     # --- 3. Paper Type Distribution (Pie Chart) ---
@@ -176,17 +215,16 @@ def display_analytics(df: pd.DataFrame):
             return "P2 (Structured/Core)"
         elif paper_code in P4_codes:
             return "P4 (Advanced Theory)"
-        # Unmapped codes return None and are excluded from the chart
         return None 
 
     # 3b. Apply the mapping to create the new column
     df['Paper Group'] = df['paper'].apply(map_paper_to_group)
     
-    # Count the new groups (excluding None values implicitly)
     paper_counts = df['Paper Group'].value_counts().reset_index()
     paper_counts.columns = ['Paper Group', 'Count']
     
     if paper_counts.empty:
+        st.subheader("Distribution of Questions by Custom Paper Groups")
         st.warning("No P1, P2, or P4 data found under current filters.")
         return
 
@@ -198,6 +236,7 @@ def display_analytics(df: pd.DataFrame):
         title='Distribution of Questions by Custom Paper Groups',
     )
     st.plotly_chart(fig_paper, use_container_width=False)
+    
 # === MAIN APP ===
 def main():
     st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
