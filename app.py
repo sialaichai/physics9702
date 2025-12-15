@@ -331,7 +331,7 @@ def main():
 
     # --- 2. Render Login/Handle Status ---
     # The name of the user, the authentication status (True/False/None), and the username
-    name, authentication_status, username = authenticator.login('Login', 'unrendered')
+    name, authentication_status, username = authenticator.login('Login', 'main')
     #name, authentication_status, username = authenticator.login('Login')
    
     # Status check and core logic starts here
