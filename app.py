@@ -8,7 +8,7 @@ import io
 import os
 import re
 # === CONFIG ===
-PAYLOAD_PATH = "9702payload.txt"  # originally .enc
+PAYLOAD_PATH = "9702payload.enc"  # originally .enc
 UPDATES_PATH = "updates.json"
 PDF_BASE_URL = "https://sialaichai.github.io/physics9702/"
 
