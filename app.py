@@ -7,6 +7,9 @@ from Cryptodome.Cipher import AES
 from Cryptodome.Util.Padding import unpad
 import base64
 import altair as alt # Optional: for simpler charts
+import hashlib
+import base64
+
 
 # --- CONFIGURATION ---
 # These filenames refer to the files you uploaded
@@ -41,44 +44,59 @@ def fetch_and_load_data(password):
             st.error(f"FATAL ERROR: Could not find data file '{PAYLOAD_FILE}'. Ensure it's in the same folder as app.py in your GitHub repo.")
             return None
         
-        # 2. Decryption Logic (Crucial Step: Needs to match your encryption)
-        # Assuming a standard AES-256-CBC with key derived from password
+    # 1. Decode the Base64 Encrypted Data
+    try:
+        decoded_data = base64.b64decode(encrypted_data)
+    except Exception:
+        raise ValueError("Encrypted payload is not valid Base64.")
+    
+    # 2. Check for the "Salted__" prefix (8 bytes)
+    if decoded_data[:8] != b'Salted__':
+        raise ValueError("Encrypted data does not have the expected 'Salted__' header. Check encryption method.")
+    
+    # 3. Extract Salt (8 bytes) and Ciphertext
+    salt = decoded_data[8:16]
+    ciphertext_with_iv = decoded_data[16:] # The rest is the ciphertext (since IV is part of the derivation)
+    key_size = 32  # AES-256 (32 bytes)
+    iv_size = 16   # AES-256 uses a 16-byte IV
+    
+    # 4. Derive Key and IV using MD5 (the EVP_BytesToKey equivalent)
+    def derive_key_and_iv(password, salt, key_len, iv_len):
+        d = b''
+        last_hash = b''
+        password = password.encode('utf-8')
+        while len(d) < key_len + iv_len:
+            last_hash = hashlib.md5(last_hash + password + salt).digest()
+            d += last_hash
+        return d[:key_len], d[key_len:key_len + iv_len]
+    
+    key, iv = derive_key_and_iv(password, salt, key_size, iv_size)
+    
+    # 5. Decrypt
+    try:
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        # The ciphertext for PyCryptodome is the part AFTER the Salt
+        decrypted_padded = cipher.decrypt(ciphertext_with_iv)
+        decrypted_bytes = unpad(decrypted_padded, AES.block_size)
         
-        # --- PLACEHOLDER DECRYPTION LOGIC START ---
+        # 6. Parse JSON result
+        decrypted_bundle = json.loads(decrypted_bytes.decode('utf-8'))
         
-        # In the real world, you'd use a Key Derivation Function (KDF) here.
-        # Since the exact CryptoJS parameters are unknown, we use a mock for demonstration.
+        # Check if the result is valid
+        if 'data' not in decrypted_bundle or 'secure_folder' not in decrypted_bundle:
+            raise ValueError("Decrypted content is missing 'data' or 'secure_folder' keys.")
+            
+        main_data = decrypted_bundle['data']
+        pdf_folder = decrypted_bundle['secure_folder']
+        st.session_state.pdf_folder = pdf_folder
         
-        # 🛑🛑🛑 REPLACE THIS SECTION WITH YOUR ACTUAL DECRYPTION CODE 🛑🛑🛑
-        # E.g., using Cryptodome for AES-256-CBC:
-        # 1. Derive Key/IV from 'password' using the correct salt/method.
-        # 2. Extract salt, iv, and ciphertext from 'encrypted_data' (Base64 format).
-        # 3. Use AES.new(key, AES.MODE_CBC, iv) to decrypt.
-        
-        if password == "1234": # Replace with your actual password check or decryption success
-            
-            # --- DUMMY DATA FOR DEMONSTRATION ---
-            # This structure mimics the JSON object in your payload
-            decrypted_bundle = {
-                "secure_folder": "Q_Papers", 
-                "data": [
-                    {"filename": "9702_s23_qp_11.pdf", "year": "s23", "paper": "11", "question": "q1", "mainTopic": "Forces, Density", "otherTopics": []},
-                    {"filename": "9702_w22_qp_22.pdf", "year": "w22", "paper": "22", "question": "q5", "mainTopic": "Oscillations", "otherTopics": ["SHM"]},
-                    {"filename": "9702_s21_qp_33.pdf", "year": "s21", "paper": "33", "question": "q10", "mainTopic": "Electromagnetism", "otherTopics": ["Fields", "Induction"]},
-                    {"filename": "9702_w20_qp_42.pdf", "year": "w20", "paper": "42", "question": "q2", "mainTopic": "Quantum Physics", "otherTopics": ["Photons"]},
-                    {"filename": "9702_s19_qp_51.pdf", "year": "s19", "paper": "51", "question": "q3", "mainTopic": "Data Analysis", "otherTopics": ["Uncertainty"]},
-                ]
-            }
-            main_data = decrypted_bundle['data']
-            pdf_folder = decrypted_bundle['secure_folder']
-            st.session_state.pdf_folder = pdf_folder
-            
-            # --- DUMMY DATA END ---
-            
-        else:
-            raise ValueError("Incorrect password or decryption failed.")
-            
-        # --- PLACEHOLDER DECRYPTION LOGIC END ---
+    except ValueError as e:
+        # This catches incorrect padding or bad JSON (usually means wrong password)
+        raise ValueError(f"Decryption failed, likely due to incorrect password or bad data format: {e}")
+    except Exception as e:
+        raise Exception(f"An unexpected error occurred during decryption or JSON parsing: {e}")
+    
+    # --- END OF REPLACEMENT DECRYPTION LOGIC ---
 
         # 3. Load and Merge Updates (updates.json)
      #   with open(UPDATES_FILE, 'r') as f:
