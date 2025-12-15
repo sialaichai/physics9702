@@ -154,21 +154,44 @@ def display_analytics(df: pd.DataFrame):
 
     st.markdown("---")
 
-    # --- 3. Paper Type Distribution (Pie Chart) ---
-    df['Paper Type'] = df['paper'].str[0].apply(
-        lambda x: f"P{x} ({'MCQ' if x=='1' else 'Structured' if x=='2' else 'Practical/Adv'})"
-    )
-    paper_counts = df['Paper Type'].value_counts().reset_index()
-    paper_counts.columns = ['Paper Type', 'Count']
+# --- 3. Paper Type Distribution (Pie Chart) ---
     
+    # 3a. Define the custom mapping function
+    def map_paper_to_group(paper_code):
+        # Ensure paper_code is treated as a string for 'in' checking
+        paper_code = str(paper_code) 
+        
+        # Define the groups based on user request
+        P1_codes = ['1', '11', '12', '13', '14']
+        P2_codes = ['2', '21', '22', '23', '24']
+        P4_codes = ['4', '41', '42', '43']
+        
+        if paper_code in P1_codes:
+            return "P1 (MCQ/Core)"
+        elif paper_code in P2_codes:
+            return "P2 (Structured/Core)"
+        elif paper_code in P4_codes:
+            return "P4 (Advanced Theory)"
+        else:
+            # Group any other code (e.g., '3', '5') into a general 'Other' category
+            return f"Other ({paper_code})"
+
+    # 3b. Apply the mapping to create the new column
+    # Note: We apply the map to the raw 'paper' column, not just the first digit
+    df['Paper Group'] = df['paper'].apply(map_paper_to_group)
+    
+    # Count the new groups
+    paper_counts = df['Paper Group'].value_counts().reset_index()
+    paper_counts.columns = ['Paper Group', 'Count']
+    
+    # Create the Pie Chart using the new grouping
     fig_paper = px.pie(
         paper_counts,
         values='Count',
-        names='Paper Type',
-        title='Distribution of Questions by Paper Type',
+        names='Paper Group', # <-- Changed from 'Paper Type' to 'Paper Group'
+        title='Distribution of Questions by Custom Paper Groups',
     )
     st.plotly_chart(fig_paper, use_container_width=False)
-
 
 # === MAIN APP ===
 def main():
