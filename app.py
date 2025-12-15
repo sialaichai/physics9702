@@ -30,7 +30,7 @@ def decrypt_payload(password: str, encrypted_b64: str) -> dict:
 @st.cache_data
 def load_encrypted_data():
     if not os.path.exists(PAYLOAD_PATH):
-        st.error("❌ 9702payload.txt not found!")
+        st.error("❌ 9702payload.enc not found!")
         return None
     with open(PAYLOAD_PATH, 'r') as f:
         return f.read().strip()
