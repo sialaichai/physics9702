@@ -332,9 +332,9 @@ def main():
     # --- 2. Render Login/Handle Status ---
     # The name of the user, the authentication status (True/False/None), and the username
     name, authentication_status, username = authenticator.login(
-        'main',                # 1. Positional argument for the form header
-        #'',                 # 2. Positional argument for the location
-        #'unique_login_key'      # 3. Positional argument for the component key
+        'sialaichai',                # 1. Positional argument for the form header
+        #'True',                 # 2. Positional argument for the location
+        #'sialaichai'      # 3. Positional argument for the component key
     )
     # Status check and core logic starts here
     if st.session_state["authentication_status"]:
