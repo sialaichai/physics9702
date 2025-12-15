@@ -164,7 +164,7 @@ def display_analytics(df: pd.DataFrame):
         # Define the groups based on user request
         P1_codes = ['1', '11', '12', '13', '14']
         P2_codes = ['2', '21', '22', '23', '24']
-        P4_codes = ['4', '41', '42', '43','43']
+        P4_codes = ['4', '41', '42', '43', '43']
         
         if paper_code in P1_codes:
             return "P1 (MCQ/Core)"
