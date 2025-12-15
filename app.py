@@ -230,7 +230,7 @@ def main():
     st.header("🔍 Filter Questions")
     
     # Define custom column widths: [Year, Paper, Question, Main Topic]
-    col1, col2, col_q, col3 = st.columns([0.6, 0.6, 0.6, 3.5])
+    col1, col2, col_q, col3 = st.columns([0.6, 0.6, 0.6, 3.3])
     
     # 1. Year Filter
     with col1:
