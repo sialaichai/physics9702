@@ -362,7 +362,7 @@ def main():
         authenticator.logout('Logout', 'sidebar')
         
         # === START MAIN INTERFACE (MUST BE INDENTED) ===
-            df = st.session_state.data
+        df = st.session_state.data
             if df is None or df.empty:
                 st.warning("No data loaded.")
                 # We don't need a separate logout button here since we are authenticated
