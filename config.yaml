@@ -1,0 +1,26 @@
+# config.yaml
+
+# 1. Credentials (Users)
+credentials:
+  usernames:
+    # Example User 1: Replace with your actual user details
+    jsmith:
+      email: sialaichai@gmail.com
+      name: sialaichai
+      # Password for this user must be hashed (see Step 3)
+      password: $2b$12$Kk0G8C7vT/tK4T2F7zL9u.z7w0QyD1h2F5X8W3vC6/h9R0jA6Q4S3
+
+# 2. Cookie Configuration (Persistence)
+cookie:
+  # A unique name for your application's cookie
+  name: my_app_cookie
+  # A random, complex string for signing the cookie (VERY IMPORTANT FOR SECURITY)
+  key: 'a_very_secret_key_that_is_at_least_32_chars_long'
+  # Days the user stays logged in
+  expiry_days: 30
+
+# 3. Pre-authorized (Optional)
+preauthorized:
+  # You can pre-authorize emails here if needed
+  emails:
+    - admin@example.com
