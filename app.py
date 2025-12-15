@@ -333,7 +333,7 @@ def main():
     # The name of the user, the authentication status (True/False/None), and the username
     name, authentication_status, username = authenticator.login(
         location='main',                # Explicitly define location
-        key='login_form_key'            # Explicitly define a unique key
+        #key='login_form_key'            # Explicitly define a unique key
     )
     # Status check and core logic starts here
     if st.session_state["authentication_status"]:
