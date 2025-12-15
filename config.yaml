@@ -8,7 +8,7 @@ credentials:
       email: sialaichai@gmail.com
       name: sialaichai
       # Password for this user must be hashed (see Step 3)
-      password: $2b$12$wl5uXL6XJyyu50VinqyZzukYGiEyNU9lUN88xe7TAH5.p4hXPVTmS
+      password: '$2b$12$wl5uXL6XJyyu50VinqyZzukYGiEyNU9lUN88xe7TAH5.p4hXPVTmS'
 
 # 2. Cookie Configuration (Persistence)
 cookie:
