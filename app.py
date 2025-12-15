@@ -211,7 +211,9 @@ def main():
         st.session_state.authenticated = False
         st.session_state.data = None
         st.session_state.folder = ""
-
+        # NEW: Initialize page state
+        st.session_state.page_number = 1
+        
     # === LOGIN SCREEN ===
     if not st.session_state.authenticated:
         # Login logic remains the same (omitted here for brevity)
@@ -329,19 +331,62 @@ def main():
                 href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
                 st.markdown(href, unsafe_allow_html=True)
                 
-        # --- DISPLAY RESULTS TABLE ---
+# --- 4. DISPLAY PAGINATED RESULTS TABLE ---
         st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
+        
+        TOTAL_ROWS = len(filtered_df)
+        ROWS_PER_PAGE = 50
+        
+        if TOTAL_ROWS == 0:
+            st.info("No entries match the current filters.")
+            return # Exit if no data
+        
+        # Calculate total number of pages
+        total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE # Ceiling division
+        
+        # --- Pagination Controls ---
+        # Ensure page number is valid after filtering (it might change dramatically)
+        if st.session_state.page_number > total_pages:
+            st.session_state.page_number = 1
+            
+        st.markdown(f"**Viewing Page {st.session_state.page_number} of {total_pages}**")
 
-        if not filtered_df.empty:
+        # Use columns for page navigation buttons
+        nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 6])
+        
+        with nav_col1:
+            if st.button("⬅️ Previous", key="prev_page", 
+                         disabled=(st.session_state.page_number == 1)):
+                st.session_state.page_number -= 1
+                st.rerun()
+                
+        with nav_col2:
+            if st.button("Next ➡️", key="next_page", 
+                         disabled=(st.session_state.page_number == total_pages)):
+                st.session_state.page_number += 1
+                st.rerun()
+
+        st.markdown("---")
+        
+        # --- Slice the DataFrame ---
+        start_row = (st.session_state.page_number - 1) * ROWS_PER_PAGE
+        end_row = start_row + ROWS_PER_PAGE
+        
+        # This is the small subset of data we will display
+        paginated_df = filtered_df.iloc[start_row:end_row]
+
+        # --- Display Logic for the Paginated Data ---
+        if not paginated_df.empty:
             # Make filename clickable to PDF
             def make_pdf_link(row):
                 url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
                 return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
             
-            display_df = filtered_df.copy()
+            display_df = paginated_df.copy() # Use the paginated_df here
             display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
             display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
             
+            # Select and rename columns for display
             display_cols = ["Link", "year", "paper", "question", "mainTopic", "otherTopics"]
             display_df = display_df[display_cols].rename(columns={
                 "year": "Year", 
@@ -352,14 +397,13 @@ def main():
                 "Link": "Filename"
             })
             
+            # Display the paginated table
             st.write(
                 display_df
                 .to_html(escape=False, index=False),
                 unsafe_allow_html=True
             )
-
-        else:
-            st.info("No entries match the current filters.")
+        # Note: No 'else' needed here since we handle empty data at the top.
 
     with tab2:
         # --- Analytics View ---
