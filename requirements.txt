@@ -4,3 +4,4 @@ plotly
 requests
 pycryptodome
 streamlit-authenticator
+pyyaml
