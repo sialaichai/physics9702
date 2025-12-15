@@ -1,327 +1,190 @@
 import streamlit as st
 import pandas as pd
+import base64
 import json
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 import io
-import requests
-from Cryptodome.Cipher import AES
-from Cryptodome.Util.Padding import unpad
-import base64
-import altair as alt # Optional: for simpler charts
-import hashlib
-import base64
+import os
 
+# === CONFIG ===
+PAYLOAD_PATH = "9702payload.txt"  # originally .enc
+UPDATES_PATH = "updates.json"
+PDF_BASE_URL = "https://sialaichai.github.io/physics9702/"
 
-# --- CONFIGURATION ---
-# These filenames refer to the files you uploaded
-PAYLOAD_FILE = '9702payload.enc'
-UPDATES_FILE = 'updates.json' 
-# Base URL for the GitHub Pages repository where your PDFs are hosted
-BASE_PDF_URL = 'https://sialaichai.github.io/physics9702/' 
+# === DECRYPTION ===
+def decrypt_payload(password: str, encrypted_b64: str) -> dict:
+    try:
+        encrypted_data = base64.b64decode(encrypted_b64)
+        # Derive key/IV same way as CryptoJS (OpenSSL-compatible)
+        password_bytes = password.encode('utf-8')
+        key = password_bytes
+        cipher = AES.new(key, AES.MODE_ECB)
+        decrypted = unpad(cipher.decrypt(encrypted_data), AES.block_size)
+        return json.loads(decrypted.decode('utf-8'))
+    except Exception as e:
+        st.error(f"Decryption failed: {str(e)}")
+        return None
 
-# Set Streamlit page config for an elegant, wide layout
-st.set_page_config(
-    page_title="9702 Physics Viewer",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# --- HELPER FUNCTIONS (REPLACING JAVASCRIPT LOGIC) ---
-
+# === LOAD ENCRYPTED DATA ===
 @st.cache_data
-def fetch_and_load_data(password):
-    """
-    Fetches encrypted payload and updates file, then decrypts and normalizes data.
-    NOTE: The decryption logic here is a placeholder. You must update the key
-    and IV derivation to match how your original JavaScript/CryptoJS encrypts data.
-    """
-    st.info("Loading files and attempting decryption. This is a one-time process until the password changes.")
-    
-    try:
-        # 1. Load Encrypted Payload (9702payload.enc)
-        with open(PAYLOAD_FILE, 'r') as f:
-            encrypted_data = f.read().strip()
-        except FileNotFoundError:
-            st.error(f"FATAL ERROR: Could not find data file '{PAYLOAD_FILE}'. Ensure it's in the same folder as app.py in your GitHub repo.")
-            return None
-        
-    # 1. Decode the Base64 Encrypted Data
-    try:
-        decoded_data = base64.b64decode(encrypted_data)
-    except Exception:
-        raise ValueError("Encrypted payload is not valid Base64.")
-    
-    # 2. Check for the "Salted__" prefix (8 bytes)
-    if decoded_data[:8] != b'Salted__':
-        raise ValueError("Encrypted data does not have the expected 'Salted__' header. Check encryption method.")
-    
-    # 3. Extract Salt (8 bytes) and Ciphertext
-    salt = decoded_data[8:16]
-    ciphertext_with_iv = decoded_data[16:] # The rest is the ciphertext (since IV is part of the derivation)
-    key_size = 32  # AES-256 (32 bytes)
-    iv_size = 16   # AES-256 uses a 16-byte IV
-    
-    # 4. Derive Key and IV using MD5 (the EVP_BytesToKey equivalent)
-    def derive_key_and_iv(password, salt, key_len, iv_len):
-        d = b''
-        last_hash = b''
-        password = password.encode('utf-8')
-        while len(d) < key_len + iv_len:
-            last_hash = hashlib.md5(last_hash + password + salt).digest()
-            d += last_hash
-        return d[:key_len], d[key_len:key_len + iv_len]
-    
-    key, iv = derive_key_and_iv(password, salt, key_size, iv_size)
-    
-    # 5. Decrypt
-    try:
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        # The ciphertext for PyCryptodome is the part AFTER the Salt
-        decrypted_padded = cipher.decrypt(ciphertext_with_iv)
-        decrypted_bytes = unpad(decrypted_padded, AES.block_size)
-        
-        # 6. Parse JSON result
-        decrypted_bundle = json.loads(decrypted_bytes.decode('utf-8'))
-        
-        # Check if the result is valid
-        if 'data' not in decrypted_bundle or 'secure_folder' not in decrypted_bundle:
-            raise ValueError("Decrypted content is missing 'data' or 'secure_folder' keys.")
-            
-        main_data = decrypted_bundle['data']
-        pdf_folder = decrypted_bundle['secure_folder']
-        st.session_state.pdf_folder = pdf_folder
-        
-    except ValueError as e:
-        # This catches incorrect padding or bad JSON (usually means wrong password)
-        raise ValueError(f"Decryption failed, likely due to incorrect password or bad data format: {e}")
-    except Exception as e:
-        raise Exception(f"An unexpected error occurred during decryption or JSON parsing: {e}")
-    
-    # --- END OF REPLACEMENT DECRYPTION LOGIC ---
-
-        # 3. Load and Merge Updates (updates.json)
-     #   with open(UPDATES_FILE, 'r') as f:
-    #        update_data = json.load(f)
-
-    # 3. Load and Merge Updates (updates.json)
-    try:
-        with open(UPDATES_FILE, 'r') as f:
-            update_data = json.load(f)
-    except FileNotFoundError:
-        st.warning(f"Warning: Could not find updates file '{UPDATES_FILE}'. Proceeding with main data only.")
-        update_data = []
-    except Exception as e:
-        st.warning(f"Warning: Failed to load updates.json: {e}")
-        update_data = []
-
-    
-        if update_data:
-            main_data.extend(update_data)
-        
-        # 4. Normalize and Convert to DataFrame
-        df = pd.DataFrame(main_data)
-        df['question'] = df['question'].str.replace(r'(\.pdf$|^q0+)', r'\1', regex=True).str.strip()
-        df['mainTopic'] = df['mainTopic'].str.strip()
-        df['otherTopics'] = df['otherTopics'].apply(lambda x: ', '.join(x) if isinstance(x, list) else str(x))
-        
-        return df
-
-    except ValueError as e:
-        st.error(f"Login failed: {e}. Please check your password.")
+def load_encrypted_data():
+    if not os.path.exists(PAYLOAD_PATH):
+        st.error("❌ 9702payload.txt not found!")
         return None
-    except Exception as e:
-        st.error(f"System Error: Could not load or decrypt data files. {e}")
-        return None
+    with open(PAYLOAD_PATH, 'r') as f:
+        return f.read().strip()
 
-# --- STREAMLIT APP LAYOUT & LOGIC ---
+# === LOAD UPDATES (optional) ===
+def load_updates():
+    if os.path.exists(UPDATES_PATH):
+        with open(UPDATES_PATH, 'r') as f:
+            return json.load(f)
+    return []
 
-def login_screen():
-    """Displays the password input screen."""
-    st.empty() # Clear the main area
-    col1, col2, col3 = st.columns([1, 2, 1])
+# === MAIN APP ===
+def main():
+    st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
+    st.title("🔐 9702 Physics Past Paper Viewer")
+
+    # Load encrypted payload once
+    encrypted_text = load_encrypted_data()
+    if not encrypted_text:
+        return
+
+    # Session state for authentication & data
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
+        st.session_state.data = None
+
+    # === LOGIN SCREEN ===
+    if not st.session_state.authenticated:
+        with st.form("login"):
+            password = st.text_input("Enter password", type="password")
+            submitted = st.form_submit_button("Unlock")
+            if submitted and password:
+                bundle = decrypt_payload(password, encrypted_text)
+                if bundle:
+                    st.session_state.authenticated = True
+                    main_data = bundle.get("data", [])
+                    # Merge updates
+                    updates = load_updates()
+                    if updates:
+                        main_data.extend(updates)
+                    # Normalize and clean
+                    normalized = []
+                    for item in main_data:
+                        q = str(item.get("question", "")).strip()
+                        q = q.replace(".pdf", "").replace(/^q0+(\d)/i, r"q\1")
+                        normalized.append({
+                            "filename": str(item.get("filename", "")).strip(),
+                            "year": str(item.get("year", "")).strip(),
+                            "paper": str(item.get("paper", "")).strip(),
+                            "question": q,
+                            "mainTopic": str(item.get("mainTopic", "")).strip(),
+                            "otherTopics": [t.strip() for t in (item.get("otherTopics") or []) if t.strip()]
+                        })
+                    st.session_state.data = pd.DataFrame(normalized)
+                    st.session_state.folder = bundle.get("secure_folder", "")
+                    st.rerun()
+                else:
+                    st.error("Incorrect password")
+        return
+
+    # === MAIN INTERFACE ===
+    df = st.session_state.data
+    if df is None or df.empty:
+        st.warning("No data loaded.")
+        return
+
+    # Sidebar filters
+    st.sidebar.header("🔍 Filters")
     
-    with col2:
-        st.title("🔐 9702 Physics Viewer")
-        st.subheader("Restricted Access")
-        
-        password = st.text_input("Enter Password to Unlock Data", type="password")
-        
-        if st.button("Login"):
-            if password:
-                # Store password in session state, which will trigger data loading
-                st.session_state.password = password
-                st.session_state.data_loaded = False
-                st.rerun()
-            else:
-                st.warning("Please enter a password.")
+    all_years = sorted(df["year"].dropna().unique(), reverse=True)
+    selected_years = st.sidebar.multiselect("Year", options=all_years)
 
-def display_main_app(df):
-    """Displays the main application dashboard."""
-    
-    st.sidebar.title("Data Filters")
+    all_papers = sorted(df["paper"].dropna().unique())
+    selected_papers = st.sidebar.multiselect("Paper", options=all_papers)
 
-    # --- 1. SIDEBAR FILTERS (Elegant Display) ---
-    
-    # Extract unique filter options
-    years = sorted(df['year'].unique(), reverse=True)
-    papers = sorted(df['paper'].unique())
-    topics = sorted(df['mainTopic'].str.split(',\s*').explode().unique().dropna())
+    all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
+    selected_questions = st.sidebar.multiselect("Question", options=all_questions)
 
-    # Create Multiselect Widgets in the Sidebar
-    selected_years = st.sidebar.multiselect("Select Year(s)", years)
-    selected_papers = st.sidebar.multiselect("Select Paper(s)", papers)
-    selected_topics = st.sidebar.multiselect("Select Main Topic(s)", topics)
+    # Extract and split main topics (some entries have ";")
+    def extract_main_topics(series):
+        topics = set()
+        for val in series.dropna():
+            for t in val.split(";"):
+                topics.add(t.strip())
+        return sorted(topics)
+    all_topics = extract_main_topics(df["mainTopic"])
+    selected_topics = st.sidebar.multiselect("Main Topic", options=all_topics)
 
-    # Search Bar (Replaces Question Filter Dropdown)
-    search_term = st.sidebar.text_input("Search Filename or Topic:", "").lower()
-    
-    # Apply Filters
-    df_filtered = df.copy()
-    
+    # Apply filters
+    filtered_df = df.copy()
     if selected_years:
-        df_filtered = df_filtered[df_filtered['year'].isin(selected_years)]
+        filtered_df = filtered_df[filtered_df["year"].isin(selected_years)]
     if selected_papers:
-        df_filtered = df_filtered[df_filtered['paper'].isin(selected_papers)]
+        filtered_df = filtered_df[filtered_df["paper"].isin(selected_papers)]
+    if selected_questions:
+        filtered_df = filtered_df[filtered_df["question"].isin(selected_questions)]
     if selected_topics:
-        # Filter where the 'mainTopic' column contains ANY of the selected topics
-        df_filtered = df_filtered[df_filtered['mainTopic'].apply(
-            lambda x: any(t in x.split(', ') for t in selected_topics)
-        )]
-    if search_term:
-        df_filtered = df_filtered[
-            df_filtered.apply(
-                lambda row: search_term in row['filename'].lower() or 
-                            search_term in row['mainTopic'].lower() or
-                            search_term in row['otherTopics'].lower(), 
-                axis=1
-            )
+        filtered_df = filtered_df[
+            filtered_df["mainTopic"].apply(lambda x: any(t in x for t in selected_topics))
         ]
 
-    st.header(f"Data Dashboard ({len(df_filtered)} files selected)")
-    
-    # --- 2. CHARTS (New Feature for Data Insights) ---
+    st.subheader(f"📄 Results ({len(filtered_df)} files)")
 
-    chart_tab, data_tab = st.tabs(["📊 Data Visualizations", "📄 Filtered Question List"])
-    
-    with chart_tab:
+    # Display table
+    if not filtered_df.empty:
+        # Make filename clickable to PDF
+        def make_pdf_link(row):
+            url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
+            return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
+        display_df = filtered_df.copy()
+        display_df["filename"] = display_df.apply(make_pdf_link, axis=1)
+        display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
         
-        # Use st.columns for elegant side-by-side display
-        chart_col1, chart_col2 = st.columns(2)
-        
-        with chart_col1:
-            st.subheader("Topic Frequency Analysis")
-            # Explode the main topics and count them
-            topic_counts = df_filtered['mainTopic'].str.split(',\s*').explode().value_counts().reset_index()
-            topic_counts.columns = ['Topic', 'Count']
-            
-            # Plotly Bar Chart (Highly Interactive)
-            fig_topic = px.bar(
-                topic_counts.head(10), # Show top 10 topics
-                x='Count', 
-                y='Topic', 
-                orientation='h', 
-                title='Top 10 Most Frequent Topics in Selection',
-                color_discrete_sequence=['#007bff']
-            )
-            fig_topic.update_yaxes(categoryorder='total ascending')
-            st.plotly_chart(fig_topic, use_container_width=True)
-
-        with chart_col2:
-            st.subheader("File Distribution by Year")
-            year_counts = df_filtered['year'].value_counts().sort_index().reset_index()
-            year_counts.columns = ['Year', 'Count']
-            
-            # Altair Line Chart (Good for trends)
-            chart_year = alt.Chart(year_counts).mark_line(point=True).encode(
-                x=alt.X('Year:O', sort='descending'),
-                y='Count:Q',
-                tooltip=['Year', 'Count']
-            ).properties(
-                title="Number of Files per Year"
-            )
-            st.altair_chart(chart_year, use_container_width=True)
-
-    # --- 3. DATA TABLE AND PDF VIEWER (Main Content) ---
-    
-    with data_tab:
-        
-        # Display the Filtered Data Table
-        st.subheader("Click a Row to View PDF")
-        
-        # Streamlit's st.dataframe is a much more elegant, interactive table
-        # than the custom HTML table (sortable, searchable)
-        st.dataframe(
-            df_filtered[['filename', 'year', 'paper', 'question', 'mainTopic', 'otherTopics']].rename(
-                columns={'mainTopic': 'Main Topic', 'otherTopics': 'Other Topics'}
-            ),
-            use_container_width=True,
-            height=300, # Control table height
-            hide_index=True
-        )
-        
-        # --- PDF Viewer ---
-        
-        # Get the selected row from the dataframe (by user click)
-        # Note: Streamlit's DataFrame does not natively support single-click row selection
-        # so we will use a workaround, or simplify to direct viewing.
-        
-        # For a simpler approach, we'll use a Selectbox for viewing
-        selected_file = st.selectbox(
-            "Select file to view PDF:", 
-            options=df_filtered['filename'].unique(),
-            index=None
+        st.write(
+            display_df[["filename", "year", "paper", "question", "mainTopic", "otherTopics"]]
+            .to_html(escape=False, index=False),
+            unsafe_allow_html=True
         )
 
-        if selected_file:
-            row = df_filtered[df_filtered['filename'] == selected_file].iloc[0]
-            year = row['year']
-            
-            # Construct the PDF URL based on the pattern in your JS code
-            # e.g., https://sialaichai.github.io/physics9702/Q_Papers/w19/9702_w19_qp_11.pdf
-            pdf_url = f"{BASE_PDF_URL}{st.session_state.pdf_folder}/{year}/{selected_file}"
-            
-            st.subheader(f"Viewing: {selected_file}")
-            
-            # Embed the PDF using an iframe via st.markdown
-            st.markdown(
-                f'<iframe src="{pdf_url}" width="100%" height="600" style="border: none;"></iframe>',
-                unsafe_allow_html=True
-            )
-        else:
-            st.info("Select a file from the list above to view its PDF.")
-            
-# --- MAIN APPLICATION ENTRY POINT ---
+        # === GENERATE HTML REPORT ===
+        @st.experimental_fragment
+        def generate_html_report():
+            if len(filtered_df) > 100:
+                if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?"):
+                    return
+            html_content = f"""<!DOCTYPE html>
+<html><head><title>Physics Report</title>
+<style>
+body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
+h1 {{ text-align: center; }}
+.pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
+.header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
+embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
+</style></head><body><h1>Filtered PDF Report</h1>"""
+            for _, row in filtered_df.iterrows():
+                url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
+                html_content += f"""
+                <div class='pdf-section'>
+                    <div class='header-row'>
+                        <b>{row['filename']}</b> 
+                        <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
+                    </div>
+                    <embed src='{url}' type='application/pdf' />
+                </div>"""
+            html_content += "</body></html>"
 
-# Initialize session state variables
-if 'password' not in st.session_state:
-    st.session_state.password = None
-if 'data_loaded' not in st.session_state:
-    st.session_state.data_loaded = False
-if 'pdf_folder' not in st.session_state:
-    st.session_state.pdf_folder = None
-    
-# Import charting libraries after st.set_page_config
-import plotly.express as px
+            b64 = base64.b64encode(html_content.encode()).decode()
+            href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report</a>'
+            st.markdown(href, unsafe_allow_html=True)
 
-if st.session_state.password:
-    # Attempt to load and decrypt data
-    if not st.session_state.data_loaded:
-        df = fetch_and_load_data(st.session_state.password)
-        if df is not None:
-            st.session_state.df = df
-            st.session_state.data_loaded = True
-            st.rerun() # Rerun to switch from loading screen to main app
-        else:
-            # If decryption fails, clear password state to show login screen again
-            st.session_state.password = None
-            st.rerun()
-    
-    if st.session_state.data_loaded:
-        display_main_app(st.session_state.df)
+        st.divider()
+        generate_html_report()
+    else:
+        st.info("No entries match the current filters.")
 
-else:
-    # No password entered, show login screen
-    login_screen()
-
-st.sidebar.markdown("---")
-st.sidebar.markdown(f"[Prelim]({BASE_PDF_URL}physicsprelim/)")
-st.sidebar.markdown(f"[SEAB]({BASE_PDF_URL}physicsseab/)")
+if __name__ == "__main__":
+    main()
