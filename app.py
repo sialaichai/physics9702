@@ -557,12 +557,12 @@ embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
         # --- Analytics View ---
         display_analytics(filtered_df) 
     elif st.session_state["authentication_status"] == False:
-            st.error('Username/password is incorrect')
-            st.session_state.data = None
+        st.error('Username/password is incorrect')
+        st.session_state.data = None
         
-        elif st.session_state["authentication_status"] == None:
-            st.warning('Please enter your credentials to access the data.')
-            st.session_state.data = None
+    elif st.session_state["authentication_status"] == None:
+        st.warning('Please enter your credentials to access the data.')
+        st.session_state.data = None
 
 if __name__ == "__main__":
     main()
