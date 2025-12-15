@@ -360,16 +360,8 @@ def main():
         # --- 2b. Display App Header and Logout Button ---
         st.sidebar.title(f'Welcome {name}')
         authenticator.logout('Logout', 'sidebar')
-        
-        # === START MAIN INTERFACE (MUST BE INDENTED) ===
-        df = st.session_state.data
-            if df is None or df.empty:
-                st.warning("No data loaded.")
-                # We don't need a separate logout button here since we are authenticated
-                return 
-            
-            # --- 1. FILTERS (Custom Width Columns) ---
-            st.header("🔍 Filter Questions")
+       
+        st.header("🔍 Filter Questions")
             
         # === MAIN INTERFACE ===
         df = st.session_state.data
