@@ -13,6 +13,53 @@ import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 
+# app.py (Use this exact structure)
+#import streamlit as st
+#import streamlit_authenticator as stauth
+#from yaml.loader import SafeLoader # Keep this import, it's harmless
+
+# 1. DEFINE CONFIGURATION DICT INLINE (REPLACING YAML LOAD)
+#    This GUARANTEES the data structure and string values are correct.
+
+config = {
+    'cookie': {
+        'name': 'your_app_cookie_name',  # Must match the old YAML name
+        'key': 'a_long_complex_secret_key_32_chars', # MUST be 32+ characters, unique string
+        'expiry_days': 30
+    },
+    'credentials': {
+        'usernames': {
+            'sialaichai': {  # Your Username
+                'email': 'sialaichai@gmail.com',
+                'name': 'Sialai Chai',
+                # ⬅️ PASTE YOUR 60-CHARACTER BCRYPT HASH HERE. No quotes needed in Python dict.
+                'password': $2b$12$cbcnx5YAVy/3Rtpx01H9IOZLP7lfI960NV4BN39fmo8dYxqw8A0OW 
+            }
+        }
+    },
+    'preauthorized': {
+        'emails': []
+    }
+}
+
+# 2. Initialize the Authenticator object
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config['preauthorized']
+)
+
+# 3. Call the login widget (This part remains the same)
+name, authentication_status, username = authenticator.login(
+    form_name='Login',
+    location='main'
+)
+
+
+
+
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"  # originally .enc
 UPDATES_PATH = "updates.json"
@@ -318,17 +365,17 @@ def main():
 
     # --- 1. Authenticator Setup ---
     # Load configuration
-    with open('./config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
+    #with open('./config.yaml') as file:
+    #    config = yaml.load(file, Loader=SafeLoader)
 
     # Initialize Authenticator
-    authenticator = stauth.Authenticate(
-        config['credentials'],
-        config['cookie']['name'],
-        config['cookie']['key'],
-        config['cookie']['expiry_days'],
-        config['preauthorized']
-    )
+    #authenticator = stauth.Authenticate(
+    #    config['credentials'],
+    #    config['cookie']['name'],
+    #    config['cookie']['key'],
+   #     config['cookie']['expiry_days'],
+   #     config['preauthorized']
+   # )
 
     # --- 2. Render Login/Handle Status ---
     # The name of the user, the authentication status (True/False/None), and the username
