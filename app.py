@@ -333,7 +333,7 @@ def main():
     # The name of the user, the authentication status (True/False/None), and the username
     name, authentication_status, username = authenticator.login(
         'sialaichai',                # 1. Positional argument for the form header
-        #'True',                 # 2. Positional argument for the location
+        #'main',                 # 2. Positional argument for the location
         #'sialaichai'      # 3. Positional argument for the component key
     )
     # Status check and core logic starts here
