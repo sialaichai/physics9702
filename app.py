@@ -169,39 +169,49 @@ def main():
             st.rerun()
         return
 
-    # --- 1. FILTERS (Moved from Sidebar to Main Panel) ---
+    # --- 1. FILTERS (Custom Width Columns) ---
     st.header("🔍 Filter Questions")
     
-    # Use columns to display filters horizontally for better use of space
-    col1, col2, col3 = st.columns(3)
+    # Define custom column widths: [Year, Paper, Question, Main Topic]
+    # Ratio: [1, 1, 1.5, 3.5] (Total units = 7)
+    col1, col2, col_q, col3 = st.columns([1, 1, 1.5, 3.5])
     
+    # 1. Year Filter (Small)
     with col1:
         all_years = sorted(df["year"].dropna().unique(), reverse=True)
         selected_years = st.multiselect("Year", options=all_years, key="filter_year")
     
+    # 2. Paper Filter (Small)
     with col2:
         all_papers = sorted(df["paper"].dropna().unique())
         selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
         
+    # 3. Question Number Filter (Medium-Small)
+    with col_q:
+        all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
+        # Moved the multiselect definition here
+        selected_questions = st.multiselect("Q#", options=all_questions, key="filter_question")
+        
+    # 4. Main Topic Filter (Widest)
     with col3:
-        # Extract and split main topics (some entries have ";")
+        # NOTE: The extract_main_topics function should be defined outside main() 
+        # or inside main() before this block. Assuming it's defined and accessible.
         def extract_main_topics(series):
             topics = set()
             for val in series.dropna():
                 for t in val.split(";"):
                     topics.add(t.strip())
             return sorted(topics)
+        
         all_topics = extract_main_topics(df["mainTopic"])
         selected_topics = st.multiselect("Main Topic", options=all_topics, key="filter_topic")
-
-    # Separate question filter below the columns
-    all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
-    selected_questions = st.multiselect("Question Number", options=all_questions, key="filter_question")
 
     st.markdown("---") # Visual separator
 
     # --- 2. APPLY FILTERS ---
     filtered_df = df.copy()
+    
+    # Apply filters based on the selections made above
     if selected_years:
         filtered_df = filtered_df[filtered_df["year"].isin(selected_years)]
     if selected_papers:
@@ -212,7 +222,6 @@ def main():
         filtered_df = filtered_df[
             filtered_df["mainTopic"].apply(lambda x: any(t in x.split(';') for t in selected_topics))
         ]
-
     # --- 3. DOWNLOAD BUTTON (Moved to the Top) ---
     
     # Place download link in an expander for better organization above the results
