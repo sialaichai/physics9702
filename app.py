@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import base64
 import json
-from Cryptodome.Cipher import AES
-from Cryptodome.Util.Padding import unpad
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 import io
 import os
 import re
