@@ -327,6 +327,7 @@ def main():
         config['cookie']['name'],
         config['cookie']['key'],
         config['cookie']['expiry_days']
+        config['preauthorized']
     )
 
     # --- 2. Render Login/Handle Status ---
