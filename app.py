@@ -12,20 +12,86 @@ PAYLOAD_PATH = "9702payload.enc"  # originally .enc
 UPDATES_PATH = "updates.json"
 PDF_BASE_URL = "https://sialaichai.github.io/physics9702/"
 
-# === DECRYPTION ===
-def decrypt_payload(password: str, encrypted_b64: str) -> dict:
-    try:
-        encrypted_data = base64.b64decode(encrypted_b64)
-        # Derive key/IV same way as CryptoJS (OpenSSL-compatible)
-        password_bytes = password.encode('utf-8')
-        key = password_bytes
-        cipher = AES.new(key, AES.MODE_ECB)
-        decrypted = unpad(cipher.decrypt(encrypted_data), AES.block_size)
-        return json.loads(decrypted.decode('utf-8'))
-    except Exception as e:
-        st.error(f"Decryption failed: {str(e)}")
-        return None
+# ====================================================================
+# === KEY DERIVATION FUNCTION (MIMICS OpenSSL/CryptoJS) ===
+# ====================================================================
 
+def derive_key_and_iv(password, salt, key_len, iv_len, hash_algo=hashlib.md5):
+    """
+    Derives AES Key and IV from password and salt using the specified hash function.
+    hash_algo can be hashlib.md5 or hashlib.sha256.
+    """
+    d = b''
+    last_hash = b''
+    password = password.encode('utf-8')
+    while len(d) < key_len + iv_len:
+        last_hash = hash_algo(last_hash + password + salt).digest()
+        d += last_hash
+    return d[:key_len], d[key_len:key_len + iv_len]
+
+# ====================================================================
+# === DECRYPTION (CORRECTED WITH KDF AND KEY SIZE TESTING) ===
+# ====================================================================
+
+@st.cache_data
+def decrypt_payload(password: str, encrypted_b64: str) -> dict | None:
+    # Key sizes to test: AES-128 (16), AES-192 (24), AES-256 (32)
+    KEY_SIZES = [16, 24, 32]
+    IV_SIZE = 16
+    HASH_ALGOS = {"MD5": hashlib.md5, "SHA256": hashlib.sha256}
+    
+    try:
+        decoded_data = base64.b64decode(encrypted_b64)
+    
+        if decoded_data[:8] != b'Salted__':
+            st.error("Decryption failed: Data format error - missing 'Salted__' header.")
+            return None
+    
+        salt = decoded_data[8:16]
+        ciphertext = decoded_data[16:]
+        
+        last_error = None
+        
+        # 3. Iterate through possible hash algorithms and key sizes
+        for algo_name, hash_func in HASH_ALGOS.items():
+            for key_size in KEY_SIZES:
+                try:
+                    # Derive Key and IV using the current hash function
+                    key, iv = derive_key_and_iv(password, salt, key_size, IV_SIZE, hash_func)
+                
+                    # Decrypt using CBC mode
+                    cipher = AES.new(key, AES.MODE_CBC, iv)
+                    decrypted_padded = cipher.decrypt(ciphertext)
+                    
+                    # Unpad and decode JSON (raises ValueError on wrong key/IV)
+                    decrypted_bytes = unpad(decrypted_padded, AES.block_size)
+                    
+                    # Success! Parse JSON result
+                    decrypted_bundle = json.loads(decrypted_bytes.decode('utf-8'))
+                    
+                    if 'data' not in decrypted_bundle:
+                        raise ValueError("Decrypted JSON is incomplete.")
+                        
+                    st.success(f"Decryption successful! Using {algo_name}/AES-{key_size*8}.")
+                    return decrypted_bundle
+                    
+                except ValueError as e:
+                    # Catches bad padding/wrong key/IV (ValueError from unpad) or bad JSON
+                    last_error = f"{algo_name}/AES-{key_size*8} failed (Bad Key/IV/Padding): {str(e)}"
+                    continue # Try next combination
+                except Exception as e:
+                    # Catch any other system errors (e.g., unexpected encoding)
+                    last_error = f"{algo_name}/AES-{key_size*8} system failure: {type(e).__name__} {str(e)}"
+                    continue
+
+        # If the entire loop finishes without success
+        st.error(f"Login Failed. All KDF/AES combinations failed. Last attempt error: {last_error}")
+        return None
+        
+    except Exception as e:
+        # Catch errors outside the loop (e.g., Base64 decoding failure)
+        st.error(f"A fatal error occurred during initialization: {type(e).__name__}: {str(e)}")
+        return None
 # === LOAD ENCRYPTED DATA ===
 @st.cache_data
 def load_encrypted_data():
