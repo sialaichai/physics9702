@@ -164,7 +164,8 @@ def display_analytics(df: pd.DataFrame):
         # Define the groups based on user request
         P1_codes = ['1', '11', '12', '13', '14']
         P2_codes = ['2', '21', '22', '23', '24']
-        P4_codes = ['4', '41', '42', '43', '43']
+        # UPDATED P4 CODES
+        P4_codes = ['4', '41', '42', '43', '44'] 
         
         if paper_code in P1_codes:
             return "P1 (MCQ/Core)"
@@ -172,23 +173,25 @@ def display_analytics(df: pd.DataFrame):
             return "P2 (Structured/Core)"
         elif paper_code in P4_codes:
             return "P4 (Advanced Theory)"
-        else:
-            # Group any other code (e.g., '3', '5') into a general 'Other' category
-            return f"Other ({paper_code})"
+        # REMOVED 'else': Any unmapped code will return None, which is excluded from the chart count.
+        return None 
 
     # 3b. Apply the mapping to create the new column
-    # Note: We apply the map to the raw 'paper' column, not just the first digit
     df['Paper Group'] = df['paper'].apply(map_paper_to_group)
     
-    # Count the new groups
+    # Count the new groups (excluding None values implicitly)
     paper_counts = df['Paper Group'].value_counts().reset_index()
     paper_counts.columns = ['Paper Group', 'Count']
     
+    if paper_counts.empty:
+        st.warning("No P1, P2, or P4 data found under current filters.")
+        return
+
     # Create the Pie Chart using the new grouping
     fig_paper = px.pie(
         paper_counts,
         values='Count',
-        names='Paper Group', # <-- Changed from 'Paper Type' to 'Paper Group'
+        names='Paper Group', 
         title='Distribution of Questions by Custom Paper Groups',
     )
     st.plotly_chart(fig_paper, use_container_width=False)
