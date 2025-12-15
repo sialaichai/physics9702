@@ -362,210 +362,210 @@ def main():
         authenticator.logout('Logout', 'sidebar')
         
         # === START MAIN INTERFACE (MUST BE INDENTED) ===
+            df = st.session_state.data
+            if df is None or df.empty:
+                st.warning("No data loaded.")
+                # We don't need a separate logout button here since we are authenticated
+                return 
+            
+            # --- 1. FILTERS (Custom Width Columns) ---
+            st.header("🔍 Filter Questions")
+            
+        # === MAIN INTERFACE ===
         df = st.session_state.data
         if df is None or df.empty:
             st.warning("No data loaded.")
-            # We don't need a separate logout button here since we are authenticated
-            return 
-        
+            #if st.button("Logout"):
+                st.session_state.authenticated = False
+                st.rerun()
+            return
+    
         # --- 1. FILTERS (Custom Width Columns) ---
         st.header("🔍 Filter Questions")
         
-    # === MAIN INTERFACE ===
-    df = st.session_state.data
-    if df is None or df.empty:
-        st.warning("No data loaded.")
-        if st.button("Logout"):
-            st.session_state.authenticated = False
-            st.rerun()
-        return
-
-    # --- 1. FILTERS (Custom Width Columns) ---
-    st.header("🔍 Filter Questions")
+        # Define custom column widths: [Year, Session, Paper, Question, Main Topic]
+        col_yr, col_sess, col2, col_q, col3 = st.columns([1, 1, 1, 1, 3.4])
+        
+        # 1a. Year Filter (NEW)
+        with col_yr:
+            # Use the new year_numeric column for filtering
+            all_years = sorted(df["year_numeric"].dropna().unique(), reverse=True)
+            # Convert to int for display (as pandas returns float for unique values if NaN is present)
+            all_years_display = [int(y) for y in all_years]
+            selected_years = st.multiselect("Year", options=all_years_display, key="filter_year")
     
-    # Define custom column widths: [Year, Session, Paper, Question, Main Topic]
-    col_yr, col_sess, col2, col_q, col3 = st.columns([1, 1, 1, 1, 3.4])
+        # 1b. Session Filter (NEW)
+        with col_sess:
+            # Use the new session column for filtering
+            all_sessions = sorted(df["session"].dropna().unique())
+            all_sessions = [s for s in all_sessions if s in ['M', 'S', 'W']] # Only show M, S, W options
+            selected_sessions = st.multiselect("Session", options=all_sessions, key="filter_session")
+            
+        # 2. Paper Filter (Small)
+        with col2:
+            all_papers = sorted(df["paper"].dropna().unique())
+            selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
+            
+        # 3. Question Number Filter (Medium-Small)
+        with col_q:
+            all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
+            selected_questions = st.multiselect("Q#", options=all_questions, key="filter_question")
+            
+        # 4. Main Topic Filter (Widest)
+        with col3:
+            def extract_main_topics(series):
+                topics = set()
+                for val in series.dropna():
+                    for t in val.split(";"):
+                        topics.add(t.strip())
+                return sorted(topics)
+            
+            all_topics = extract_main_topics(df["mainTopic"])
+            selected_topics = st.multiselect("Main Topic", options=all_topics, key="filter_topic")
     
-    # 1a. Year Filter (NEW)
-    with col_yr:
-        # Use the new year_numeric column for filtering
-        all_years = sorted(df["year_numeric"].dropna().unique(), reverse=True)
-        # Convert to int for display (as pandas returns float for unique values if NaN is present)
-        all_years_display = [int(y) for y in all_years]
-        selected_years = st.multiselect("Year", options=all_years_display, key="filter_year")
-
-    # 1b. Session Filter (NEW)
-    with col_sess:
-        # Use the new session column for filtering
-        all_sessions = sorted(df["session"].dropna().unique())
-        all_sessions = [s for s in all_sessions if s in ['M', 'S', 'W']] # Only show M, S, W options
-        selected_sessions = st.multiselect("Session", options=all_sessions, key="filter_session")
-        
-    # 2. Paper Filter (Small)
-    with col2:
-        all_papers = sorted(df["paper"].dropna().unique())
-        selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
-        
-    # 3. Question Number Filter (Medium-Small)
-    with col_q:
-        all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
-        selected_questions = st.multiselect("Q#", options=all_questions, key="filter_question")
-        
-    # 4. Main Topic Filter (Widest)
-    with col3:
-        def extract_main_topics(series):
-            topics = set()
-            for val in series.dropna():
-                for t in val.split(";"):
-                    topics.add(t.strip())
-            return sorted(topics)
-        
-        all_topics = extract_main_topics(df["mainTopic"])
-        selected_topics = st.multiselect("Main Topic", options=all_topics, key="filter_topic")
-
-    st.markdown("---") 
-
-    # --- 2. APPLY FILTERS ---
-    filtered_df = df.copy()
+        st.markdown("---") 
     
-    # Apply filters based on the selections made above
-    if selected_years:
-        # Filter based on the new 'year_numeric' column
-        filtered_df = filtered_df[filtered_df["year_numeric"].isin(selected_years)]
-    if selected_sessions:
-        # Filter based on the new 'session' column
-        filtered_df = filtered_df[filtered_df["session"].isin(selected_sessions)]
-    if selected_papers:
-        filtered_df = filtered_df[filtered_df["paper"].isin(selected_papers)]
-    if selected_questions:
-        filtered_df = filtered_df[filtered_df["question"].isin(selected_questions)]
-    if selected_topics:
-        filtered_df = filtered_df[
-            filtered_df["mainTopic"].apply(lambda x: any(t in x.split(';') for t in selected_topics))
-        ]
-
-    # === 3. TAB CREATION AND CONTENT ===
-    tab1, tab2 = st.tabs(["📄 Data Table", "📊 Analytics"])
-
-    with tab1:
-        # --- Download Button expander remains the same ---
-        with st.expander(f"📥 Generate & Download Report ({len(filtered_df)} files match filters)", expanded=False):
-            
-            def generate_html_report_content(filtered_df, folder):
-                # ... (Content generation logic remains here) ...
-                if len(filtered_df) > 100:
-                    if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
-                        return None
+        # --- 2. APPLY FILTERS ---
+        filtered_df = df.copy()
+        
+        # Apply filters based on the selections made above
+        if selected_years:
+            # Filter based on the new 'year_numeric' column
+            filtered_df = filtered_df[filtered_df["year_numeric"].isin(selected_years)]
+        if selected_sessions:
+            # Filter based on the new 'session' column
+            filtered_df = filtered_df[filtered_df["session"].isin(selected_sessions)]
+        if selected_papers:
+            filtered_df = filtered_df[filtered_df["paper"].isin(selected_papers)]
+        if selected_questions:
+            filtered_df = filtered_df[filtered_df["question"].isin(selected_questions)]
+        if selected_topics:
+            filtered_df = filtered_df[
+                filtered_df["mainTopic"].apply(lambda x: any(t in x.split(';') for t in selected_topics))
+            ]
+    
+        # === 3. TAB CREATION AND CONTENT ===
+        tab1, tab2 = st.tabs(["📄 Data Table", "📊 Analytics"])
+    
+        with tab1:
+            # --- Download Button expander remains the same ---
+            with st.expander(f"📥 Generate & Download Report ({len(filtered_df)} files match filters)", expanded=False):
                 
-                # ... (rest of HTML generation) ...
-                html_content = f"""<!DOCTYPE html>
-<html><head><title>Physics Report</title>
-<style>
-body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
-h1 {{ text-align: center; }}
-.pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
-.header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
-embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
-</style></head><body><h1>Filtered PDF Report</h1>"""
+                def generate_html_report_content(filtered_df, folder):
+                    # ... (Content generation logic remains here) ...
+                    if len(filtered_df) > 100:
+                        if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
+                            return None
+                    
+                    # ... (rest of HTML generation) ...
+                    html_content = f"""<!DOCTYPE html>
+    <html><head><title>Physics Report</title>
+    <style>
+    body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
+    h1 {{ text-align: center; }}
+    .pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
+    .header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
+    embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
+    </style></head><body><h1>Filtered PDF Report</h1>"""
+                    
+                    for _, row in filtered_df.iterrows():
+                        url = f"{PDF_BASE_URL}{folder}/{row['raw_year']}/{row['filename']}" # USE RAW_YEAR FOR FOLDER PATH
+                        html_content += f"""
+                        <div class='pdf-section'>
+                            <div class='header-row'>
+                                <b>{row['filename']}</b> 
+                                <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
+                            </div>
+                            <embed src='{url}' type='application/pdf' />
+                        </div>"""
+                    
+                    html_content += "</body></html>"
+                    return html_content
+    
+                html_result = generate_html_report_content(filtered_df, st.session_state.folder)
                 
-                for _, row in filtered_df.iterrows():
-                    url = f"{PDF_BASE_URL}{folder}/{row['raw_year']}/{row['filename']}" # USE RAW_YEAR FOR FOLDER PATH
-                    html_content += f"""
-                    <div class='pdf-section'>
-                        <div class='header-row'>
-                            <b>{row['filename']}</b> 
-                            <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
-                        </div>
-                        <embed src='{url}' type='application/pdf' />
-                    </div>"""
+                if html_result and not html_result.startswith('<!'): # Simple check to skip if checkbox was hit but content wasn't generated
+                    pass 
+                elif html_result:
+                    b64 = base64.b64encode(html_result.encode()).decode()
+                    href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
+                    st.markdown(href, unsafe_allow_html=True)
+            
+            st.markdown("---")
+    
+            # --- 4. DISPLAY PAGINATED RESULTS TABLE ---
+            st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
+            
+            TOTAL_ROWS = len(filtered_df)
+            ROWS_PER_PAGE = 50
+            
+            if TOTAL_ROWS == 0:
+                st.info("No entries match the current filters.")
+                # Use return instead of break here
+                return 
+            
+            total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE
+            
+            if st.session_state.page_number > total_pages:
+                st.session_state.page_number = 1
                 
-                html_content += "</body></html>"
-                return html_content
-
-            html_result = generate_html_report_content(filtered_df, st.session_state.folder)
+            st.markdown(f"**Viewing Page {st.session_state.page_number} of {total_pages}**")
+    
+            nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 1])
             
-            if html_result and not html_result.startswith('<!'): # Simple check to skip if checkbox was hit but content wasn't generated
-                pass 
-            elif html_result:
-                b64 = base64.b64encode(html_result.encode()).decode()
-                href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
-                st.markdown(href, unsafe_allow_html=True)
-        
-        st.markdown("---")
-
-        # --- 4. DISPLAY PAGINATED RESULTS TABLE ---
-        st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
-        
-        TOTAL_ROWS = len(filtered_df)
-        ROWS_PER_PAGE = 50
-        
-        if TOTAL_ROWS == 0:
-            st.info("No entries match the current filters.")
-            # Use return instead of break here
-            return 
-        
-        total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE
-        
-        if st.session_state.page_number > total_pages:
-            st.session_state.page_number = 1
+            with nav_col1:
+                if st.button("⬅️ Previous", key="prev_page", 
+                             disabled=(st.session_state.page_number == 1)):
+                    st.session_state.page_number -= 1
+                    st.rerun()
+                    
+            with nav_col2:
+                if st.button("Next ➡️", key="next_page", 
+                             disabled=(st.session_state.page_number == total_pages)):
+                    st.session_state.page_number += 1
+                    st.rerun()
+    
+            st.markdown("---")
             
-        st.markdown(f"**Viewing Page {st.session_state.page_number} of {total_pages}**")
-
-        nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 1])
-        
-        with nav_col1:
-            if st.button("⬅️ Previous", key="prev_page", 
-                         disabled=(st.session_state.page_number == 1)):
-                st.session_state.page_number -= 1
-                st.rerun()
+            start_row = (st.session_state.page_number - 1) * ROWS_PER_PAGE
+            end_row = start_row + ROWS_PER_PAGE
+            
+            paginated_df = filtered_df.iloc[start_row:end_row]
+    
+            if not paginated_df.empty:
+                def make_pdf_link(row):
+                    # Use raw_year for the link generation, as the folder structure likely uses it
+                    url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['raw_year']}/{row['filename']}" 
+                    return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
                 
-        with nav_col2:
-            if st.button("Next ➡️", key="next_page", 
-                         disabled=(st.session_state.page_number == total_pages)):
-                st.session_state.page_number += 1
-                st.rerun()
-
-        st.markdown("---")
-        
-        start_row = (st.session_state.page_number - 1) * ROWS_PER_PAGE
-        end_row = start_row + ROWS_PER_PAGE
-        
-        paginated_df = filtered_df.iloc[start_row:end_row]
-
-        if not paginated_df.empty:
-            def make_pdf_link(row):
-                # Use raw_year for the link generation, as the folder structure likely uses it
-                url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['raw_year']}/{row['filename']}" 
-                return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
-            
-            display_df = paginated_df.copy()
-            display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
-            display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
-            
-            # 💥 UPDATED DISPLAY COLUMNS
-            display_cols = ["Link", "year_numeric", "session", "paper", "question", "mainTopic", "otherTopics"]
-            display_df = display_df[display_cols].rename(columns={
-                "year_numeric": "Year", # Uses the numeric year
-                "session": "Session", # NEW Session column
-                "paper": "Paper", 
-                "question": "Q#", 
-                "mainTopic": "Main Topic", 
-                "otherTopics": "Other Topics",
-                "Link": "Filename"
-            })
-            
-            st.write(
-                display_df
-                .to_html(escape=False, index=False),
-                unsafe_allow_html=True
-            )
-        else:
-            st.info("No entries match the current filters.") # This will be hit only if paginated_df is empty when filtered_df is not (unlikely with fixed logic)
-
-    with tab2:
-        # --- Analytics View ---
-        display_analytics(filtered_df) 
-
+                display_df = paginated_df.copy()
+                display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
+                display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
+                
+                # 💥 UPDATED DISPLAY COLUMNS
+                display_cols = ["Link", "year_numeric", "session", "paper", "question", "mainTopic", "otherTopics"]
+                display_df = display_df[display_cols].rename(columns={
+                    "year_numeric": "Year", # Uses the numeric year
+                    "session": "Session", # NEW Session column
+                    "paper": "Paper", 
+                    "question": "Q#", 
+                    "mainTopic": "Main Topic", 
+                    "otherTopics": "Other Topics",
+                    "Link": "Filename"
+                })
+                
+                st.write(
+                    display_df
+                    .to_html(escape=False, index=False),
+                    unsafe_allow_html=True
+                )
+            else:
+                st.info("No entries match the current filters.") # This will be hit only if paginated_df is empty when filtered_df is not (unlikely with fixed logic)
+    
+        with tab2:
+            # --- Analytics View ---
+            display_analytics(filtered_df) 
+    
 
     elif st.session_state["authentication_status"] == False:
         st.error('Username/password is incorrect')
