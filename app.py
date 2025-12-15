@@ -113,7 +113,7 @@ def load_updates():
             return json.load(f)
     return []
 
-# === ANALYTICS DISPLAY FUNCTION (Revised for Topic Trending Charts) ===
+# === ANALYTICS DISPLAY FUNCTION (FIXED: Topic Trends Data Processing) ===
 
 def display_analytics(df: pd.DataFrame):
     st.header("📊 Question Analytics")
@@ -126,6 +126,10 @@ def display_analytics(df: pd.DataFrame):
     # --- 1. Total Questions Per Year (Bar Chart) ---
     year_counts = df['year'].value_counts().sort_index(ascending=False).reset_index()
     year_counts.columns = ['Year', 'Count']
+    # Ensure this bar chart's year data is also numeric for robust plotting
+    year_counts['Year'] = pd.to_numeric(year_counts['Year'], errors='coerce')
+    year_counts = year_counts.dropna(subset=['Year'])
+    
     fig_year = px.bar(
         year_counts,
         x='Year',
@@ -150,6 +154,12 @@ def display_analytics(df: pd.DataFrame):
     else:
         # 2. Create a long DataFrame for trending analysis
         topic_df = df[['year', 'mainTopic']].copy()
+        
+        # 💥 FIX: Convert year to numeric and drop invalid years immediately
+        topic_df['year'] = pd.to_numeric(topic_df['year'], errors='coerce')
+        topic_df = topic_df.dropna(subset=['year']) # Drop rows where year conversion failed
+        # ---------------------------------------------------------------------
+
         topic_df['topic'] = topic_df['mainTopic'].str.split(';')
         topic_df_long = topic_df.explode('topic')
         topic_df_long['topic'] = topic_df_long['topic'].str.strip()
@@ -161,8 +171,7 @@ def display_analytics(df: pd.DataFrame):
         # 3. Group by Year and Topic and count the frequency
         topic_year_counts = trending_df.groupby(['year', 'topic']).size().reset_index(name='Count')
         
-        # Ensure Year is numeric for correct sorting in charts
-        topic_year_counts['year'] = pd.to_numeric(topic_year_counts['year'], errors='coerce')
+        # The year column is already numeric due to the fix above, just sort
         topic_year_counts = topic_year_counts.sort_values('year')
 
         # 4. Iterate and Chart for each topic in a 2-column layout
@@ -173,11 +182,9 @@ def display_analytics(df: pd.DataFrame):
         for topic in top_20_topics:
             topic_data = topic_year_counts[topic_year_counts['topic'] == topic]
             
-            # Ensure we have data for this specific topic
             if topic_data.empty:
                 continue
                 
-            # Create a chart inside one of the two columns
             with cols[col_index % 2]:
                 fig = px.line(
                     topic_data,
@@ -187,8 +194,6 @@ def display_analytics(df: pd.DataFrame):
                     markers=True,
                     labels={'year': 'Year', 'Count': 'Frequency'},
                 )
-                # Ensure the X-axis (Year) is treated as a linear sequence for proper markers/ticks
-                # Ensure Y-axis starts at zero
                 fig.update_layout(
                     xaxis=dict(tickmode='linear', dtick=1), 
                     yaxis=dict(rangemode='tozero')
