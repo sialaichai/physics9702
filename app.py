@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import base64
 import json
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
+from Cryptodome.Cipher import AES # <-- FIXED: Changed from 'Crypto' to 'Cryptodome'
+from Cryptodome.Util.Padding import unpad # <-- FIXED: Changed from 'Crypto' to 'Cryptodome'
 import io
 import os
 import re
 import hashlib
+import plotly.express as px # <-- NEW: Import Plotly for graphing
 
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"  # originally .enc
@@ -94,6 +95,7 @@ def decrypt_payload(password: str, encrypted_b64: str) -> dict | None:
         # Catch errors outside the loop (e.g., Base64 decoding failure)
         st.error(f"A fatal error occurred during initialization: {type(e).__name__}: {str(e)}")
         return None
+        
 # === LOAD ENCRYPTED DATA ===
 @st.cache_data
 def load_encrypted_data():
@@ -109,6 +111,64 @@ def load_updates():
         with open(UPDATES_PATH, 'r') as f:
             return json.load(f)
     return []
+
+# === ANALYTICS DISPLAY FUNCTION (NEW) ===
+def display_analytics(df: pd.DataFrame):
+    st.header("📊 Question Analytics")
+    st.info("These graphs reflect the data currently shown in the table (i.e., they respect the filters you set).")
+
+    if df.empty:
+        st.warning("No data to display in the charts based on current filters.")
+        return
+
+    # --- 1. Total Questions Per Year (Bar Chart) ---
+    year_counts = df['year'].value_counts().sort_index(ascending=False).reset_index()
+    year_counts.columns = ['Year', 'Count']
+    fig_year = px.bar(
+        year_counts,
+        x='Year',
+        y='Count',
+        title='Total Questions by Year',
+        labels={'Count': 'Number of Questions'},
+        color='Year'
+    )
+    st.plotly_chart(fig_year, use_container_width=True)
+
+    st.markdown("---")
+
+    # --- 2. Top Main Topics (Horizontal Bar Chart) ---
+    topic_list = df['mainTopic'].str.split(';').explode().str.strip()
+    topic_counts = topic_list.value_counts().nlargest(10).reset_index()
+    topic_counts.columns = ['Main Topic', 'Count']
+    
+    fig_topic = px.bar(
+        topic_counts.sort_values('Count', ascending=True),
+        x='Count',
+        y='Main Topic',
+        orientation='h',
+        title='Top 10 Main Topics by Question Count',
+        labels={'Count': 'Number of Questions'},
+        color='Main Topic'
+    )
+    st.plotly_chart(fig_topic, use_container_width=True)
+
+    st.markdown("---")
+
+    # --- 3. Paper Type Distribution (Pie Chart) ---
+    df['Paper Type'] = df['paper'].str[0].apply(
+        lambda x: f"P{x} ({'MCQ' if x=='1' else 'Structured' if x=='2' else 'Practical/Adv'})"
+    )
+    paper_counts = df['Paper Type'].value_counts().reset_index()
+    paper_counts.columns = ['Paper Type', 'Count']
+    
+    fig_paper = px.pie(
+        paper_counts,
+        values='Count',
+        names='Paper Type',
+        title='Distribution of Questions by Paper Type',
+    )
+    st.plotly_chart(fig_paper, use_container_width=False)
+
 
 # === MAIN APP ===
 def main():
@@ -194,8 +254,7 @@ def main():
         
     # 4. Main Topic Filter (Widest)
     with col3:
-        # NOTE: The extract_main_topics function should be defined outside main() 
-        # or inside main() before this block. Assuming it's defined and accessible.
+        # NOTE: The extract_main_topics function needs to be defined within main() scope
         def extract_main_topics(series):
             topics = set()
             for val in series.dropna():
@@ -303,6 +362,10 @@ embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
 
     else:
         st.info("No entries match the current filters.")
+        
+    # --- 5. CALL ANALYTICS FUNCTION (NEW) ---
+    st.markdown("---")
+    display_analytics(filtered_df) # <-- NEW CALL TO THE ANALYTICS FUNCTION
 
 if __name__ == "__main__":
     main()
