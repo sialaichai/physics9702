@@ -368,8 +368,8 @@ def main():
         if df is None or df.empty:
             st.warning("No data loaded.")
             #if st.button("Logout"):
-                st.session_state.authenticated = False
-                st.rerun()
+            st.session_state.authenticated = False
+            st.rerun()
             return
     
         # --- 1. FILTERS (Custom Width Columns) ---
