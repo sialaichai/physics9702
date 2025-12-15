@@ -9,6 +9,9 @@ import os
 import re
 import hashlib
 import plotly.express as px
+import yaml
+from yaml.loader import SafeLoader
+import streamlit_authenticator as stauth
 
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"  # originally .enc
@@ -305,7 +308,6 @@ def display_analytics(df: pd.DataFrame):
     st.plotly_chart(fig_paper, use_container_width=False)
 
 
-# === MAIN APP ===
 def main():
     st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
     st.title("🔐 9702 Physics Past Paper Viewer")
@@ -314,38 +316,52 @@ def main():
     if not encrypted_text:
         return
 
-    # Session state initialization
-    if 'authenticated' not in st.session_state:
-        st.session_state.authenticated = False
-        st.session_state.data = None
-        st.session_state.folder = ""
-        st.session_state.page_number = 1 
-    if 'view_mode' not in st.session_state:
-        st.session_state.view_mode = 'table' 
+    # --- 1. Authenticator Setup ---
+    # Load configuration
+    with open('./config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
 
-    # === LOGIN SCREEN ===
-    if not st.session_state.authenticated:
-        with st.form("login"):
-            password = st.text_input("Enter password", type="password")
-            submitted = st.form_submit_button("Unlock")
-            if submitted and password:
-                bundle = decrypt_payload(password, encrypted_text)
-                if bundle:
-                    st.session_state.authenticated = True
-                    st.session_state.folder = bundle.get("secure_folder", "")
-                    
-                    # 💥 UPDATED: Use the new normalize_data function
-                    main_data = bundle.get("data", [])
-                    updates = load_updates()
-                    if updates:
-                        main_data.extend(updates)
-                    
-                    st.session_state.data = normalize_data(main_data)
-                    st.rerun()
-                else:
-                    st.error("Incorrect password (or decryption failed, see error above).")
-        return
+    # Initialize Authenticator
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days']
+    )
 
+    # --- 2. Render Login/Handle Status ---
+    # The name of the user, the authentication status (True/False/None), and the username
+    name, authentication_status, username = authenticator.login('Login', 'main')
+
+    # Status check and core logic starts here
+    if st.session_state["authentication_status"]:
+        # User is logged in
+        
+        # --- 2a. Decrypt Data (Use the same logic as before, but ensure it's triggered once) ---
+        if st.session_state.data is None:
+            # For simplicity, we assume your decryption password is hardcoded 
+            # if you are using the same key for everyone.
+            # If the user's login password IS the decryption key, you need to save it during login.
+            DECRYPTION_PASSWORD = "Your_Hardcoded_Decryption_Password_Here" # <-- CHANGE THIS
+
+            bundle = decrypt_payload(DECRYPTION_PASSWORD, encrypted_text)
+            if bundle:
+                st.session_state.folder = bundle.get("secure_folder", "")
+                main_data = bundle.get("data", [])
+                updates = load_updates()
+                if updates:
+                    main_data.extend(updates)
+                st.session_state.data = normalize_data(main_data)
+            else:
+                # If decryption fails for any reason, log the user out
+                st.session_state["authentication_status"] = None
+                st.error("Decryption failed after successful login. Data is unavailable.")
+                st.rerun()
+
+        # --- 2b. Display App Header and Logout Button ---
+        st.sidebar.title(f'Welcome {name}')
+        authenticator.logout('Logout', 'sidebar')
+        
     # === MAIN INTERFACE ===
     df = st.session_state.data
     if df is None or df.empty:
@@ -540,6 +556,13 @@ embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
     with tab2:
         # --- Analytics View ---
         display_analytics(filtered_df) 
+    elif st.session_state["authentication_status"] == False:
+            st.error('Username/password is incorrect')
+            st.session_state.data = None
+        
+        elif st.session_state["authentication_status"] == None:
+            st.warning('Please enter your credentials to access the data.')
+            st.session_state.data = None
 
 if __name__ == "__main__":
     main()
