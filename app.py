@@ -37,6 +37,9 @@ def fetch_and_load_data(password):
         # 1. Load Encrypted Payload (9702payload.enc)
         with open(PAYLOAD_FILE, 'r') as f:
             encrypted_data = f.read().strip()
+        except FileNotFoundError:
+            st.error(f"FATAL ERROR: Could not find data file '{PAYLOAD_FILE}'. Ensure it's in the same folder as app.py in your GitHub repo.")
+            return None
         
         # 2. Decryption Logic (Crucial Step: Needs to match your encryption)
         # Assuming a standard AES-256-CBC with key derived from password
@@ -78,9 +81,21 @@ def fetch_and_load_data(password):
         # --- PLACEHOLDER DECRYPTION LOGIC END ---
 
         # 3. Load and Merge Updates (updates.json)
+     #   with open(UPDATES_FILE, 'r') as f:
+    #        update_data = json.load(f)
+
+    # 3. Load and Merge Updates (updates.json)
+    try:
         with open(UPDATES_FILE, 'r') as f:
             update_data = json.load(f)
+    except FileNotFoundError:
+        st.warning(f"Warning: Could not find updates file '{UPDATES_FILE}'. Proceeding with main data only.")
+        update_data = []
+    except Exception as e:
+        st.warning(f"Warning: Failed to load updates.json: {e}")
+        update_data = []
 
+    
         if update_data:
             main_data.extend(update_data)
         
