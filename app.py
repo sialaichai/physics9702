@@ -328,21 +328,35 @@ def main():
         config['cookie']['key'],
         config['cookie']['expiry_days']
     )
-# --- 2. Render Login/Handle Status ---
+
+    # --- 2. Render Login/Handle Status ---
+    # The name of the user, the authentication status (True/False/None), and the username
     name, authentication_status, username = authenticator.login('Login', 'main')
 
     # Status check and core logic starts here
-    if st.session_state["authentication_status"]: # <--- START IF BLOCK
+    if st.session_state["authentication_status"]:
         # User is logged in
         
-        # --- 2a. Decrypt Data ---
+        # --- 2a. Decrypt Data (Use the same logic as before, but ensure it's triggered once) ---
         if st.session_state.data is None:
-            # ... (decryption and data loading code) ...
-            if bundle:
-                # ... (load data) ...
-            else:
-                # ... (error and rerun) ...
+            # For simplicity, we assume your decryption password is hardcoded 
+            # if you are using the same key for everyone.
+            # If the user's login password IS the decryption key, you need to save it during login.
+            DECRYPTION_PASSWORD = "Your_Hardcoded_Decryption_Password_Here" # <-- CHANGE THIS
 
+            bundle = decrypt_payload(DECRYPTION_PASSWORD, encrypted_text)
+            if bundle:
+                st.session_state.folder = bundle.get("secure_folder", "")
+                main_data = bundle.get("data", [])
+                updates = load_updates()
+                if updates:
+                    main_data.extend(updates)
+                st.session_state.data = normalize_data(main_data)
+            else:
+                # If decryption fails for any reason, log the user out
+                st.session_state["authentication_status"] = None
+                st.error("Decryption failed after successful login. Data is unavailable.")
+                st.rerun()
         # --- 2b. Display App Header and Logout Button ---
         st.sidebar.title(f'Welcome {name}')
         authenticator.logout('Logout', 'sidebar')
@@ -356,6 +370,18 @@ def main():
         
         # --- 1. FILTERS (Custom Width Columns) ---
         st.header("🔍 Filter Questions")
+        
+    # === MAIN INTERFACE ===
+    df = st.session_state.data
+    if df is None or df.empty:
+        st.warning("No data loaded.")
+        if st.button("Logout"):
+            st.session_state.authenticated = False
+            st.rerun()
+        return
+
+    # --- 1. FILTERS (Custom Width Columns) ---
+    st.header("🔍 Filter Questions")
     
     # Define custom column widths: [Year, Session, Paper, Question, Main Topic]
     col_yr, col_sess, col2, col_q, col3 = st.columns([1, 1, 1, 1, 3.4])
@@ -540,7 +566,6 @@ embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
         # --- Analytics View ---
         display_analytics(filtered_df) 
 
-# ... (This part remains largely unchanged, using st.session_state.data) ...
 
     elif st.session_state["authentication_status"] == False:
         st.error('Username/password is incorrect')
