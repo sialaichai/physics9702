@@ -7,6 +7,8 @@ from Crypto.Util.Padding import unpad
 import io
 import os
 import re
+import hashlib
+
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"  # originally .enc
 UPDATES_PATH = "updates.json"
