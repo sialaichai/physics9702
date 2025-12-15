@@ -218,13 +218,24 @@ def main():
             unsafe_allow_html=True
         )
 
-        # === GENERATE HTML REPORT ===
-        @st.experimental_fragment
-        def generate_html_report():
-            if len(filtered_df) > 100:
-                if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?"):
-                    return
-            html_content = f"""<!DOCTYPE html>
+        # === GENERATE HTML REPORT (Download Link) ===
+        st.divider()
+        
+        # Use st.expander for the large report feature to keep the UI clean
+        with st.expander("Generate & Download PDF Report (Embeds all filtered PDFs)"):
+            
+            # 1. DEFINE the function (NO @st.experimental_fragment)
+            def generate_html_report_content(filtered_df, folder):
+                
+                # Check for large report warning first
+                if len(filtered_df) > 100:
+                    # Use a key to ensure Streamlit tracks the checkbox state correctly
+                    if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
+                        # If the user has not confirmed, return None to stop generation
+                        return None
+                
+                # Generate the HTML content
+                html_content = f"""<!DOCTYPE html>
 <html><head><title>Physics Report</title>
 <style>
 body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
@@ -233,26 +244,30 @@ h1 {{ text-align: center; }}
 .header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
 embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
 </style></head><body><h1>Filtered PDF Report</h1>"""
-            for _, row in filtered_df.iterrows():
-                url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
-                html_content += f"""
-                <div class='pdf-section'>
-                    <div class='header-row'>
-                        <b>{row['filename']}</b> 
-                        <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
-                    </div>
-                    <embed src='{url}' type='application/pdf' />
-                </div>"""
-            html_content += "</body></html>"
+                
+                for _, row in filtered_df.iterrows():
+                    # Use the correct folder and URL base
+                    url = f"{PDF_BASE_URL}{folder}/{row['year']}/{row['filename']}"
+                    html_content += f"""
+                    <div class='pdf-section'>
+                        <div class='header-row'>
+                            <b>{row['filename']}</b> 
+                            <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
+                        </div>
+                        <embed src='{url}' type='application/pdf' />
+                    </div>"""
+                
+                html_content += "</body></html>"
+                return html_content
 
-            b64 = base64.b64encode(html_content.encode()).decode()
-            href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report</a>'
-            st.markdown(href, unsafe_allow_html=True)
-
-        st.divider()
-        generate_html_report()
-    else:
-        st.info("No entries match the current filters.")
+            # 2. CALL the function and handle the result
+            html_result = generate_html_report_content(filtered_df, st.session_state.folder)
+            
+            if html_result:
+                # Create the download link only if content was generated
+                b64 = base64.b64encode(html_result.encode()).decode()
+                href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
+                st.markdown(href, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
