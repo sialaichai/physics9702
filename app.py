@@ -120,13 +120,15 @@ def main():
     if not encrypted_text:
         return
 
-    # Session state for authentication & data
+    # Session state initialization remains the same
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
         st.session_state.data = None
+        st.session_state.folder = ""
 
     # === LOGIN SCREEN ===
     if not st.session_state.authenticated:
+        # Login logic remains the same (omitted here for brevity)
         with st.form("login"):
             password = st.text_input("Enter password", type="password")
             submitted = st.form_submit_button("Unlock")
@@ -134,12 +136,12 @@ def main():
                 bundle = decrypt_payload(password, encrypted_text)
                 if bundle:
                     st.session_state.authenticated = True
+                    st.session_state.folder = bundle.get("secure_folder", "")
                     main_data = bundle.get("data", [])
-                    # Merge updates
                     updates = load_updates()
                     if updates:
                         main_data.extend(updates)
-                    # Normalize and clean
+                    
                     normalized = []
                     for item in main_data:
                         q = str(item.get("question", "")).strip()
@@ -153,41 +155,52 @@ def main():
                             "otherTopics": [t.strip() for t in (item.get("otherTopics") or []) if t.strip()]
                         })
                     st.session_state.data = pd.DataFrame(normalized)
-                    st.session_state.folder = bundle.get("secure_folder", "")
                     st.rerun()
                 else:
-                    st.error("Incorrect password")
+                    st.error("Incorrect password (or decryption failed, see error above).")
         return
 
     # === MAIN INTERFACE ===
     df = st.session_state.data
     if df is None or df.empty:
         st.warning("No data loaded.")
+        if st.button("Logout"):
+            st.session_state.authenticated = False
+            st.rerun()
         return
 
-    # Sidebar filters
-    st.sidebar.header("🔍 Filters")
+    # --- 1. FILTERS (Moved from Sidebar to Main Panel) ---
+    st.header("🔍 Filter Questions")
     
-    all_years = sorted(df["year"].dropna().unique(), reverse=True)
-    selected_years = st.sidebar.multiselect("Year", options=all_years)
+    # Use columns to display filters horizontally for better use of space
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        all_years = sorted(df["year"].dropna().unique(), reverse=True)
+        selected_years = st.multiselect("Year", options=all_years, key="filter_year")
+    
+    with col2:
+        all_papers = sorted(df["paper"].dropna().unique())
+        selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
+        
+    with col3:
+        # Extract and split main topics (some entries have ";")
+        def extract_main_topics(series):
+            topics = set()
+            for val in series.dropna():
+                for t in val.split(";"):
+                    topics.add(t.strip())
+            return sorted(topics)
+        all_topics = extract_main_topics(df["mainTopic"])
+        selected_topics = st.multiselect("Main Topic", options=all_topics, key="filter_topic")
 
-    all_papers = sorted(df["paper"].dropna().unique())
-    selected_papers = st.sidebar.multiselect("Paper", options=all_papers)
-
+    # Separate question filter below the columns
     all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
-    selected_questions = st.sidebar.multiselect("Question", options=all_questions)
+    selected_questions = st.multiselect("Question Number", options=all_questions, key="filter_question")
 
-    # Extract and split main topics (some entries have ";")
-    def extract_main_topics(series):
-        topics = set()
-        for val in series.dropna():
-            for t in val.split(";"):
-                topics.add(t.strip())
-        return sorted(topics)
-    all_topics = extract_main_topics(df["mainTopic"])
-    selected_topics = st.sidebar.multiselect("Main Topic", options=all_topics)
+    st.markdown("---") # Visual separator
 
-    # Apply filters
+    # --- 2. APPLY FILTERS ---
     filtered_df = df.copy()
     if selected_years:
         filtered_df = filtered_df[filtered_df["year"].isin(selected_years)]
@@ -197,77 +210,90 @@ def main():
         filtered_df = filtered_df[filtered_df["question"].isin(selected_questions)]
     if selected_topics:
         filtered_df = filtered_df[
-            filtered_df["mainTopic"].apply(lambda x: any(t in x for t in selected_topics))
+            filtered_df["mainTopic"].apply(lambda x: any(t in x.split(';') for t in selected_topics))
         ]
 
-    st.subheader(f"📄 Results ({len(filtered_df)} files)")
-
-    # Display table
-    if not filtered_df.empty:
-        # Make filename clickable to PDF
-        def make_pdf_link(row):
-            url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
-            return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
-        display_df = filtered_df.copy()
-        display_df["filename"] = display_df.apply(make_pdf_link, axis=1)
-        display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
+    # --- 3. DOWNLOAD BUTTON (Moved to the Top) ---
+    
+    # Place download link in an expander for better organization above the results
+    with st.expander(f"📥 Generate & Download Report ({len(filtered_df)} files match filters)", expanded=False):
         
-        st.write(
-            display_df[["filename", "year", "paper", "question", "mainTopic", "otherTopics"]]
-            .to_html(escape=False, index=False),
-            unsafe_allow_html=True
-        )
-
-        # === GENERATE HTML REPORT (Download Link) ===
-        st.divider()
-        
-        # Use st.expander for the large report feature to keep the UI clean
-        with st.expander("Generate & Download PDF Report (Embeds all filtered PDFs)"):
+        # Define the content generation function inline
+        def generate_html_report_content(filtered_df, folder):
             
-            # 1. DEFINE the function (NO @st.experimental_fragment)
-            def generate_html_report_content(filtered_df, folder):
-                
-                # Check for large report warning first
-                if len(filtered_df) > 100:
-                    # Use a key to ensure Streamlit tracks the checkbox state correctly
-                    if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
-                        # If the user has not confirmed, return None to stop generation
-                        return None
-                
-                # Generate the HTML content
-                html_content = f"""<!DOCTYPE html>
+            if len(filtered_df) > 100:
+                # Use a unique key for the checkbox
+                if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
+                    return None
+            
+            # --- HTML GENERATION LOGIC ---
+            html_content = f"""<!DOCTYPE html>
 <html><head><title>Physics Report</title>
 <style>
+/* ... (CSS styles remain the same) ... */
 body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
 h1 {{ text-align: center; }}
 .pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
 .header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
 embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
 </style></head><body><h1>Filtered PDF Report</h1>"""
-                
-                for _, row in filtered_df.iterrows():
-                    # Use the correct folder and URL base
-                    url = f"{PDF_BASE_URL}{folder}/{row['year']}/{row['filename']}"
-                    html_content += f"""
-                    <div class='pdf-section'>
-                        <div class='header-row'>
-                            <b>{row['filename']}</b> 
-                            <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
-                        </div>
-                        <embed src='{url}' type='application/pdf' />
-                    </div>"""
-                
-                html_content += "</body></html>"
-                return html_content
-
-            # 2. CALL the function and handle the result
-            html_result = generate_html_report_content(filtered_df, st.session_state.folder)
             
-            if html_result:
-                # Create the download link only if content was generated
-                b64 = base64.b64encode(html_result.encode()).decode()
-                href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
-                st.markdown(href, unsafe_allow_html=True)
+            for _, row in filtered_df.iterrows():
+                url = f"{PDF_BASE_URL}{folder}/{row['year']}/{row['filename']}"
+                html_content += f"""
+                <div class='pdf-section'>
+                    <div class='header-row'>
+                        <b>{row['filename']}</b> 
+                        <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
+                    </div>
+                    <embed src='{url}' type='application/pdf' />
+                </div>"""
+            
+            html_content += "</body></html>"
+            return html_content
+
+        # Call the function and generate the download link
+        html_result = generate_html_report_content(filtered_df, st.session_state.folder)
+        
+        if html_result:
+            b64 = base64.b64encode(html_result.encode()).decode()
+            href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
+            st.markdown(href, unsafe_allow_html=True)
+            
+    st.markdown("---") # Visual separator before the table
+
+    # --- 4. DISPLAY RESULTS TABLE ---
+    st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
+
+    if not filtered_df.empty:
+        # Make filename clickable to PDF
+        def make_pdf_link(row):
+            url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['year']}/{row['filename']}"
+            return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
+        
+        display_df = filtered_df.copy()
+        display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
+        display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
+        
+        # Select and rename columns for display
+        display_cols = ["Link", "year", "paper", "question", "mainTopic", "otherTopics"]
+        display_df = display_df[display_cols].rename(columns={
+            "year": "Year", 
+            "paper": "Paper", 
+            "question": "Q#", 
+            "mainTopic": "Main Topic", 
+            "otherTopics": "Other Topics",
+            "Link": "Filename"
+        })
+        
+        st.write(
+            display_df
+            .to_html(escape=False, index=False),
+            unsafe_allow_html=True
+        )
+
+    else:
+        st.info("No entries match the current filters.")
 
 if __name__ == "__main__":
     main()
