@@ -112,7 +112,8 @@ def load_updates():
             return json.load(f)
     return []
 
-# === ANALYTICS DISPLAY FUNCTION (NEW) ===
+# === ANALYTICS DISPLAY FUNCTION (Revised for Top 20 Topics & Custom Paper Grouping) ===
+
 def display_analytics(df: pd.DataFrame):
     st.header("📊 Question Analytics")
     st.info("These graphs reflect the data currently shown in the table (i.e., they respect the filters you set).")
@@ -137,16 +138,21 @@ def display_analytics(df: pd.DataFrame):
     st.markdown("---")
 
     # --- 2. Top Main Topics (Horizontal Bar Chart) ---
+    # Explode semi-colon separated topics for accurate counting
     topic_list = df['mainTopic'].str.split(';').explode().str.strip()
-    topic_counts = topic_list.value_counts().nlargest(10).reset_index()
+    
+    # 💥 CHANGE HERE: Show nlargest(20) instead of nlargest(10)
+    topic_counts = topic_list.value_counts().nlargest(20).reset_index()
     topic_counts.columns = ['Main Topic', 'Count']
     
+    # Sort by count for a horizontal bar chart
     fig_topic = px.bar(
         topic_counts.sort_values('Count', ascending=True),
         x='Count',
         y='Main Topic',
         orientation='h',
-        title='Top 10 Main Topics by Question Count',
+        # Updated chart title to reflect the change
+        title=f'Main Topics by Question Count (Top {len(topic_counts)})',
         labels={'Count': 'Number of Questions'},
         color='Main Topic'
     )
@@ -154,17 +160,14 @@ def display_analytics(df: pd.DataFrame):
 
     st.markdown("---")
 
-# --- 3. Paper Type Distribution (Pie Chart) ---
+    # --- 3. Paper Type Distribution (Pie Chart) ---
     
-    # 3a. Define the custom mapping function
+    # 3a. Define the custom mapping function for P1, P2, P4
     def map_paper_to_group(paper_code):
-        # Ensure paper_code is treated as a string for 'in' checking
         paper_code = str(paper_code) 
         
-        # Define the groups based on user request
         P1_codes = ['1', '11', '12', '13', '14']
         P2_codes = ['2', '21', '22', '23', '24']
-        # UPDATED P4 CODES
         P4_codes = ['4', '41', '42', '43', '44'] 
         
         if paper_code in P1_codes:
@@ -173,7 +176,7 @@ def display_analytics(df: pd.DataFrame):
             return "P2 (Structured/Core)"
         elif paper_code in P4_codes:
             return "P4 (Advanced Theory)"
-        # REMOVED 'else': Any unmapped code will return None, which is excluded from the chart count.
+        # Unmapped codes return None and are excluded from the chart
         return None 
 
     # 3b. Apply the mapping to create the new column
@@ -195,7 +198,6 @@ def display_analytics(df: pd.DataFrame):
         title='Distribution of Questions by Custom Paper Groups',
     )
     st.plotly_chart(fig_paper, use_container_width=False)
-
 # === MAIN APP ===
 def main():
     st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
