@@ -4,7 +4,7 @@
 credentials:
   usernames:
     # Example User 1: Replace with your actual user details
-    jsmith:
+      my_username: sialaichai
       email: sialaichai@gmail.com
       name: sialaichai
       # Password for this user must be hashed (see Step 3)
