@@ -3,5 +3,5 @@ pandas
 plotly
 requests
 pycryptodome
-streamlit-authenticator
+streamlit-authenticator==0.4.2
 pyyaml
