@@ -555,7 +555,11 @@ embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
 
     with tab2:
         # --- Analytics View ---
-        display_analytics(filtered_df) elif st.session_state["authentication_status"] == False:
+        display_analytics(filtered_df) 
+
+# ... (This part remains largely unchanged, using st.session_state.data) ...
+
+    elif st.session_state["authentication_status"] == False:
         st.error('Username/password is incorrect')
         st.session_state.data = None
     
