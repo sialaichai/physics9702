@@ -6,7 +6,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import io
 import os
-
+import re
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.txt"  # originally .enc
 UPDATES_PATH = "updates.json"
@@ -75,7 +75,7 @@ def main():
                     normalized = []
                     for item in main_data:
                         q = str(item.get("question", "")).strip()
-                        q = q.replace(".pdf", "").replace(/^q0+(\d)/i, r"q\1")
+                        q = re.sub(r'^q0+(\d)', r'q\1', re.sub(r'\.pdf$', '', q, flags=re.IGNORECASE), flags=re.IGNORECASE)
                         normalized.append({
                             "filename": str(item.get("filename", "")).strip(),
                             "year": str(item.get("year", "")).strip(),
