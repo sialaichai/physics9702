@@ -367,16 +367,35 @@ def main():
         st.session_state.folder = ""
     if "page_number" not in st.session_state:
         st.session_state.page_number = 1
-        
+   
     # **THIS IS THE CRITICAL FIX:** Set the default authentication status to None.
     # The Authenticator object will later overwrite this if a cookie exists.
-    if "authentication_status" not in st.session_state:
-        st.session_state["authentication_status"] = None
-    if "name" not in st.session_state:
-        st.session_state["name"] = None
-    if "username" not in st.session_state:
-        st.session_state["username"] = None
+    #if "authentication_status" not in st.session_state:
+    #    st.session_state["authentication_status"] = None
+    #if "name" not in st.session_state:
+    #    st.session_state["name"] = None
+    #if "username" not in st.session_state:
+    #    st.session_state["username"] = None
     # =====================================
+
+    # === NEW: HARD RESET LOGIC ===
+    # This prevents the application from entering the secured block 
+    # if the status is anything other than True (logged in).
+    if st.session_state.get("authentication_status") not in (True, False):
+        # This covers the initial state (None) and any unexpected values.
+        st.session_state["authentication_status"] = None
+    
+    # Check if a false positive login occurred and clear cookies/data
+    if st.session_state["authentication_status"] == True and st.session_state.get("name") is None:
+        # If status is True but name is missing, force a reset
+        st.session_state["authentication_status"] = None
+        # This forces the authenticator to also try clearing its side of the cookie
+        authenticator.logout('ForceLogout', 'main') 
+        st.rerun() 
+    # ============================
+
+
+    
     encrypted_text = load_encrypted_data()
     if not encrypted_text:
         return
