@@ -393,7 +393,13 @@ def main():
         authenticator.logout('ForceLogout', 'main') 
         st.rerun() 
     # ============================
-
+    # --- NEW: EXTREME FORCE LOGOUT ---
+    # We force the authenticator to reset its cookie before the login call runs.
+    if st.session_state.get("authentication_status") != None:
+        # The 'Logout' function in authenticator clears the cookie.
+        authenticator.logout('Force Reset', 'main') 
+        st.session_state["authentication_status"] = None
+    # ----------------------------------
 
     
     encrypted_text = load_encrypted_data()
