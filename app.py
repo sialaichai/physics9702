@@ -397,7 +397,7 @@ def main():
     # --- 2. Display App Header ---
     st.sidebar.title('Welcome User') # You can change this to a generic welcome
    
-    st.header("🔍 Filter Questions")
+    #st.header("🔍 Filter Questions")
         
     # === MAIN INTERFACE ===
     df = st.session_state.data
