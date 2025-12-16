@@ -359,17 +359,28 @@ def main():
     st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
     st.title("🔐 9702 Physics Past Paper Viewer")
 
-    encrypted_text = load_encrypted_data()
-    if not encrypted_text:
-        return
-    # === NEW: INITIALIZE SESSION STATE ===
+    # === FIXED: INITIALIZE SESSION STATE ===
+    # This ensures all necessary keys exist with a neutral default value.
     if "data" not in st.session_state:
         st.session_state.data = None
     if "folder" not in st.session_state:
         st.session_state.folder = ""
     if "page_number" not in st.session_state:
         st.session_state.page_number = 1
+        
+    # **THIS IS THE CRITICAL FIX:** Set the default authentication status to None.
+    # The Authenticator object will later overwrite this if a cookie exists.
+    if "authentication_status" not in st.session_state:
+        st.session_state["authentication_status"] = None
+    if "name" not in st.session_state:
+        st.session_state["name"] = None
+    if "username" not in st.session_state:
+        st.session_state["username"] = None
     # =====================================
+    encrypted_text = load_encrypted_data()
+    if not encrypted_text:
+        return
+    
 # --- 1. RENDER LOGIN FORM AND GET STATUS ---
     # **THIS MUST BE UNCOMMENTED AND RUN**
     # This renders the form (because location='main') and returns the current status.
