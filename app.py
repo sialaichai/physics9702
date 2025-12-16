@@ -609,9 +609,9 @@ def main():
         st.error('Username/password is incorrect')
         st.session_state.data = None
     
-    elif st.session_state["authentication_status"] == None:
-        st.warning('Please enter your credentials to access the data.')
-        st.session_state.data = None
+    #elif st.session_state["authentication_status"] == None:
+    #    st.warning('Please enter your credentials to access the data.')
+    #    st.session_state.data = None
 
     
 
