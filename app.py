@@ -368,39 +368,23 @@ def main():
     if "page_number" not in st.session_state:
         st.session_state.page_number = 1
    
-    # **THIS IS THE CRITICAL FIX:** Set the default authentication status to None.
-    # The Authenticator object will later overwrite this if a cookie exists.
-    #if "authentication_status" not in st.session_state:
-    #    st.session_state["authentication_status"] = None
-    #if "name" not in st.session_state:
-    #    st.session_state["name"] = None
-    #if "username" not in st.session_state:
-    #    st.session_state["username"] = None
-    # =====================================
-
-    # === NEW: HARD RESET LOGIC ===
-    # This prevents the application from entering the secured block 
-    # if the status is anything other than True (logged in).
-    if st.session_state.get("authentication_status") not in (True, False):
-        # This covers the initial state (None) and any unexpected values.
+    # === CONSOLIDATED INITIALIZATION ===
+    # This ensures all necessary keys exist with a neutral default value on first run.
+    if "data" not in st.session_state:
+        st.session_state.data = None
+    if "folder" not in st.session_state:
+        st.session_state.folder = ""
+    if "page_number" not in st.session_state:
+        st.session_state.page_number = 1
+   
+    # This block *must* be uncommented and running to set the default status to None.
+    if "authentication_status" not in st.session_state:
         st.session_state["authentication_status"] = None
-    
-    # Check if a false positive login occurred and clear cookies/data
-    if st.session_state["authentication_status"] == True and st.session_state.get("name") is None:
-        # If status is True but name is missing, force a reset
-        st.session_state["authentication_status"] = None
-        # This forces the authenticator to also try clearing its side of the cookie
-        authenticator.logout('ForceLogout', 'main') 
-        st.rerun() 
-    # ============================
-    # --- NEW: EXTREME FORCE LOGOUT ---
-    # We force the authenticator to reset its cookie before the login call runs.
-    if st.session_state.get("authentication_status") != None:
-        # The 'Logout' function in authenticator clears the cookie.
-        authenticator.logout('Force Reset', 'main') 
-        st.session_state["authentication_status"] = None
-    # ----------------------------------
-
+    if "name" not in st.session_state:
+        st.session_state["name"] = None
+    if "username" not in st.session_state:
+        st.session_state["username"] = None
+    # ==================================
     
     encrypted_text = load_encrypted_data()
     if not encrypted_text:
@@ -652,9 +636,9 @@ def main():
         st.error('Username/password is incorrect')
         st.session_state.data = None
     
-    elif st.session_state["authentication_status"] == None:
-        st.warning('Please enter your credentials to access the data.')
-        st.session_state.data = None
+    #elif st.session_state["authentication_status"] == None:
+    #    st.warning('Please enter your credentials to access the data.')
+    #    st.session_state.data = None
 
     
 
