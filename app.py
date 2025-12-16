@@ -9,59 +9,11 @@ import os
 import re
 import hashlib
 import plotly.express as px
-import yaml
-from yaml.loader import SafeLoader
-import streamlit_authenticator as stauth
 
-# app.py (Use this exact structure)
-#import streamlit as st
-#import streamlit_authenticator as stauth
-#from yaml.loader import SafeLoader # Keep this import, it's harmless
-
-# 1. DEFINE CONFIGURATION DICT INLINE (REPLACING YAML LOAD)
-#    This GUARANTEES the data structure and string values are correct.
-
-config = {
-    'cookie': {
-        'name': 'your_app_cookie_name',  # Must match the old YAML name
-        'key': 'a_long_complex_secret_key_32_chars', # MUST be 32+ characters, unique string
-        'expiry_days': 30
-    },
-    'credentials': {
-        'usernames': {
-            'sialaichai': {  # Your Username
-                'email': 'sialaichai@gmail.com',
-                'name': 'Sialai Chai',
-                # ⬅️ PASTE YOUR 60-CHARACTER BCRYPT HASH HERE. No quotes needed in Python dict.
-                'password': '$2b$12$cbcnx5YAVy/3Rtpx01H9IOZLP7lfI960NV4BN39fmo8dYxqw8A0OW' 
-            }
-        }
-    },
-    'preauthorized': {
-        'emails': []
-    }
-}
-
-# 2. Initialize the Authenticator object
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['preauthorized']
-)
-
-# 3. Call the login widget (This part remains the same)
-#name, authentication_status, username = authenticator.login(
-#    form_name='Login',
-#    location='main'
-#)
-
-
-
+# Removed imports: yaml, SafeLoader, streamlit_authenticator (stauth)
 
 # === CONFIG ===
-PAYLOAD_PATH = "9702payload.enc"  # originally .enc
+PAYLOAD_PATH = "9702payload.enc"
 UPDATES_PATH = "updates.json"
 PDF_BASE_URL = "https://sialaichai.github.io/physics9702/"
 
@@ -127,7 +79,7 @@ def decrypt_payload(password: str, encrypted_b64: str) -> dict | None:
                     last_error = f"{algo_name}/AES-{key_size*8} system failure: {type(e).__name__} {str(e)}"
                     continue
 
-        st.error(f"Login Failed. All KDF/AES combinations failed. Last attempt error: {last_error}")
+        st.error(f"Decryption Failed. All KDF/AES combinations failed. Last attempt error: {last_error}")
         return None
         
     except Exception as e:
@@ -359,7 +311,7 @@ def main():
     st.set_page_config(page_title="9702 Physics Viewer", layout="wide")
     st.title("🔐 9702 Physics Past Paper Viewer")
 
-    # === FIXED: INITIALIZE SESSION STATE ===
+    # === INITIALIZE SESSION STATE ===
     # This ensures all necessary keys exist with a neutral default value.
     if "data" not in st.session_state:
         st.session_state.data = None
@@ -367,280 +319,276 @@ def main():
         st.session_state.folder = ""
     if "page_number" not in st.session_state:
         st.session_state.page_number = 1
-   
-    # === CONSOLIDATED INITIALIZATION ===
-    # This ensures all necessary keys exist with a neutral default value on first run.
-    if "data" not in st.session_state:
-        st.session_state.data = None
-    if "folder" not in st.session_state:
-        st.session_state.folder = ""
-    if "page_number" not in st.session_state:
-        st.session_state.page_number = 1
-   
-    # This block *must* be uncommented and running to set the default status to None.
-    if "authentication_status" not in st.session_state:
-        st.session_state["authentication_status"] = None
-    if "name" not in st.session_state:
-        st.session_state["name"] = None
-    if "username" not in st.session_state:
-        st.session_state["username"] = None
-    # ==================================
+    # State for simple authentication
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
+    # =====================================
+
+    # --- NEW: SIMPLE, SINGLE-PASSWORD AUTHENTICATION ---
+    
+    # Check Authentication Status
+    if st.session_state["authenticated"]:
+        # User is already logged in, proceed to secured content
+        pass 
+    else:
+        # Show Login Form
+        with st.form("Login_Form", clear_on_submit=False):
+            st.warning('Please enter your credentials to access the data.')
+            user_input = st.text_input("Password", type="password", key="login_pass_input")
+            submitted = st.form_submit_button("Log In")
+
+            if submitted:
+                try:
+                    # Retrieve the single master key from secrets
+                    MASTER_KEY = st.secrets["master_key"]
+                except KeyError:
+                    st.error("Configuration Error: 'master_key' not found in your .streamlit/secrets.toml file.")
+                    return # Stop if config is missing
+
+                if user_input == MASTER_KEY:
+                    st.session_state.authenticated = True
+                    st.success("Login successful!")
+                    st.rerun() # Rerun to hide the form and display content
+                else:
+                    st.error("Incorrect Password.")
+            
+        # If not authenticated, the script returns here after showing the form
+        return 
+    # === END NEW AUTHENTICATION BLOCK ===
+
+    # --- SECURED APPLICATION CONTENT STARTS HERE ---
     
     encrypted_text = load_encrypted_data()
     if not encrypted_text:
         return
     
-# --- 1. RENDER LOGIN FORM AND GET STATUS ---
-    # **THIS MUST BE UNCOMMENTED AND RUN**
-    # This renders the form (because location='main') and returns the current status.
-    name, authentication_status, username = authenticator.login(
-        form_name='Login', 
-        location='main'
-    )
-    
-    # --- 2. UPDATE SESSION STATE ---
-    # We assign the values returned by the login function to Streamlit's session state
-    # so the rest of your app logic (which uses st.session_state) can read it.
-    st.session_state["authentication_status"] = authentication_status
-    st.session_state["name"] = name
-    st.session_state["username"] = username
-
-
-    # --- 3. Conditional App Content (Checks the updated session state) ---
-    if st.session_state["authentication_status"]:
-        # User is logged in
-        
-        # --- 2a. Decrypt Data (Use the same logic as before, but ensure it's triggered once) ---
-        if st.session_state.data is None:
-            # For simplicity, we assume your decryption password is hardcoded 
-            # if you are using the same key for everyone.
-            # If the user's login password IS the decryption key, you need to save it during login.
-            DECRYPTION_PASSWORD = "Your_Hardcoded_Decryption_Password_Here" # <-- CHANGE THIS
-
-            bundle = decrypt_payload(DECRYPTION_PASSWORD, encrypted_text)
-            if bundle:
-                st.session_state.folder = bundle.get("secure_folder", "")
-                main_data = bundle.get("data", [])
-                updates = load_updates()
-                if updates:
-                    main_data.extend(updates)
-                st.session_state.data = normalize_data(main_data)
-            else:
-                # If decryption fails for any reason, log the user out
-                st.session_state["authentication_status"] = None
-                st.error("Decryption failed after successful login. Data is unavailable.")
-                st.rerun()
-        # --- 2b. Display App Header and Logout Button ---
-        st.sidebar.title(f'Welcome {name}')
-        authenticator.logout('Logout', 'sidebar')
-       
-        st.header("🔍 Filter Questions")
-            
-        # === MAIN INTERFACE ===
-        df = st.session_state.data
-        if df is None or df.empty:
-            st.warning("No data loaded.")
-            #if st.button("Logout"):
-            st.session_state.authenticated = False
-            st.rerun()
-            return
-    
-        # --- 1. FILTERS (Custom Width Columns) ---
-        st.header("🔍 Filter Questions")
-        
-        # Define custom column widths: [Year, Session, Paper, Question, Main Topic]
-        col_yr, col_sess, col2, col_q, col3 = st.columns([1, 1, 1, 1, 3.4])
-        
-        # 1a. Year Filter (NEW)
-        with col_yr:
-            # Use the new year_numeric column for filtering
-            all_years = sorted(df["year_numeric"].dropna().unique(), reverse=True)
-            # Convert to int for display (as pandas returns float for unique values if NaN is present)
-            all_years_display = [int(y) for y in all_years]
-            selected_years = st.multiselect("Year", options=all_years_display, key="filter_year")
-    
-        # 1b. Session Filter (NEW)
-        with col_sess:
-            # Use the new session column for filtering
-            all_sessions = sorted(df["session"].dropna().unique())
-            all_sessions = [s for s in all_sessions if s in ['M', 'S', 'W']] # Only show M, S, W options
-            selected_sessions = st.multiselect("Session", options=all_sessions, key="filter_session")
-            
-        # 2. Paper Filter (Small)
-        with col2:
-            all_papers = sorted(df["paper"].dropna().unique())
-            selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
-            
-        # 3. Question Number Filter (Medium-Small)
-        with col_q:
-            all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
-            selected_questions = st.multiselect("Q#", options=all_questions, key="filter_question")
-            
-        # 4. Main Topic Filter (Widest)
-        with col3:
-            def extract_main_topics(series):
-                topics = set()
-                for val in series.dropna():
-                    for t in val.split(";"):
-                        topics.add(t.strip())
-                return sorted(topics)
-            
-            all_topics = extract_main_topics(df["mainTopic"])
-            selected_topics = st.multiselect("Main Topic", options=all_topics, key="filter_topic")
-    
-        st.markdown("---") 
-    
-        # --- 2. APPLY FILTERS ---
-        filtered_df = df.copy()
-        
-        # Apply filters based on the selections made above
-        if selected_years:
-            # Filter based on the new 'year_numeric' column
-            filtered_df = filtered_df[filtered_df["year_numeric"].isin(selected_years)]
-        if selected_sessions:
-            # Filter based on the new 'session' column
-            filtered_df = filtered_df[filtered_df["session"].isin(selected_sessions)]
-        if selected_papers:
-            filtered_df = filtered_df[filtered_df["paper"].isin(selected_papers)]
-        if selected_questions:
-            filtered_df = filtered_df[filtered_df["question"].isin(selected_questions)]
-        if selected_topics:
-            filtered_df = filtered_df[
-                filtered_df["mainTopic"].apply(lambda x: any(t in x.split(';') for t in selected_topics))
-            ]
-    
-        # === 3. TAB CREATION AND CONTENT ===
-        tab1, tab2 = st.tabs(["📄 Data Table", "📊 Analytics"])
-    
-        with tab1:
-            # --- Download Button expander remains the same ---
-            with st.expander(f"📥 Generate & Download Report ({len(filtered_df)} files match filters)", expanded=False):
-                
-                def generate_html_report_content(filtered_df, folder):
-                    # ... (Content generation logic remains here) ...
-                    if len(filtered_df) > 100:
-                        if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
-                            return None
-                    
-                    # ... (rest of HTML generation) ...
-                    html_content = f"""<!DOCTYPE html>
-    <html><head><title>Physics Report</title>
-    <style>
-    body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
-    h1 {{ text-align: center; }}
-    .pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
-    .header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
-    embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
-    </style></head><body><h1>Filtered PDF Report</h1>"""
-                    
-                    for _, row in filtered_df.iterrows():
-                        url = f"{PDF_BASE_URL}{folder}/{row['raw_year']}/{row['filename']}" # USE RAW_YEAR FOR FOLDER PATH
-                        html_content += f"""
-                        <div class='pdf-section'>
-                            <div class='header-row'>
-                                <b>{row['filename']}</b> 
-                                <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
-                            </div>
-                            <embed src='{url}' type='application/pdf' />
-                        </div>"""
-                    
-                    html_content += "</body></html>"
-                    return html_content
-    
-                html_result = generate_html_report_content(filtered_df, st.session_state.folder)
-                
-                if html_result and not html_result.startswith('<!'): # Simple check to skip if checkbox was hit but content wasn't generated
-                    pass 
-                elif html_result:
-                    b64 = base64.b64encode(html_result.encode()).decode()
-                    href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
-                    st.markdown(href, unsafe_allow_html=True)
-            
-            st.markdown("---")
-    
-            # --- 4. DISPLAY PAGINATED RESULTS TABLE ---
-            st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
-            
-            TOTAL_ROWS = len(filtered_df)
-            ROWS_PER_PAGE = 50
-            
-            if TOTAL_ROWS == 0:
-                st.info("No entries match the current filters.")
-                # Use return instead of break here
-                return 
-            
-            total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE
-            
-            if st.session_state.page_number > total_pages:
-                st.session_state.page_number = 1
-                
-            st.markdown(f"**Viewing Page {st.session_state.page_number} of {total_pages}**")
-    
-            nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 1])
-            
-            with nav_col1:
-                if st.button("⬅️ Previous", key="prev_page", 
-                             disabled=(st.session_state.page_number == 1)):
-                    st.session_state.page_number -= 1
-                    st.rerun()
-                    
-            with nav_col2:
-                if st.button("Next ➡️", key="next_page", 
-                             disabled=(st.session_state.page_number == total_pages)):
-                    st.session_state.page_number += 1
-                    st.rerun()
-    
-            st.markdown("---")
-            
-            start_row = (st.session_state.page_number - 1) * ROWS_PER_PAGE
-            end_row = start_row + ROWS_PER_PAGE
-            
-            paginated_df = filtered_df.iloc[start_row:end_row]
-    
-            if not paginated_df.empty:
-                def make_pdf_link(row):
-                    # Use raw_year for the link generation, as the folder structure likely uses it
-                    url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['raw_year']}/{row['filename']}" 
-                    return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
-                
-                display_df = paginated_df.copy()
-                display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
-                display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
-                
-                # 💥 UPDATED DISPLAY COLUMNS
-                display_cols = ["Link", "year_numeric", "session", "paper", "question", "mainTopic", "otherTopics"]
-                display_df = display_df[display_cols].rename(columns={
-                    "year_numeric": "Year", # Uses the numeric year
-                    "session": "Session", # NEW Session column
-                    "paper": "Paper", 
-                    "question": "Q#", 
-                    "mainTopic": "Main Topic", 
-                    "otherTopics": "Other Topics",
-                    "Link": "Filename"
-                })
-                
-                st.write(
-                    display_df
-                    .to_html(escape=False, index=False),
-                    unsafe_allow_html=True
-                )
-            else:
-                st.info("No entries match the current filters.") # This will be hit only if paginated_df is empty when filtered_df is not (unlikely with fixed logic)
-    
-        with tab2:
-            # --- Analytics View ---
-            display_analytics(filtered_df) 
-    
-
-    elif st.session_state["authentication_status"] == False:
-        st.error('Username/password is incorrect')
+    # --- Logout Button (in secured block) ---
+    if st.sidebar.button("Logout"):
+        st.session_state.authenticated = False
         st.session_state.data = None
-    
-    #elif st.session_state["authentication_status"] == None:
-    #    st.warning('Please enter your credentials to access the data.')
-    #    st.session_state.data = None
+        # st.session_state.clear() # Uncomment this if you want to wipe all session state
+        st.rerun()
+        
+    # --- 1. Decryption Block ---
+    if st.session_state.data is None:
+        try:
+            # Use the same key from secrets for decryption
+            DECRYPTION_PASSWORD = st.secrets["master_key"]
+        except KeyError:
+            st.error("Configuration Error: Decryption key 'master_key' not found in secrets.")
+            return # Stop execution if key is missing
+            
+        bundle = decrypt_payload(DECRYPTION_PASSWORD, encrypted_text)
+        
+        if bundle:
+            st.session_state.folder = bundle.get("secure_folder", "")
+            main_data = bundle.get("data", [])
+            updates = load_updates()
+            if updates:
+                main_data.extend(updates)
+            st.session_state.data = normalize_data(main_data)
+        else:
+            # If decryption fails for any reason, log the user out and show error
+            st.session_state["authenticated"] = False
+            st.session_state.data = None
+            st.error("Decryption failed. Please check the master key in secrets.toml and try logging in again.")
+            st.rerun()
+            
+    # --- 2. Display App Header ---
+    st.sidebar.title('Welcome User') # You can change this to a generic welcome
+   
+    st.header("🔍 Filter Questions")
+        
+    # === MAIN INTERFACE ===
+    df = st.session_state.data
+    if df is None or df.empty:
+        st.warning("No data loaded.")
+        st.session_state.authenticated = False
+        st.rerun()
+        return
 
+    # --- 1. FILTERS (Custom Width Columns) ---
+    st.header("🔍 Filter Questions")
     
+    # Define custom column widths: [Year, Session, Paper, Question, Main Topic]
+    col_yr, col_sess, col2, col_q, col3 = st.columns([1, 1, 1, 1, 3.4])
+    
+    # 1a. Year Filter (NEW)
+    with col_yr:
+        # Use the new year_numeric column for filtering
+        all_years = sorted(df["year_numeric"].dropna().unique(), reverse=True)
+        # Convert to int for display (as pandas returns float for unique values if NaN is present)
+        all_years_display = [int(y) for y in all_years]
+        selected_years = st.multiselect("Year", options=all_years_display, key="filter_year")
+
+    # 1b. Session Filter (NEW)
+    with col_sess:
+        # Use the new session column for filtering
+        all_sessions = sorted(df["session"].dropna().unique())
+        all_sessions = [s for s in all_sessions if s in ['M', 'S', 'W']] # Only show M, S, W options
+        selected_sessions = st.multiselect("Session", options=all_sessions, key="filter_session")
+        
+    # 2. Paper Filter (Small)
+    with col2:
+        all_papers = sorted(df["paper"].dropna().unique())
+        selected_papers = st.multiselect("Paper", options=all_papers, key="filter_paper")
+        
+    # 3. Question Number Filter (Medium-Small)
+    with col_q:
+        all_questions = sorted(df["question"].dropna().unique(), key=lambda x: [int(c) if c.isdigit() else c for c in x.split()])
+        selected_questions = st.multiselect("Q#", options=all_questions, key="filter_question")
+        
+    # 4. Main Topic Filter (Widest)
+    with col3:
+        def extract_main_topics(series):
+            topics = set()
+            for val in series.dropna():
+                for t in val.split(";"):
+                    topics.add(t.strip())
+            return sorted(topics)
+        
+        all_topics = extract_main_topics(df["mainTopic"])
+        selected_topics = st.multiselect("Main Topic", options=all_topics, key="filter_topic")
+
+    st.markdown("---") 
+
+    # --- 2. APPLY FILTERS ---
+    filtered_df = df.copy()
+    
+    # Apply filters based on the selections made above
+    if selected_years:
+        # Filter based on the new 'year_numeric' column
+        filtered_df = filtered_df[filtered_df["year_numeric"].isin(selected_years)]
+    if selected_sessions:
+        # Filter based on the new 'session' column
+        filtered_df = filtered_df[filtered_df["session"].isin(selected_sessions)]
+    if selected_papers:
+        filtered_df = filtered_df[filtered_df["paper"].isin(selected_papers)]
+    if selected_questions:
+        filtered_df = filtered_df[filtered_df["question"].isin(selected_questions)]
+    if selected_topics:
+        filtered_df = filtered_df[
+            filtered_df["mainTopic"].apply(lambda x: any(t in x.split(';') for t in selected_topics))
+        ]
+
+    # === 3. TAB CREATION AND CONTENT ===
+    tab1, tab2 = st.tabs(["📄 Data Table", "📊 Analytics"])
+
+    with tab1:
+        # --- Download Button expander remains the same ---
+        with st.expander(f"📥 Generate & Download Report ({len(filtered_df)} files match filters)", expanded=False):
+            
+            def generate_html_report_content(filtered_df, folder):
+                if len(filtered_df) > 100:
+                    if not st.checkbox("⚠️ Large report (>100 files). Proceed anyway?", key="report_check"):
+                        return None
+                
+                html_content = f"""<!DOCTYPE html>
+<html><head><title>Physics Report</title>
+<style>
+body {{ font-family: sans-serif; margin: 20px; background: #f4f4f4; }}
+h1 {{ text-align: center; }}
+.pdf-section {{ margin-bottom: 40px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
+.header-row {{ font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
+embed {{ width: 100%; height: 800px; border: 1px solid #ccc; }}
+</style></head><body><h1>Filtered PDF Report</h1>"""
+                
+                for _, row in filtered_df.iterrows():
+                    url = f"{PDF_BASE_URL}{folder}/{row['raw_year']}/{row['filename']}" # USE RAW_YEAR FOR FOLDER PATH
+                    html_content += f"""
+                    <div class='pdf-section'>
+                        <div class='header-row'>
+                            <b>{row['filename']}</b> 
+                            <span style='color:#666; font-size:0.9em;'>({row['mainTopic']})</span>
+                        </div>
+                        <embed src='{url}' type='application/pdf' />
+                    </div>"""
+                
+                html_content += "</body></html>"
+                return html_content
+
+            html_result = generate_html_report_content(filtered_df, st.session_state.folder)
+            
+            if html_result and not html_result.startswith('<!'): 
+                pass 
+            elif html_result:
+                b64 = base64.b64encode(html_result.encode()).decode()
+                href = f'<a href="data:text/html;base64,{b64}" download="physics_report.html">📥 Download HTML Report ({len(filtered_df)} files)</a>'
+                st.markdown(href, unsafe_allow_html=True)
+        
+        st.markdown("---")
+
+        # --- 4. DISPLAY PAGINATED RESULTS TABLE ---
+        st.subheader(f"📄 Results Table ({len(filtered_df)} files)")
+        
+        TOTAL_ROWS = len(filtered_df)
+        ROWS_PER_PAGE = 50
+        
+        if TOTAL_ROWS == 0:
+            st.info("No entries match the current filters.")
+            return 
+        
+        total_pages = (TOTAL_ROWS + ROWS_PER_PAGE - 1) // ROWS_PER_PAGE
+        
+        if st.session_state.page_number > total_pages:
+            st.session_state.page_number = 1
+            
+        st.markdown(f"**Viewing Page {st.session_state.page_number} of {total_pages}**")
+
+        nav_col1, nav_col2, nav_col3 = st.columns([1, 1, 1])
+        
+        with nav_col1:
+            if st.button("⬅️ Previous", key="prev_page", 
+                         disabled=(st.session_state.page_number == 1)):
+                st.session_state.page_number -= 1
+                st.rerun()
+                
+        with nav_col2:
+            if st.button("Next ➡️", key="next_page", 
+                         disabled=(st.session_state.page_number == total_pages)):
+                st.session_state.page_number += 1
+                st.rerun()
+
+        st.markdown("---")
+        
+        start_row = (st.session_state.page_number - 1) * ROWS_PER_PAGE
+        end_row = start_row + ROWS_PER_PAGE
+        
+        paginated_df = filtered_df.iloc[start_row:end_row]
+
+        if not paginated_df.empty:
+            def make_pdf_link(row):
+                # Use raw_year for the link generation, as the folder structure likely uses it
+                url = f"{PDF_BASE_URL}{st.session_state.folder}/{row['raw_year']}/{row['filename']}" 
+                return f'<a href="{url}" target="_blank">{row["filename"]}</a>'
+            
+            display_df = paginated_df.copy()
+            display_df["Link"] = display_df.apply(make_pdf_link, axis=1)
+            display_df["otherTopics"] = display_df["otherTopics"].apply(lambda x: ", ".join(x))
+            
+            # UPDATED DISPLAY COLUMNS
+            display_cols = ["Link", "year_numeric", "session", "paper", "question", "mainTopic", "otherTopics"]
+            display_df = display_df[display_cols].rename(columns={
+                "year_numeric": "Year", 
+                "session": "Session",
+                "paper": "Paper", 
+                "question": "Q#", 
+                "mainTopic": "Main Topic", 
+                "otherTopics": "Other Topics",
+                "Link": "Filename"
+            })
+            
+            st.write(
+                display_df
+                .to_html(escape=False, index=False),
+                unsafe_allow_html=True
+            )
+        else:
+            st.info("No entries match the current filters.") 
+
+    with tab2:
+        # --- Analytics View ---
+        display_analytics(filtered_df) 
 
 if __name__ == "__main__":
     main()
