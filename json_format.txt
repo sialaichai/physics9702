@@ -1,0 +1,2 @@
+[  {"filename":"9702_m24_qp_22_q1.pdf","year":"m24","paper":"22","question":"q1","mainTopic":"1 Quantities and Measurement","otherTopics":["10 Wave Motion","4 Energy and Fields"]},
+  {"filename":"9702_m24_qp_22_q2.pdf","year":"m24","paper":"22","question":"q2","mainTopic":"5 Projectile Motion","otherTopics":["2 Forces and Moments","3 Motion and Forces"]} ]
