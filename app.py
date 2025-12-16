@@ -363,25 +363,25 @@ def main():
     if not encrypted_text:
         return
 
-    # 1. --- RENDER LOGIN FORM AND GET STATUS ---
-    # This must be run on every script rerun, so it is placed outside the main if/elif flow.
-    # The variables (name, status, username) are updated here.
+# --- 1. RENDER LOGIN FORM AND GET STATUS ---
+    # **THIS MUST BE UNCOMMENTED AND RUN**
+    # This renders the form (because location='main') and returns the current status.
     name, authentication_status, username = authenticator.login(
         form_name='Login', 
         location='main'
     )
     
-    # 2. --- SAVE STATUS TO SESSION STATE ---
-    # This is necessary because your application logic (the big if/elif block)
-    # uses st.session_state["authentication_status"].
+    # --- 2. UPDATE SESSION STATE ---
+    # We assign the values returned by the login function to Streamlit's session state
+    # so the rest of your app logic (which uses st.session_state) can read it.
     st.session_state["authentication_status"] = authentication_status
     st.session_state["name"] = name
     st.session_state["username"] = username
 
 
-    # --- 3. Status check and core logic starts here ---
+    # --- 3. Conditional App Content (Checks the updated session state) ---
     if st.session_state["authentication_status"]:
-
+        # User is logged in
         
         # --- 2a. Decrypt Data (Use the same logic as before, but ensure it's triggered once) ---
         if st.session_state.data is None:
