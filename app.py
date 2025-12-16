@@ -10,8 +10,6 @@ import re
 import hashlib
 import plotly.express as px
 
-# Removed imports: yaml, SafeLoader, streamlit_authenticator (stauth)
-
 # === CONFIG ===
 PAYLOAD_PATH = "9702payload.enc"
 UPDATES_PATH = "updates.json"
@@ -333,7 +331,7 @@ def main():
     else:
         # Show Login Form
         with st.form("Login_Form", clear_on_submit=False):
-            st.warning('Please enter your credentials to access the data.')
+            st.warning('Please enter the password to access the data.')
             user_input = st.text_input("Password", type="password", key="login_pass_input")
             submitted = st.form_submit_button("Log In")
 
@@ -363,10 +361,10 @@ def main():
         return
     
     # --- Logout Button (in secured block) ---
+    st.sidebar.title('Welcome User') # Welcome title in sidebar
     if st.sidebar.button("Logout"):
         st.session_state.authenticated = False
         st.session_state.data = None
-        # st.session_state.clear() # Uncomment this if you want to wipe all session state
         st.rerun()
         
     # --- 1. Decryption Block ---
@@ -394,11 +392,7 @@ def main():
             st.error("Decryption failed. Please check the master key in secrets.toml and try logging in again.")
             st.rerun()
             
-    # --- 2. Display App Header ---
-    st.sidebar.title('Welcome User') # You can change this to a generic welcome
-   
-    #st.header("🔍 Filter Questions")
-        
+    
     # === MAIN INTERFACE ===
     df = st.session_state.data
     if df is None or df.empty:
