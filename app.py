@@ -362,7 +362,14 @@ def main():
     encrypted_text = load_encrypted_data()
     if not encrypted_text:
         return
-
+    # === NEW: INITIALIZE SESSION STATE ===
+    if "data" not in st.session_state:
+        st.session_state.data = None
+    if "folder" not in st.session_state:
+        st.session_state.folder = ""
+    if "page_number" not in st.session_state:
+        st.session_state.page_number = 1
+    # =====================================
 # --- 1. RENDER LOGIN FORM AND GET STATUS ---
     # **THIS MUST BE UNCOMMENTED AND RUN**
     # This renders the form (because location='main') and returns the current status.
@@ -609,9 +616,9 @@ def main():
         st.error('Username/password is incorrect')
         st.session_state.data = None
     
-    #elif st.session_state["authentication_status"] == None:
-    #    st.warning('Please enter your credentials to access the data.')
-    #    st.session_state.data = None
+    elif st.session_state["authentication_status"] == None:
+        st.warning('Please enter your credentials to access the data.')
+        st.session_state.data = None
 
     
 
