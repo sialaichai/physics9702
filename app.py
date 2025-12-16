@@ -363,29 +363,25 @@ def main():
     if not encrypted_text:
         return
 
-    # --- 1. Authenticator Setup ---
-    # Load configuration
-    #with open('./config.yaml') as file:
-    #    config = yaml.load(file, Loader=SafeLoader)
+    # 1. --- RENDER LOGIN FORM AND GET STATUS ---
+    # This must be run on every script rerun, so it is placed outside the main if/elif flow.
+    # The variables (name, status, username) are updated here.
+    name, authentication_status, username = authenticator.login(
+        form_name='Login', 
+        location='main'
+    )
+    
+    # 2. --- SAVE STATUS TO SESSION STATE ---
+    # This is necessary because your application logic (the big if/elif block)
+    # uses st.session_state["authentication_status"].
+    st.session_state["authentication_status"] = authentication_status
+    st.session_state["name"] = name
+    st.session_state["username"] = username
 
-    # Initialize Authenticator
-    #authenticator = stauth.Authenticate(
-    #    config['credentials'],
-    #    config['cookie']['name'],
-    #    config['cookie']['key'],
-   #     config['cookie']['expiry_days'],
-   #     config['preauthorized']
-   # )
 
-    # --- 2. Render Login/Handle Status ---
-    # The name of the user, the authentication status (True/False/None), and the username
-    #name, authentication_status, username = authenticator.login(
-    #    form_name='Login', 
-    #    location='main'
-    #)
-    # Status check and core logic starts here
+    # --- 3. Status check and core logic starts here ---
     if st.session_state["authentication_status"]:
-        # User is logged in
+
         
         # --- 2a. Decrypt Data (Use the same logic as before, but ensure it's triggered once) ---
         if st.session_state.data is None:
