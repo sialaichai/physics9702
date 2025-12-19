@@ -394,7 +394,7 @@
                         const { width } = firstPage.getSize();
 
                         // Add a short page (50px height) to act as a header
-                        const bannerPage = mergedPdf.addPage([width, 50]);
+                        const bannerPage = mergedPdf.addPage([width, 30]);
                         
                         // Draw Filename on this banner page
                         bannerPage.drawText(`File: ${fname}`, {
