@@ -351,7 +351,7 @@
                 a.download = 'report.html'; a.click();
             });
 
-            // --- UPDATED: MERGE PDF FUNCTIONALITY (LINEAR BANNER STYLE) ---
+            // --- NEW: MERGE PDF FUNCTIONALITY ---
             const mergeBtn = document.getElementById('merge-pdf-btn');
             mergeBtn.addEventListener('click', async () => {
                 const rows = Array.from(tableBody.querySelectorAll('tr'));
@@ -377,37 +377,51 @@
                         const fname = r.cells[0].textContent; // Filename
                         const year = r.cells[1].textContent;  // Year
 
+                        // Update status button
                         mergeBtn.textContent = `Merging ${i + 1}/${rows.length}...`;
 
                         // Fetch the individual PDF
                         const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
                         const res = await fetch(fileUrl);
-                        if (!res.ok) { console.error(`Failed to fetch ${fname}`); continue; }
+                        if (!res.ok) {
+                            console.error(`Failed to fetch ${fname}`);
+                            continue;
+                        }
                         const existingPdfBytes = await res.arrayBuffer();
 
-                        // Load the source PDF
+                        // Load and Copy Pages
                         const sourcePdf = await PDFDocument.load(existingPdfBytes);
-                        
-                        // --- NEW LOGIC: Create a "Banner Page" ---
-                        // Get dimensions of the first page so our banner matches the width
-                        const firstPage = sourcePdf.getPages()[0];
-                        const { width } = firstPage.getSize();
-
-                        // Add a short page (50px height) to act as a header
-                        const bannerPage = mergedPdf.addPage([width, 50]);
-                        
-                        // Draw Filename on this banner page
-                        bannerPage.drawText(`File: ${fname}`, {
-                            x: 20,
-                            y: 20, // Centered vertically in the 50px height
-                            size: 8,
-                            font: font,
-                            color: rgb(0, 0, 0), // Black text
-                        });
-
-                        // Copy actual pages and append them after the banner
                         const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
-                        copiedPages.forEach((page) => mergedPdf.addPage(page));
+
+                        // Add pages to merged doc and Label the first page of this section
+                        copiedPages.forEach((page, pageIndex) => {
+                            // Embed the page
+                            const addedPage = mergedPdf.addPage(page);
+
+                            // Label only the first page of this specific file
+                            if (pageIndex === 0) {
+                                const { width, height } = addedPage.getSize();
+                                
+                                // Draw a white background box for text legibility
+                                addedPage.drawRectangle({
+                                    x: 20,
+                                    y: height - 40,
+                                    width: width - 40,
+                                    height: 30,
+                                    color: rgb(1, 1, 1), // White
+                                    opacity: 0.1,
+                                });
+
+                                // Draw the Filename Text
+                                addedPage.drawText(`File: ${fname}`, {
+                                    x: 30,
+                                    y: height - 30,
+                                    size: 8,
+                                    font: font,
+                                    color: rgb(1, 0, 0), // Red text for visibility
+                                });
+                            }
+                        });
                     }
 
                     // 4. Save and Download
@@ -416,12 +430,12 @@
                     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = `merged_physics_linear_${new Date().toISOString().slice(0,10)}.pdf`;
+                    link.download = `merged_physics_${new Date().toISOString().slice(0,10)}.pdf`;
                     link.click();
 
                 } catch (err) {
                     console.error(err);
-                    alert("An error occurred while merging:\n" + err.message);
+                    alert("An error occurred while merging. See console for details.\n" + err.message);
                 } finally {
                     mergeBtn.textContent = originalBtnText;
                     mergeBtn.disabled = false;
