@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>9702 Physics Viewer</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js?v=1.0.2"></script>
+	<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; }
         
@@ -103,6 +104,8 @@
                 <div class="dropdown-check-container"><button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button><div id="topic-filter-panel" class="dropdown-panel"><div id="topic-filter-list" class="dropdown-list"></div><button id="topic-filter-apply" class="apply-button">Apply</button></div></div>
                 
                 <button id="generate-html-btn">Create HTML</button>
+				<button id="generate-html-btn">Create HTML</button>
+<button id="merge-pdf-btn" style="background-color: #007bff; color: white; padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px;">Merge PDFs</button>
                 <span id="file-count-display"></span>
                 
                 <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link" style="margin-left:auto;">Prelim</a>
@@ -347,6 +350,83 @@
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
                 a.download = 'report.html'; a.click();
+            });
+
+			// --- UPDATED: MERGE PDF FUNCTIONALITY (LINEAR BANNER STYLE) ---
+            const mergeBtn = document.getElementById('merge-pdf-btn');
+            mergeBtn.addEventListener('click', async () => {
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                
+                // 1. Safety Checks
+                if (rows.length === 0) { alert("No files to merge."); return; }
+                if (rows.length > 50 && !confirm(`Merging ${rows.length} PDFs is memory intensive and may crash your browser. Continue?`)) return;
+
+                const originalBtnText = mergeBtn.textContent;
+                mergeBtn.textContent = "Processing...";
+                mergeBtn.disabled = true;
+
+                try {
+                    // 2. Initialize new PDF
+                    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+                    const mergedPdf = await PDFDocument.create();
+                    const font = await mergedPdf.embedFont(StandardFonts.HelveticaBold);
+                    const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
+
+                    // 3. Iterate through filtered rows
+                    for (let i = 0; i < rows.length; i++) {
+                        const r = rows[i];
+                        const fname = r.cells[0].textContent; // Filename
+                        const year = r.cells[1].textContent;  // Year
+
+                        mergeBtn.textContent = `Merging ${i + 1}/${rows.length}...`;
+
+                        // Fetch the individual PDF
+                        const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
+                        const res = await fetch(fileUrl);
+                        if (!res.ok) { console.error(`Failed to fetch ${fname}`); continue; }
+                        const existingPdfBytes = await res.arrayBuffer();
+
+                        // Load the source PDF
+                        const sourcePdf = await PDFDocument.load(existingPdfBytes);
+                        
+                        // --- NEW LOGIC: Create a "Banner Page" ---
+                        // Get dimensions of the first page so our banner matches the width
+                        const firstPage = sourcePdf.getPages()[0];
+                        const { width } = firstPage.getSize();
+
+                        // Add a short page (50px height) to act as a header
+                        const bannerPage = mergedPdf.addPage([width, 50]);
+                        
+                        // Draw Filename on this banner page
+                        bannerPage.drawText(`File: ${fname}`, {
+                            x: 15,
+                            y: 15, // Centered vertically in the 50px height
+                            size: 12,
+                            font: font,
+                            color: rgb(1, 0, 0), // Black text
+                        });
+
+                        // Copy actual pages and append them after the banner
+                        const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
+                        copiedPages.forEach((page) => mergedPdf.addPage(page));
+                    }
+
+                    // 4. Save and Download
+                    mergeBtn.textContent = "Finalizing...";
+                    const pdfBytes = await mergedPdf.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `merged_physics_linear_${new Date().toISOString().slice(0,10)}.pdf`;
+                    link.click();
+
+                } catch (err) {
+                    console.error(err);
+                    alert("An error occurred while merging:\n" + err.message);
+                } finally {
+                    mergeBtn.textContent = originalBtnText;
+                    mergeBtn.disabled = false;
+                }
             });
         }
 
