@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>9702 Physics Viewer</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js?v=1.0.2"></script>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <style>
     body {
@@ -13,122 +13,288 @@
       overflow: hidden;
     }
 
-    /* LOGIN SCREEN */
+    /* LOGIN SCREEN STYLES */
     #login-screen {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: #e0e0e0; z-index: 10000;
-      display: flex; justify-content: center; align-items: center;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #e0e0e0;
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+
     .login-box {
-      background: white; padding: 40px; border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center;
-      width: 90%; max-width: 400px;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
     }
-    .login-box h2 { margin-top: 0; color: #333; }
-    .login-box p { color: #666; margin-bottom: 20px; }
+
+    .login-box h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .login-box p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
     .login-box input {
-      width: 100%; padding: 12px; margin: 10px 0;
-      border: 1px solid #ccc; border-radius: 6px; font-size: 16px;
-      outline: none; transition: border 0.3s;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border 0.3s;
     }
-    .login-box input:focus { border-color: #007bff; }
+
+    .login-box input:focus {
+      border-color: #007bff;
+    }
+
     .login-box button {
-      width: 100%; padding: 12px; background: #007bff; color: white;
-      border: none; border-radius: 6px; font-size: 16px; font-weight: bold;
-      cursor: pointer; transition: background 0.3s;
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .login-box button:hover { background: #0056b3; }
+
+    .login-box button:hover {
+      background: #0056b3;
+    }
+
     .error {
-      color: #d9534f; margin-top: 15px; display: none;
-      background: #f9d6d5; border: 1px solid #d9534f; padding: 10px;
-      font-size: 13px; border-radius: 4px; text-align: left;
+      color: #d9534f;
+      margin-top: 15px;
+      display: none;
+      background: #f9d6d5;
+      border: 1px solid #d9534f;
+      padding: 10px;
+      font-size: 13px;
+      border-radius: 4px;
+      text-align: left;
     }
+
     .status {
-      color: #0275d8; margin-top: 15px; font-size: 14px; font-weight: 500; display: block;
+      color: #0275d8;
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: 500;
+      display: block;
     }
 
-    /* MAIN APP */
-    #main-container { display: none; flex-direction: column; height: 100vh; }
-    #upper-panel { flex: 1; display: flex; flex-direction: column; min-height: 150px; }
-    #lower-panel { height: 300px; min-height: 100px; overflow-y: auto; background: white; }
-    #dragger { height: 5px; background: #ccc; cursor: ns-resize; border-top: 1px solid #aaa; border-bottom: 1px solid #aaa; }
+    /* MAIN APP STYLES */
+    #main-container {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #upper-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 150px;
+    }
+
+    #lower-panel {
+      height: 300px;
+      min-height: 100px;
+      overflow-y: auto;
+      background: white;
+    }
+
+    #dragger {
+      height: 5px;
+      background: #ccc;
+      cursor: ns-resize;
+      border-top: 1px solid #aaa;
+      border-bottom: 1px solid #aaa;
+    }
+
     #controls {
-      padding: 10px; background: #f4f4f4; display: flex; align-items: center;
-      gap: 10px; flex-wrap: wrap; border-bottom: 1px solid #ddd;
+      padding: 10px;
+      background: #f4f4f4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #ddd;
     }
-    #pdf-viewer-container { flex: 1; background: #525659; }
-    #pdf-viewer { width: 100%; height: 100%; border: none; }
 
-    /* FILTERS */
-    .dropdown-check-container { position: relative; display: inline-block; }
-    .filter-button {
-      padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;
-      background: white; min-width: 60px; display: flex; justify-content: space-between;
-      align-items: center; cursor: pointer;
+    #pdf-viewer-container {
+      flex: 1;
+      background: #525659;
     }
-    #topic-filter-btn { min-width: 320px; }
+
+    #pdf-viewer {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      cursor: pointer;
+      position: sticky;
+      top: 0;
+    }
+
+    tbody tr:hover {
+      background-color: #e2e6ea;
+      cursor: pointer;
+    }
+
+    .dropdown-check-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .filter-button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      min-width: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    #topic-filter-btn {
+      min-width: 320px;
+    }
+
     .dropdown-panel {
-      display: none; position: absolute; background: white;
-      border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      z-index: 100; min-width: 200px; padding: 10px;
+      display: none;
+      position: absolute;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 100;
+      min-width: 200px;
+      padding: 10px;
       border-radius: 4px;
     }
+
     .dropdown-list {
-      max-height: 250px; overflow-y: auto; border-bottom: 1px solid #eee;
+      max-height: 250px;
+      overflow-y: auto;
+      border-bottom: 1px solid #eee;
       margin-bottom: 10px;
     }
+
     .dropdown-list label {
-      display: block; padding: 6px; cursor: pointer;
-    }
-    .dropdown-list label:hover { background-color: #f4f4f4; }
-    .apply-button {
-      width: 100%; padding: 8px; background: #007bff; color: white;
-      border: none; border-radius: 4px; cursor: pointer;
-    }
-    .nav-link {
-      text-decoration: none; color: #333; background-color: #e0e0e0;
-      padding: 8px 12px; border-radius: 4px; font-weight: bold;
-      border: 1px solid #ccc; font-size: 14px;
-    }
-    .nav-link:hover { background-color: #d0d0d0; }
-    #generate-html-btn {
-      background-color: #28a745; color: white; padding: 8px 12px;
-      border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
-      font-size: 14px;
-    }
-    #generate-html-btn:hover { background-color: #218838; }
-    #merge-pdf-btn {
-      background-color: #007bff; color: white; padding: 8px 12px;
-      border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
-      font-size: 14px;
-    }
-    #file-count-display {
-      font-weight: bold; color: #555; margin-left: 10px;
+      display: block;
+      padding: 6px;
+      cursor: pointer;
     }
 
-    /* TABLE */
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background-color: #f8f9fa; cursor: pointer; position: sticky; top: 0; }
-    tbody tr:hover { background-color: #e2e6ea; cursor: pointer; }
+    .dropdown-list label:hover {
+      background-color: #f4f4f4;
+    }
+
+    .apply-button {
+      width: 100%;
+      padding: 8px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: #333;
+      background-color: #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .nav-link:hover {
+      background-color: #d0d0d0;
+    }
+
+    #generate-html-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #generate-html-btn:hover {
+      background-color: #218838;
+    }
+
+    #merge-pdf-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #file-count-display {
+      font-weight: bold;
+      color: #555;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
-  <!-- LOGIN SCREEN -->
   <div id="login-screen">
     <div class="login-box">
       <h2>Restricted Access</h2>
       <p>Enter password to unlock data</p>
       <p>Clear Browser Cache for latest updates</p>
-      <input type="password" id="pass-input" placeholder="Password" onkeypress="handleEnter(event)" />
+      <input type="password" id="pass-input" placeholder="Password" onkeypress="handleEnter(event)">
       <button onclick="unlock()">Login</button>
       <div id="status-msg" class="status">Initializing System...</div>
       <div id="error-msg" class="error"></div>
     </div>
   </div>
 
-  <!-- MAIN APP -->
   <div id="main-container">
     <div id="upper-panel">
       <div id="controls">
@@ -139,6 +305,7 @@
             <button id="year-filter-apply" class="apply-button">Apply</button>
           </div>
         </div>
+
         <div class="dropdown-check-container">
           <button id="paper-filter-btn" class="filter-button">Paper (<span id="paper-filter-count">0</span>)</button>
           <div id="paper-filter-panel" class="dropdown-panel">
@@ -146,6 +313,7 @@
             <button id="paper-filter-apply" class="apply-button">Apply</button>
           </div>
         </div>
+
         <div class="dropdown-check-container">
           <button id="question-filter-btn" class="filter-button">Question (<span id="question-filter-count">0</span>)</button>
           <div id="question-filter-panel" class="dropdown-panel">
@@ -153,6 +321,8 @@
             <button id="question-filter-apply" class="apply-button">Apply</button>
           </div>
         </div>
+
+        <!-- Topic Filter + Global Checkbox -->
         <div class="dropdown-check-container">
           <button id="topic-filter-btn" class="filter-button">Topic (<span id="topic-filter-count">0</span>)</button>
           <div id="topic-filter-panel" class="dropdown-panel">
@@ -160,10 +330,15 @@
             <button id="topic-filter-apply" class="apply-button">Apply</button>
           </div>
         </div>
+        <label style="display:inline-flex;align-items:center;margin-left:10px;font-size:14px;">
+          <input type="checkbox" id="include-other-topics" />
+          <span style="margin-left:4px;">Include “Other Topics”</span>
+        </label>
+
         <button id="generate-html-btn">Create HTML</button>
         <button id="merge-pdf-btn">Merge PDFs</button>
         <span id="file-count-display"></span>
-        <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link">Prelim</a>
+        <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link" style="margin-left:auto;">Prelim</a>
         <a href="https://sialaichai.github.io/physicsseab/" class="nav-link">SEAB</a>
       </div>
       <div id="pdf-viewer-container">
@@ -174,7 +349,14 @@
     <div id="lower-panel">
       <table id="data-table">
         <thead>
-          <tr><th>Filename</th><th>Year</th><th>Paper</th><th>Question</th><th>Main Topic</th><th>Other Topics</th></tr>
+          <tr>
+            <th>Filename</th>
+            <th>Year</th>
+            <th>Paper</th>
+            <th>Question</th>
+            <th>Main Topic</th>
+            <th>Other Topics</th>
+          </tr>
         </thead>
         <tbody id="data-table-body"></tbody>
       </table>
@@ -182,12 +364,11 @@
   </div>
 
   <script>
-    // CONFIG
+    // CONFIGURATION
     const PAYLOAD_FILE = '9702payload.enc';
     const UPDATES_FILE = 'updates.json';
     let PDF_FOLDER = '';
     let ENCRYPTED_TEXT = '';
-
     const statusEl = document.getElementById('status-msg');
     const errorEl = document.getElementById('error-msg');
 
@@ -204,7 +385,7 @@
       errorEl.style.display = 'none';
     }
 
-    // 1. LOAD ENCRYPTED DATA
+    // 1. PRELOAD THE ENCRYPTED DATA
     logStatus("Loading secure data...");
     fetch(PAYLOAD_FILE)
       .then(res => {
@@ -215,6 +396,7 @@
         if (!text || text.length === 0) throw new Error("payload.enc is EMPTY (0 bytes).");
         ENCRYPTED_TEXT = text.trim();
         logStatus(`Ready.`);
+        // AUTO-LOGIN CHECK
         const savedPass = sessionStorage.getItem('physics_session_key');
         if (savedPass) {
           logStatus("Restoring Session...");
@@ -245,16 +427,19 @@
       if (!isAuto) logStatus("Decrypting...");
       setTimeout(() => {
         try {
+          // A. Decrypt Main Payload
           const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TEXT, pass);
           if (bytes.sigBytes < 0) throw new Error("Decryption Key Mismatch.");
           let decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
           if (!decryptedStr) throw new Error("Incorrect Password.");
           let bundle = JSON.parse(decryptedStr);
+
+          // B. Save Session
           sessionStorage.setItem('physics_session_key', pass);
           PDF_FOLDER = bundle.secure_folder;
           let mainData = bundle.data;
 
-          // Fetch updates
+          // C. Fetch Updates (Hybrid Step)
           logStatus("Checking for updates...");
           fetch(UPDATES_FILE)
             .then(res => {
@@ -272,7 +457,7 @@
               document.getElementById('main-container').style.display = 'flex';
             })
             .catch(err => {
-              console.warn("Update fetch error:", err);
+              console.warn("Update fetch error, loading main data only:", err);
               startApp(mainData);
               document.getElementById('login-screen').style.display = 'none';
               document.getElementById('main-container').style.display = 'flex';
@@ -291,11 +476,11 @@
 
     // 3. MAIN APP LOGIC
     function startApp(allData) {
+      // - 1. INITIALIZE VARIABLES -
       let selectedTopics = new Set();
       let selectedYears = new Set();
       let selectedPapers = new Set();
       let selectedQuestions = new Set();
-
       const tableBody = document.getElementById('data-table-body');
       const pdfViewer = document.getElementById('pdf-viewer');
       const fileCountDisplay = document.getElementById('file-count-display');
@@ -316,20 +501,23 @@
         };
       });
 
+      // Initial Render
       populateDropdowns(allData);
       setupEventListeners(allData);
       renderTable(allData);
 
-      // Helper Functions
+      // - Helper Functions -
       function populateDropdowns(data) {
         const getUniques = (mapper, sorter) =>
           [...new Set(data.map(mapper).flat().filter(Boolean))].sort(sorter);
+
         const naturalSort = (a, b) =>
           a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+
         const yearSort = (a, b) => {
           const numA = parseInt(a.replace(/\D/g, '')) || 0;
           const numB = parseInt(b.replace(/\D/g, '')) || 0;
-          return numB - numA;
+          return numA !== numB ? numB - numA : b.localeCompare(a);
         };
 
         const topics = getUniques(i => i.mainTopic.split(/[;,]/).map(s => s.trim()), undefined);
@@ -361,10 +549,10 @@
 
       function setupEventListeners(data) {
         const setup = (btnId, panelId, listId, applyId, set, cls) => {
-          const btn = document.getElementById(btnId);
-          const panel = document.getElementById(panelId);
-          const list = document.getElementById(listId);
-          const apply = document.getElementById(applyId);
+          const btn = document.getElementById(btnId),
+                panel = document.getElementById(panelId),
+                list = document.getElementById(listId),
+                apply = document.getElementById(applyId);
           if (!btn) return;
           btn.addEventListener('click', () =>
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block'
@@ -383,17 +571,22 @@
         setup('paper-filter-btn', 'paper-filter-panel', 'paper-filter-list', 'paper-filter-apply', selectedPapers, 'paper-checkbox');
         setup('question-filter-btn', 'question-filter-panel', 'question-filter-list', 'question-filter-apply', selectedQuestions, 'question-checkbox');
 
-        document.addEventListener('click', e => {
-          ['topic-filter-panel', 'year-filter-panel', 'paper-filter-panel', 'question-filter-panel'].forEach(id => {
-            const p = document.getElementById(id);
-            if (p && !p.contains(e.target) && !e.target.closest('.filter-button')) p.style.display = 'none';
-          });
+        document.addEventListener('click', (e) => {
+          ['topic-filter-panel', 'year-filter-panel', 'paper-filter-panel', 'question-filter-panel']
+            .forEach(id => {
+              const p = document.getElementById(id);
+              if (p && !p.contains(e.target) && !e.target.closest('.filter-button'))
+                p.style.display = 'none';
+            });
         });
 
-        // Generate HTML Report
-        document.getElementById('generate-html-btn').addEventListener('click', () => {
+        // Generate Button
+        const genBtn = document.getElementById('generate-html-btn');
+        genBtn.addEventListener('click', () => {
           const rows = tableBody.querySelectorAll('tr');
-          if (rows.length > 100 && !confirm(`Generate report for ${rows.length} files? Browser may crash.`)) return;
+          if (rows.length > 100 && !confirm(`Generate report for ${rows.length} files? Browser may crash due to large number of files. Safer to keep < 100 files.`))
+            return;
+
           const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
           let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px;background:#f4f4f4}h1{text-align:center}.pdf-section{margin-bottom:40px;background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.header-row{font-size:1.2em;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px}embed{width:100%;height:800px;border:1px solid #ccc}</style></head><body><h1>Filtered PDF Report</h1>`;
           rows.forEach(r => {
@@ -409,14 +602,18 @@
           a.click();
         });
 
-        // Merge PDFs
-        document.getElementById('merge-pdf-btn').addEventListener('click', async () => {
+        // Merge PDF Button
+        const mergeBtn = document.getElementById('merge-pdf-btn');
+        mergeBtn.addEventListener('click', async () => {
           const rows = Array.from(tableBody.querySelectorAll('tr'));
-          if (rows.length === 0) { alert("No files to merge."); return; }
-          if (rows.length > 50 && !confirm(`Merging ${rows.length} PDFs is memory intensive. Continue?`)) return;
+          if (rows.length === 0) {
+            alert("No files to merge.");
+            return;
+          }
+          if (rows.length > 50 && !confirm(`Merging ${rows.length} PDFs is memory intensive and may crash your browser. Continue?`))
+            return;
 
           const originalBtnText = mergeBtn.textContent;
-          const mergeBtn = document.getElementById('merge-pdf-btn');
           mergeBtn.textContent = "Processing...";
           mergeBtn.disabled = true;
 
@@ -434,19 +631,28 @@
 
               const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
               const res = await fetch(fileUrl);
-              if (!res.ok) { console.error(`Failed to fetch ${fname}`); continue; }
+              if (!res.ok) {
+                console.error(`Failed to fetch ${fname}`);
+                continue;
+              }
+
               const existingPdfBytes = await res.arrayBuffer();
               const sourcePdf = await PDFDocument.load(existingPdfBytes);
 
+              // Banner Page
               const firstPage = sourcePdf.getPages()[0];
               const { width } = firstPage.getSize();
               const bannerPage = mergedPdf.addPage([width, 30]);
               bannerPage.drawText(`File: ${fname}`, {
-                x: 15, y: 15, size: 12, font: font, color: rgb(1, 0, 0)
+                x: 15,
+                y: 15,
+                size: 12,
+                font: font,
+                color: rgb(1, 0, 0)
               });
 
               const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
-              copiedPages.forEach(page => mergedPdf.addPage(page));
+              copiedPages.forEach((page) => mergedPdf.addPage(page));
             }
 
             mergeBtn.textContent = "Finalizing...";
@@ -466,18 +672,34 @@
         });
       }
 
+      // ✅ UPDATED: applyFilters now respects "Include Other Topics" checkbox
       function applyFilters(data) {
         let fd = data;
-        if (selectedTopics.size > 0)
-          fd = fd.filter(i => i.mainTopic.split(/[;,]/).map(s => s.trim()).some(t => selectedTopics.has(t)));
-        if (selectedYears.size > 0) fd = fd.filter(i => selectedYears.has(i.year));
-        if (selectedPapers.size > 0) fd = fd.filter(i => selectedPapers.has(i.paper));
-        if (selectedQuestions.size > 0) fd = fd.filter(i => selectedQuestions.has(i.question));
+
+        if (selectedTopics.size > 0) {
+          const includeOther = document.getElementById('include-other-topics').checked;
+          fd = fd.filter(item => {
+            // Match if selected topic is the main topic
+            if (selectedTopics.has(item.mainTopic)) return true;
+            // If enabled, also match if it's in otherTopics
+            if (includeOther && item.otherTopics.some(t => selectedTopics.has(t))) return true;
+            return false;
+          });
+        }
+
+        if (selectedYears.size > 0)
+          fd = fd.filter(i => selectedYears.has(i.year));
+        if (selectedPapers.size > 0)
+          fd = fd.filter(i => selectedPapers.has(i.paper));
+        if (selectedQuestions.size > 0)
+          fd = fd.filter(i => selectedQuestions.has(i.question));
+
         renderTable(fd);
       }
 
       function renderTable(data) {
         tableBody.innerHTML = '';
+        const fragment = document.createDocumentFragment();
         const displayData = data.length > 500 ? data.slice(0, 500) : data;
         displayData.forEach(r => {
           const tr = document.createElement('tr');
@@ -489,21 +711,22 @@
             <td>${r.mainTopic}</td>
             <td>${r.otherTopics.join(', ')}</td>
           `;
-          tr.addEventListener('click', () => {
-            pdfViewer.src = `${PDF_FOLDER}/${r.year}/${r.filename}`;
-          });
-          tableBody.appendChild(tr);
+          tr.addEventListener('click', () =>
+            pdfViewer.src = `${PDF_FOLDER}/${r.year}/${r.filename}`
+          );
+          fragment.appendChild(tr);
         });
+        tableBody.appendChild(fragment);
         fileCountDisplay.textContent = data.length > 500
           ? `Top 500 of ${data.length} files`
           : `${data.length} files found`;
       }
 
-      // Dragger Resizer
+      // Dragger
       const dragger = document.getElementById('dragger');
       const lowerPanel = document.getElementById('lower-panel');
-      let isDragging = false;
       if (dragger && lowerPanel) {
+        let isDragging = false;
         dragger.addEventListener('mousedown', () => {
           isDragging = true;
           document.body.style.userSelect = 'none';
@@ -514,8 +737,9 @@
           document.body.style.userSelect = 'auto';
           if (pdfViewer) pdfViewer.style.pointerEvents = 'auto';
         });
-        document.addEventListener('mousemove', e => {
-          if (isDragging) lowerPanel.style.height = `${window.innerHeight - e.clientY - 2.5}px`;
+        document.addEventListener('mousemove', (e) => {
+          if (isDragging)
+            lowerPanel.style.height = `${window.innerHeight - e.clientY - 2.5}px`;
         });
       }
     }
