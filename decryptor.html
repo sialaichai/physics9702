@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Decryptor Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], input[type="password"], input[type="file"] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
+        button { margin-top: 20px; width: 100%; padding: 15px; background: #007bff; color: white; border: none; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        .output-box { margin-top: 15px; padding: 10px; background: #e9ecef; border-radius: 4px; display: none; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Step 2: Unlock Your Data</h2>
+        
+        <label>1. Select your payload.enc:</label>
+        <input type="file" id="fileInput" accept=".enc">
+
+        <label>2. Enter the Access Password:</label>
+        <input type="password" id="password" placeholder="Enter the password used for encryption">
+
+        <button onclick="processAndDecrypt()">Decrypt & Download Data</button>
+        
+        <p id="status" style="margin-top:15px; font-weight: bold;"></p>
+        <div id="folderOutput" class="output-box"></div>
+    </div>
+
+    <script>
+        function processAndDecrypt() {
+            const pass = document.getElementById('password').value;
+            const fileInput = document.getElementById('fileInput');
+            const statusEl = document.getElementById('status');
+            const folderOutput = document.getElementById('folderOutput');
+
+            // Reset UI
+            statusEl.innerText = "";
+            folderOutput.style.display = "none";
+
+            if (!pass || !fileInput.files[0]) {
+                alert("Please select the encrypted file and enter the password.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const encryptedText = e.target.result;
+
+                    // 1. Decrypt using CryptoJS
+                    const decryptedBytes = CryptoJS.AES.decrypt(encryptedText, pass);
+                    const decryptedString = decryptedBytes.toString(CryptoJS.enc.Utf8);
+
+                    // If the string is empty, the password was likely wrong
+                    if (!decryptedString) {
+                        throw new Error("Incorrect password or corrupted file.");
+                    }
+
+                    // 2. Parse the unbundled JSON
+                    const bundle = JSON.parse(decryptedString);
+
+                    // 3. Re-stringify just the data portion for download
+                    const originalData = JSON.stringify(bundle.data, null, 2);
+
+                    // 4. Download the recovered JSON
+                    download("decrypted_data.json", originalData);
+
+                    // 5. Update UI to show success and the hidden folder name
+                    statusEl.style.color = "green";
+                    statusEl.innerText = "Success! 'decrypted_data.json' has been downloaded.";
+                    folderOutput.style.display = "block";
+                    folderOutput.innerHTML = "<strong>Recovered Folder Name:</strong> " + bundle.secure_folder;
+
+                } catch (err) {
+                    statusEl.style.color = "red";
+                    statusEl.innerText = "Error: " + err.message;
+                    console.error(err);
+                }
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        // Standard download helper function
+        function download(filename, text) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
