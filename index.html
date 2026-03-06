@@ -6,6 +6,7 @@
   <title>9702 Physics Viewer</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js?v=1.0.2"></script>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -337,7 +338,8 @@
 
         <button id="generate-html-btn">HTML</button>
         <button id="merge-pdf-btn">PDFs</button>
-        <button id="download-zip-btn">ZIP</button>
+        <button id="download-zip-btn" style="background-color: #ff9800; color: white; padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px;">ZIP</button>
+        
         <span id="file-count-display"></span>
         <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link" style="margin-left:auto;">Prelim</a>
         <a href="https://sialaichai.github.io/physicsseab/" class="nav-link">SEAB</a>
