@@ -337,6 +337,7 @@
 
         <button id="generate-html-btn">HTML</button>
         <button id="merge-pdf-btn">PDFs</button>
+        <button id="download-zip-btn">ZIP</button>
         <span id="file-count-display"></span>
         <a href="https://sialaichai.github.io/physicsprelim/" class="nav-link" style="margin-left:auto;">Prelim</a>
         <a href="https://sialaichai.github.io/physicsseab/" class="nav-link">SEAB</a>
@@ -670,6 +671,64 @@
             mergeBtn.disabled = false;
           }
         });
+        			// --- NEW: DOWNLOAD ZIP FUNCTIONALITY ---
+            const zipBtn = document.getElementById('download-zip-btn');
+            zipBtn.addEventListener('click', async () => {
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                
+                // 1. Safety Checks
+                if (rows.length === 0) { alert("No files to zip."); return; }
+                if (rows.length > 100 && !confirm(`Zipping ${rows.length} files might take a while. Continue?`)) return;
+
+                const originalBtnText = zipBtn.textContent;
+                zipBtn.disabled = true;
+
+                try {
+                    // 2. Initialize JSZip
+                    const zip = new JSZip();
+                    const pdfBaseUrl = `https://sialaichai.github.io/exam_db/${PDF_FOLDER}/`;
+
+                    // 3. Iterate through filtered rows and fetch files
+                    for (let i = 0; i < rows.length; i++) {
+                        const r = rows[i];
+                        const fname = r.cells[0].textContent; // Filename
+                        const year = r.cells[1].textContent;  // Year
+
+                        zipBtn.textContent = `Fetching ${i + 1}/${rows.length}...`;
+
+                        // Fetch the individual PDF
+                        const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
+                        const res = await fetch(fileUrl);
+                        
+                        if (res.ok) {
+                            const blob = await res.blob();
+                            // Add file to the zip folder
+                            zip.file(fname, blob);
+                        } else {
+                            console.error(`Failed to fetch ${fname}`);
+                        }
+                    }
+
+                    // 4. Generate the ZIP file and Download
+                    zipBtn.textContent = "Zipping...";
+                    const content = await zip.generateAsync({ type: "blob" });
+                    
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = `prelim_papers_${new Date().toISOString().slice(0,10)}.zip`;
+                    link.click();
+                    
+                    // Clean up memory
+                    URL.revokeObjectURL(link.href);
+
+                } catch (err) {
+                    console.error(err);
+                    alert("An error occurred while creating the zip:\n" + err.message);
+                } finally {
+                    zipBtn.textContent = originalBtnText;
+                    zipBtn.disabled = false;
+                }
+            });
       }
 
       // ✅ UPDATED: applyFilters now respects "Include Other Topics" checkbox
