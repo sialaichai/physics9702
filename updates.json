@@ -218,6 +218,22 @@
   {"filename":"9702_m26_12_q36.pdf","year":"m26","paper":"12","question":"q36","mainTopic":"16 Circuits","otherTopics":[]},
   {"filename":"9702_m26_12_q37.pdf","year":"m26","paper":"12","question":"q37","mainTopic":"16 Circuits","otherTopics":[]},
   {"filename":"9702_m26_12_q38.pdf","year":"m26","paper":"12","question":"q38","mainTopic":"20 Nuclear Physics","otherTopics":[]},
-  {"filename":"9702_m26_12_q40.pdf","year":"m26","paper":"12","question":"q40","mainTopic":"20 Nuclear Physics","otherTopics":[]}
+  {"filename":"9702_m26_12_q40.pdf","year":"m26","paper":"12","question":"q40","mainTopic":"20 Nuclear Physics","otherTopics":[]},
+  {"filename":"9702_m26_22_q1.pdf","year":"m26","paper":"22","question":"q1","mainTopic":"1 Quantities and Measurement","otherTopics":["3 Motion and Forces"]},
+  {"filename":"9702_m26_22_q2.pdf","year":"m26","paper":"22","question":"q2","mainTopic":"6 Collisions","otherTopics":["3 Motion and Forces","4 Energy and Fields","2 Forces and Moments"]},
+  {"filename":"9702_m26_22_q3.pdf","year":"m26","paper":"22","question":"q3","mainTopic":"4 Energy and Fields","otherTopics":["5 Projectile Motion"]},
+  {"filename":"9702_m26_22_q4.pdf","year":"m26","paper":"22","question":"q4","mainTopic":"2 Forces and Moments","otherTopics":["3 Motion and Forces"]},
+  {"filename":"9702_m26_22_q5.pdf","year":"m26","paper":"22","question":"q5","mainTopic":"11 Superposition","otherTopics":["10 Wave Motion"]},
+  {"filename":"9702_m26_22_q6.pdf","year":"m26","paper":"22","question":"q6","mainTopic":"16 Circuits","otherTopics":["15 Currents"]},
+  {"filename":"9702_m26_22_q7.pdf","year":"m26","paper":"22","question":"q7","mainTopic":"20 Nuclear Physics","otherTopics":[]},
+  {"filename":"9702_m26_42_q1.pdf","year":"m26","paper":"42","question":"q1","mainTopic":"7 Circular Motion","otherTopics":[]},
+  {"filename":"9702_m26_42_q2.pdf","year":"m26","paper":"42","question":"q2","mainTopic":"14 Electric Fields","otherTopics":["2 Forces and Moments"]},
+  {"filename":"9702_m26_42_q3.pdf","year":"m26","paper":"42","question":"q3","mainTopic":"13 Thermodynamic Systems","otherTopics":[]},
+  {"filename":"9702_m26_42_q4.pdf","year":"m26","paper":"42","question":"q4","mainTopic":"13 Thermodynamic Systems","otherTopics":["12 Temperature and Ideal Gases"]},
+  {"filename":"9702_m26_42_q5.pdf","year":"m26","paper":"42","question":"q5","mainTopic":"12 Temperature and Ideal Gases","otherTopics":[]},
+  {"filename":"9702_m26_42_q6.pdf","year":"m26","paper":"42","question":"q6","mainTopic":"9 Oscillations","otherTopics":["18 Electromagnetic Induction"]},
+  {"filename":"9702_m26_42_q7.pdf","year":"m26","paper":"42","question":"q7","mainTopic":"15 Currents","otherTopics":[]},
+  {"filename":"9702_m26_42_q8.pdf","year":"m26","paper":"42","question":"q8","mainTopic":"19 Quantum Physics","otherTopics":[]},
+  {"filename":"9702_m26_42_q9.pdf","year":"m26","paper":"42","question":"q9","mainTopic":"20 Nuclear Physics","otherTopics":[]}
 ]
 
