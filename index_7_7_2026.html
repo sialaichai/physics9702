@@ -143,35 +143,12 @@
     #pdf-viewer-container {
       flex: 1;
       background: #525659;
-      position: relative;
     }
 
     #pdf-viewer {
       width: 100%;
       height: 100%;
       border: none;
-    }
-
-    #ms-viewer {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-    }
-
-    .split-view {
-      display: flex;
-      height: 100%;
-    }
-
-    .split-view iframe {
-      flex: 1;
-      height: 100%;
-    }
-
-    .split-view #ms-viewer {
-      display: block;
-      border-left: 2px solid #444;
     }
 
     table {
@@ -191,7 +168,7 @@
       cursor: pointer;
       position: sticky;
       top: 0;
-      user-select: none;
+      user-select: none; /* Added to prevent text selection on click */
     }
 
     th:hover { background-color: #e2e6ea; }
@@ -318,134 +295,6 @@
       color: #555;
       margin-left: 10px;
     }
-
-    /* MS checkbox styling */
-    .ms-toggle {
-      display: inline-flex;
-      align-items: center;
-      margin-left: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      background: #e9ecef;
-      padding: 4px 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    .ms-toggle input { margin-right: 4px; cursor: pointer; }
-
-    /* Debug console */
-    #debug-console {
-      position: fixed;
-      bottom: 60px;
-      right: 10px;
-      background: rgba(0,0,0,0.9);
-      color: #0f0;
-      padding: 10px;
-      border-radius: 5px;
-      font-family: monospace;
-      font-size: 11px;
-      max-width: 500px;
-      max-height: 300px;
-      overflow-y: auto;
-      z-index: 9999;
-      display: none;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    #debug-console.show {
-      display: block;
-    }
-    #debug-toggle {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      z-index: 10000;
-      background: #333;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    #debug-toggle:hover { background: #555; }
-
-    /* Toast Notification - Bottom Right */
-    #toast-container {
-      position: fixed;
-      bottom: 60px;
-      right: 10px;
-      z-index: 99998;
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 8px;
-      max-width: 400px;
-      pointer-events: none;
-    }
-    .toast {
-      padding: 12px 16px;
-      border-radius: 6px;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 13px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      animation: slideUp 0.3s ease-out;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      pointer-events: auto;
-      min-width: 200px;
-      max-width: 380px;
-      backdrop-filter: blur(4px);
-    }
-    .toast-warning {
-      background: rgba(240, 173, 78, 0.95);
-      border-left: 4px solid #d58512;
-    }
-    .toast-info {
-      background: rgba(91, 192, 222, 0.95);
-      border-left: 4px solid #2a9fd6;
-    }
-    .toast-success {
-      background: rgba(92, 184, 92, 0.95);
-      border-left: 4px solid #398439;
-    }
-    .toast-error {
-      background: rgba(217, 83, 79, 0.95);
-      border-left: 4px solid #b52b27;
-    }
-    .toast-icon {
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .toast-message {
-      flex: 1;
-      word-break: break-word;
-      line-height: 1.4;
-    }
-    .toast-close {
-      margin-left: auto;
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 16px;
-      opacity: 0.7;
-      padding: 0 5px;
-      flex-shrink: 0;
-    }
-    .toast-close:hover { opacity: 1; }
-    @keyframes slideUp {
-      from { transform: translateY(20px) scale(0.95); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; transform: translateY(0) scale(1); }
-      to { opacity: 0; transform: translateY(-10px) scale(0.95); }
-    }
-    .toast-hiding {
-      animation: fadeOut 0.25s ease-in forwards;
-    }
   </style>
 </head>
 <body>
@@ -497,12 +346,7 @@
         </div>
         <label style="display:inline-flex;align-items:center;margin-left:10px;font-size:14px;">
           <input type="checkbox" id="include-other-topics" />
-          <span style="margin-left:4px;">"Other Topics"</span>
-        </label>
-
-        <!-- MS TOGGLE -->
-        <label class="ms-toggle">
-          <input type="checkbox" id="ms-toggle-checkbox"> MS
+          <span style="margin-left:4px;">“Other Topics”</span>
         </label>
 
         <button id="generate-html-btn">HTML</button>
@@ -515,10 +359,7 @@
         <a href="https://sialaichai.github.io/physynoptic/" class="nav-link">Data</a>
       </div>
       <div id="pdf-viewer-container">
-        <div id="pdf-viewer-wrapper" style="display:flex; height:100%;">
-          <iframe id="pdf-viewer" src="" frameborder="0" style="flex:1; height:100%;"></iframe>
-          <iframe id="ms-viewer" src="" frameborder="0" style="flex:1; height:100%; display:none; border-left:2px solid #444;"></iframe>
-        </div>
+        <iframe id="pdf-viewer" src="" frameborder="0"></iframe>
       </div>
     </div>
     <div id="dragger"></div>
@@ -539,119 +380,26 @@
     </div>
   </div>
 
-  <!-- Toast Container - Bottom Right -->
-  <div id="toast-container"></div>
-
-  <!-- Debug Console -->
-  <button id="debug-toggle">🐞 Debug</button>
-  <div id="debug-console"></div>
-
   <script>
     // CONFIGURATION
     const PAYLOAD_FILE = '9702payload.enc';
     const UPDATES_FILE = 'updates.json';
     let PDF_FOLDER = '';
     let ENCRYPTED_TEXT = '';
-    let debugMessages = [];
-    let debugVisible = false;
-    let toastTimeout = null;
-
     const statusEl = document.getElementById('status-msg');
     const errorEl = document.getElementById('error-msg');
-    const debugConsole = document.getElementById('debug-console');
-    const debugToggle = document.getElementById('debug-toggle');
-    const toastContainer = document.getElementById('toast-container');
-
-    debugToggle.addEventListener('click', () => {
-      debugVisible = !debugVisible;
-      debugConsole.classList.toggle('show', debugVisible);
-      debugToggle.textContent = debugVisible ? '🐞 Hide' : '🐞 Debug';
-    });
-
-    function debugLog(msg) {
-      const timestamp = new Date().toLocaleTimeString();
-      const logMsg = `[${timestamp}] ${msg}`;
-      debugMessages.push(logMsg);
-      if (debugMessages.length > 100) debugMessages.shift();
-      debugConsole.textContent = debugMessages.join('\n');
-      console.log(logMsg);
-    }
-
-    // Toast notification system
-    function showToast(message, type = 'info', duration = 4000) {
-      if (toastTimeout) {
-        clearTimeout(toastTimeout);
-        toastTimeout = null;
-      }
-
-      const oldToasts = toastContainer.querySelectorAll('.toast');
-      oldToasts.forEach(toast => {
-        toast.classList.add('toast-hiding');
-        setTimeout(() => toast.remove(), 300);
-      });
-
-      const toast = document.createElement('div');
-      toast.className = `toast toast-${type}`;
-      
-      const icons = {
-        warning: '⚠️',
-        info: 'ℹ️',
-        success: '✅',
-        error: '❌'
-      };
-      
-      toast.innerHTML = `
-        <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
-        <span class="toast-message">${message}</span>
-        <button class="toast-close">&times;</button>
-      `;
-      
-      toast.querySelector('.toast-close').addEventListener('click', () => {
-        toast.classList.add('toast-hiding');
-        setTimeout(() => toast.remove(), 300);
-      });
-      
-      toastContainer.appendChild(toast);
-      
-      toastTimeout = setTimeout(() => {
-        if (toast.parentNode) {
-          toast.classList.add('toast-hiding');
-          setTimeout(() => toast.remove(), 300);
-        }
-        toastTimeout = null;
-      }, duration);
-    }
 
     function logError(msg) {
       errorEl.style.display = 'block';
       errorEl.textContent = msg;
       statusEl.style.display = 'none';
       console.error(msg);
-      debugLog('ERROR: ' + msg);
-      showToast(msg, 'error', 6000);
     }
 
     function logStatus(msg) {
       statusEl.textContent = msg;
       statusEl.style.display = 'block';
       errorEl.style.display = 'none';
-      debugLog('STATUS: ' + msg);
-    }
-
-    // Helper function to get MS filename with question number
-    function getMSFilename(baseFilename) {
-      const base = baseFilename.replace(/\.pdf$/i, '');
-      return `${base}_ms.pdf`;
-    }
-
-    // Helper function to check if MS file exists
-    async function checkMSFileExists(msUrl) {
-      try {
-        const res = await fetch(msUrl, { method: 'HEAD' });
-        return res.ok;
-      } catch {
-        return false;
-      }
     }
 
     // 1. PRELOAD THE ENCRYPTED DATA
@@ -721,14 +469,12 @@
                 console.log(`Merging ${updateData.length} new items.`);
                 mainData = mainData.concat(updateData);
               }
-              showToast('Mark scheme: Direct file detection mode', 'info', 3000);
               startApp(mainData);
               document.getElementById('login-screen').style.display = 'none';
               document.getElementById('main-container').style.display = 'flex';
             })
             .catch(err => {
               console.warn("Update fetch error, loading main data only:", err);
-              showToast('Mark scheme: Direct file detection mode', 'info', 3000);
               startApp(mainData);
               document.getElementById('login-screen').style.display = 'none';
               document.getElementById('main-container').style.display = 'flex';
@@ -752,18 +498,9 @@
       let selectedYears = new Set();
       let selectedPapers = new Set();
       let selectedQuestions = new Set();
-      let msEnabled = false;
-      let lastNotifiedFile = '';
-      
       const tableBody = document.getElementById('data-table-body');
       const pdfViewer = document.getElementById('pdf-viewer');
-      const msViewer = document.getElementById('ms-viewer');
       const fileCountDisplay = document.getElementById('file-count-display');
-      const msToggle = document.getElementById('ms-toggle-checkbox');
-
-      debugLog(`🚀 Starting app with ${allData.length} items`);
-      debugLog(`📁 PDF_FOLDER: ${PDF_FOLDER}`);
-      debugLog(`📌 MS mode: Direct file detection (no ms.json required)`);
 
       // Normalize Data
       allData = allData.map(item => {
@@ -781,92 +518,24 @@
         };
       });
 
-      // --- Sort State & Listeners ---
+      // --- NEW: Sort State & Listeners ---
       let currentFilteredData = [...allData]; 
-      let currentSort = { column: 1, asc: false };
+      let currentSort = { column: 1, asc: false }; // Default: Year (index 1), Descending
       const baseHeaders = ['Filename', 'Year', 'Paper', 'Question', 'Main Topic', 'Other Topics'];
       const headers = document.querySelectorAll('#data-table th');
       
       headers.forEach((th, index) => {
-        th.addEventListener('click', () => {
-          if (currentSort.column === index) {
-            currentSort.asc = !currentSort.asc;
-          } else {
-            currentSort.column = index;
-            currentSort.asc = false;
-          }
-          renderTable(currentFilteredData);
-        });
-      });
-
-      // --- MS Toggle Handler ---
-      msToggle.addEventListener('change', function() {
-        msEnabled = this.checked;
-        debugLog(`🔄 MS toggle: ${msEnabled ? 'ON' : 'OFF'}`);
-        if (!msEnabled) {
-          msViewer.src = '';
-          msViewer.style.display = 'none';
-          pdfViewer.style.flex = '1';
-          showToast('Mark scheme view disabled', 'info', 2000);
-          return;
-        }
-        
-        const currentSrc = pdfViewer.src;
-        if (currentSrc) {
-          const parts = currentSrc.split('/');
-          const fname = parts[parts.length - 1];
-          debugLog(`Current PDF: ${fname}`);
-          if (fname) {
-            loadMSFile(fname, currentSrc.replace(/[^/]+$/, ''));
-          }
-        } else {
-          showToast('Please select a question paper first', 'info', 3000);
-        }
-      });
-
-      // Helper function to load MS file
-      function loadMSFile(fname, baseUrl) {
-        debugLog(`🔍 Attempting to load MS for: ${fname}`);
-        debugLog(`📁 Base URL: ${baseUrl}`);
-        
-        const msFile = getMSFilename(fname);
-        const msUrl = baseUrl + msFile;
-        debugLog(`📄 Trying MS file: ${msFile}`);
-        debugLog(`🌐 URL: ${msUrl}`);
-        
-        fetch(msUrl, { method: 'HEAD' })
-          .then(res => {
-            debugLog(`📡 HEAD request for ${msFile}: ${res.status}`);
-            if (res.ok) {
-              msViewer.src = msUrl;
-              msViewer.style.display = 'block';
-              pdfViewer.style.flex = '1';
-              msViewer.style.flex = '1';
-              debugLog(`✅ SUCCESS: Found MS file: ${msFile}`);
-              showToast(`✅ Mark scheme loaded: ${msFile}`, 'success', 3000);
-              lastNotifiedFile = fname;
-            } else {
-              debugLog(`❌ ${msFile} not found (${res.status})`);
-              msViewer.src = '';
-              msViewer.style.display = 'none';
-              pdfViewer.style.flex = '1';
-              if (lastNotifiedFile !== fname) {
-                showToast(`⚠️ Mark scheme not available for: ${fname}`, 'warning', 4000);
-                lastNotifiedFile = fname;
+          th.addEventListener('click', () => {
+              if (currentSort.column === index) {
+                  currentSort.asc = !currentSort.asc;
+              } else {
+                  currentSort.column = index;
+                  currentSort.asc = false; // Default to descending when a new column is clicked
               }
-            }
-          })
-          .catch(err => {
-            debugLog(`❌ Failed to load ${msFile}: ${err.message}`);
-            msViewer.src = '';
-            msViewer.style.display = 'none';
-            pdfViewer.style.flex = '1';
-            if (lastNotifiedFile !== fname) {
-              showToast(`⚠️ Mark scheme not available for: ${fname}`, 'warning', 4000);
-              lastNotifiedFile = fname;
-            }
+              renderTable(currentFilteredData);
           });
-      }
+      });
+      // -----------------------------------
 
       // Initial Render
       populateDropdowns(allData);
@@ -947,63 +616,26 @@
             });
         });
 
-        // Generate Button - FIXED: Now checks if MS file exists before including it
+        // Generate Button
         const genBtn = document.getElementById('generate-html-btn');
-        genBtn.addEventListener('click', async () => {
+        genBtn.addEventListener('click', () => {
           const rows = tableBody.querySelectorAll('tr');
           if (rows.length > 100 && !confirm(`Generate report for ${rows.length} files? Browser may crash due to large number of files. Safer to keep < 100 files.`))
             return;
 
           const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
-          let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px;background:#f4f4f4}h1{text-align:center}.pdf-section{margin-bottom:40px;background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.header-row{font-size:1.2em;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px}embed{width:100%;height:800px;border:1px solid #ccc}.ms-embed{width:100%;height:800px;border:1px solid #aaa;margin-top:10px}</style></head><body><h1>Filtered PDF Report</h1>`;
-          
-          let msFound = 0;
-          let msNotFound = 0;
-
-          for (const r of rows) {
+          let html = `<!DOCTYPE html><html><head><title>Report</title><style>body{font-family:sans-serif;margin:20px;background:#f4f4f4}h1{text-align:center}.pdf-section{margin-bottom:40px;background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}.header-row{font-size:1.2em;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:5px}embed{width:100%;height:800px;border:1px solid #ccc}</style></head><body><h1>Filtered PDF Report</h1>`;
+          rows.forEach(r => {
             const fname = r.cells[0].textContent;
             const year = r.cells[1].textContent;
             const mainTopic = r.cells[4].textContent;
-            let msUrl = '';
-            
-            if (msEnabled) {
-              const msFile = getMSFilename(fname);
-              const fullMsUrl = `${pdfBaseUrl}${year}/${msFile}`;
-              debugLog(`HTML: Checking MS file: ${msFile}`);
-              
-              // Check if MS file exists
-              const msExists = await checkMSFileExists(fullMsUrl);
-              if (msExists) {
-                msUrl = fullMsUrl;
-                msFound++;
-                debugLog(`HTML: MS file found: ${msFile}`);
-              } else {
-                msNotFound++;
-                debugLog(`HTML: MS file NOT found: ${msFile}`);
-              }
-            }
-            
-            html += `
-              <div class='pdf-section'>
-                <div class='header-row'>
-                  <b>${fname}</b> <span style="color:#666; font-size:0.9em;">(${mainTopic})</span>
-                </div>
-                <embed src='${pdfBaseUrl}${year}/${fname}' type='application/pdf' />
-                ${msUrl ? `<div style="margin-top:10px;font-weight:bold;color:#0066cc;">Mark Scheme</div><embed class="ms-embed" src='${msUrl}' type='application/pdf' />` : ''}
-              </div>
-            `;
-          }
+            html += `<div class='pdf-section'><div class='header-row'><b>${fname}</b> <span style="color:#666; font-size:0.9em;">(${mainTopic})</span></div><embed src='${pdfBaseUrl}${year}/${fname}' type='application/pdf' /></div>`;
+          });
           html += '</body></html>';
           const a = document.createElement('a');
           a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
           a.download = 'report.html';
           a.click();
-          
-          if (msEnabled) {
-            showToast(`✅ HTML report generated with ${rows.length} files (${msFound} MS found, ${msNotFound} MS missing)`, 'success', 4000);
-          } else {
-            showToast(`✅ HTML report generated with ${rows.length} files`, 'success', 3000);
-          }
         });
 
         // Merge PDF Button
@@ -1011,7 +643,7 @@
         mergeBtn.addEventListener('click', async () => {
           const rows = Array.from(tableBody.querySelectorAll('tr'));
           if (rows.length === 0) {
-            showToast("No files to merge.", 'warning', 3000);
+            alert("No files to merge.");
             return;
           }
           if (rows.length > 50 && !confirm(`Merging ${rows.length} PDFs is memory intensive and may crash your browser. Continue?`))
@@ -1026,9 +658,6 @@
             const mergedPdf = await PDFDocument.create();
             const font = await mergedPdf.embedFont(StandardFonts.HelveticaBold);
             const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
-
-            let msFound = 0;
-            let msNotFound = 0;
 
             for (let i = 0; i < rows.length; i++) {
               const r = rows[i];
@@ -1060,31 +689,6 @@
 
               const copiedPages = await mergedPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
               copiedPages.forEach((page) => mergedPdf.addPage(page));
-
-              // MS PDF if enabled
-              if (msEnabled) {
-                const msFile = getMSFilename(fname);
-                const msUrl = `${pdfBaseUrl}${year}/${msFile}`;
-                debugLog(`PDF Merge: Trying MS file: ${msFile}`);
-                const msRes = await fetch(msUrl);
-                if (msRes.ok) {
-                  const msBytes = await msRes.arrayBuffer();
-                  const msPdf = await PDFDocument.load(msBytes);
-                  const msBanner = mergedPdf.addPage([width, 30]);
-                  msBanner.drawText(`Mark Scheme: ${msFile}`, {
-                    x: 15,
-                    y: 15,
-                    size: 12,
-                    font: font,
-                    color: rgb(0, 0, 1)
-                  });
-                  const msPages = await mergedPdf.copyPages(msPdf, msPdf.getPageIndices());
-                  msPages.forEach((page) => mergedPdf.addPage(page));
-                  msFound++;
-                } else {
-                  msNotFound++;
-                }
-              }
             }
 
             mergeBtn.textContent = "Finalizing...";
@@ -1094,15 +698,9 @@
             link.href = URL.createObjectURL(blob);
             link.download = `merged_physics_linear_${new Date().toISOString().slice(0,10)}.pdf`;
             link.click();
-            
-            if (msEnabled) {
-              showToast(`✅ Merged ${rows.length} files (${msFound} MS found, ${msNotFound} MS missing)`, 'success', 4000);
-            } else {
-              showToast(`✅ Merged ${rows.length} files`, 'success', 3000);
-            }
           } catch (err) {
             console.error(err);
-            showToast(`Error merging: ${err.message}`, 'error', 5000);
+            alert("An error occurred while merging: " + err.message);
           } finally {
             mergeBtn.textContent = originalBtnText;
             mergeBtn.disabled = false;
@@ -1112,85 +710,73 @@
         // --- DOWNLOAD ZIP FUNCTIONALITY ---
         const zipBtn = document.getElementById('download-zip-btn');
         zipBtn.addEventListener('click', async () => {
-          const rows = Array.from(tableBody.querySelectorAll('tr'));
-          
-          if (rows.length === 0) { showToast("No files to zip.", 'warning', 3000); return; }
-          if (rows.length > 100 && !confirm(`Zipping ${rows.length} files might take a while. Continue?`)) return;
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            
+            // 1. Safety Checks
+            if (rows.length === 0) { alert("No files to zip."); return; }
+            if (rows.length > 100 && !confirm(`Zipping ${rows.length} files might take a while. Continue?`)) return;
 
-          const originalBtnText = zipBtn.textContent;
-          zipBtn.disabled = true;
+            const originalBtnText = zipBtn.textContent;
+            zipBtn.disabled = true;
 
-          try {
-            const zip = new JSZip();
-            const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
+            try {
+                // 2. Initialize JSZip
+                const zip = new JSZip();
+                const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
 
-            let msFound = 0;
-            let msNotFound = 0;
+                // 3. Iterate through filtered rows and fetch files
+                for (let i = 0; i < rows.length; i++) {
+                    const r = rows[i];
+                    const fname = r.cells[0].textContent; // Filename
+                    const year = r.cells[1].textContent;  // Year
 
-            for (let i = 0; i < rows.length; i++) {
-              const r = rows[i];
-              const fname = r.cells[0].textContent;
-              const year = r.cells[1].textContent;
+                    zipBtn.textContent = `Fetching ${i + 1}/${rows.length}...`;
 
-              zipBtn.textContent = `Fetching ${i + 1}/${rows.length}...`;
-
-              const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
-              const res = await fetch(fileUrl);
-              if (res.ok) {
-                const blob = await res.blob();
-                zip.file(fname, blob);
-              } else {
-                console.error(`Failed to fetch ${fname}`);
-              }
-
-              // MS if enabled
-              if (msEnabled) {
-                const msFile = getMSFilename(fname);
-                const msUrl = `${pdfBaseUrl}${year}/${msFile}`;
-                debugLog(`ZIP: Trying MS file: ${msFile}`);
-                const msRes = await fetch(msUrl);
-                if (msRes.ok) {
-                  const msBlob = await msRes.blob();
-                  zip.file(msFile, msBlob);
-                  msFound++;
-                } else {
-                  msNotFound++;
+                    // Fetch the individual PDF
+                    const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
+                    const res = await fetch(fileUrl);
+                    
+                    if (res.ok) {
+                        const blob = await res.blob();
+                        // Add file to the zip folder
+                        zip.file(fname, blob);
+                    } else {
+                        console.error(`Failed to fetch ${fname}`);
+                    }
                 }
-              }
+
+                // 4. Generate the ZIP file and Download
+                zipBtn.textContent = "Zipping...";
+                const content = await zip.generateAsync({ type: "blob" });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = `prelim_papers_${new Date().toISOString().slice(0,10)}.zip`;
+                link.click();
+                
+                // Clean up memory
+                URL.revokeObjectURL(link.href);
+
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred while creating the zip:\n" + err.message);
+            } finally {
+                zipBtn.textContent = originalBtnText;
+                zipBtn.disabled = false;
             }
-
-            zipBtn.textContent = "Zipping...";
-            const content = await zip.generateAsync({ type: "blob" });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(content);
-            link.download = `9702_papers_${new Date().toISOString().slice(0,10)}.zip`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-
-            if (msEnabled) {
-              showToast(`✅ Zipped ${rows.length} files (${msFound} MS found, ${msNotFound} MS missing)`, 'success', 4000);
-            } else {
-              showToast(`✅ Zipped ${rows.length} files`, 'success', 3000);
-            }
-
-          } catch (err) {
-            console.error(err);
-            showToast(`Error creating zip: ${err.message}`, 'error', 5000);
-          } finally {
-            zipBtn.textContent = originalBtnText;
-            zipBtn.disabled = false;
-          }
         });
       }
 
-      // ✅ applyFilters
+      // ✅ UPDATED: applyFilters now respects "Include Other Topics" checkbox and tracks currentFilteredData
       function applyFilters(data) {
         let fd = [...data];
 
         if (selectedTopics.size > 0) {
           const includeOther = document.getElementById('include-other-topics').checked;
           fd = fd.filter(item => {
+            // Match if selected topic is the main topic
             if (selectedTopics.has(item.mainTopic)) return true;
+            // If enabled, also match if it's in otherTopics
             if (includeOther && item.otherTopics.some(t => selectedTopics.has(t))) return true;
             return false;
           });
@@ -1203,7 +789,7 @@
         if (selectedQuestions.size > 0)
           fd = fd.filter(i => selectedQuestions.has(i.question));
 
-        currentFilteredData = fd;
+        currentFilteredData = fd; // Keep track of the newly filtered dataset
         renderTable(currentFilteredData);
       }
 
@@ -1211,35 +797,37 @@
         // Update Headers with Arrows
         const headers = document.querySelectorAll('#data-table th');
         headers.forEach((th, index) => {
-          if (currentSort.column === index) {
-            th.textContent = baseHeaders[index] + (currentSort.asc ? ' ▲' : ' ▼');
-          } else {
-            th.textContent = baseHeaders[index];
-          }
+            if (currentSort.column === index) {
+                th.textContent = baseHeaders[index] + (currentSort.asc ? ' ▲' : ' ▼');
+            } else {
+                th.textContent = baseHeaders[index];
+            }
         });
 
         // Dynamic Sorting Logic
         data.sort((a, b) => {
-          const keys = ['filename', 'year', 'paper', 'question', 'mainTopic', 'otherTopics'];
-          const key = keys[currentSort.column];
-          
-          let valA = a[key] || '';
-          let valB = b[key] || '';
-          
-          if (key === 'year') {
-            valA = parseInt(valA.toString().replace(/\D/g, '')) || 0;
-            valB = parseInt(valB.toString().replace(/\D/g, '')) || 0;
-            return currentSort.asc ? valA - valB : valB - valA;
-          }
-          
-          if (key === 'otherTopics') {
-            valA = valA.join(', ');
-            valB = valB.join(', ');
-          }
+            const keys = ['filename', 'year', 'paper', 'question', 'mainTopic', 'otherTopics'];
+            const key = keys[currentSort.column];
+            
+            let valA = a[key] || '';
+            let valB = b[key] || '';
+            
+            // Numeric sorting for year
+            if (key === 'year') {
+                valA = parseInt(valA.toString().replace(/\D/g, '')) || 0;
+                valB = parseInt(valB.toString().replace(/\D/g, '')) || 0;
+                return currentSort.asc ? valA - valB : valB - valA;
+            }
+            
+            // Convert arrays to strings for sorting
+            if (key === 'otherTopics') {
+                valA = valA.join(', ');
+                valB = valB.join(', ');
+            }
 
-          return currentSort.asc 
-            ? String(valA).localeCompare(String(valB), undefined, { numeric: true, sensitivity: 'base' })
-            : String(valB).localeCompare(String(valA), undefined, { numeric: true, sensitivity: 'base' });
+            return currentSort.asc 
+                ? String(valA).localeCompare(String(valB), undefined, { numeric: true, sensitivity: 'base' })
+                : String(valB).localeCompare(String(valA), undefined, { numeric: true, sensitivity: 'base' });
         });
 
         tableBody.innerHTML = '';
@@ -1255,21 +843,9 @@
             <td>${r.mainTopic}</td>
             <td>${r.otherTopics.join(', ')}</td>
           `;
-          tr.addEventListener('click', () => {
-            const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
-            const pdfUrl = `${pdfBaseUrl}${r.year}/${r.filename}`;
-            pdfViewer.src = pdfUrl;
-            pdfViewer.style.flex = '1';
-            debugLog(`🖱️ Row clicked: ${r.filename}`);
-            lastNotifiedFile = '';
-            if (msEnabled) {
-              loadMSFile(r.filename, `${pdfBaseUrl}${r.year}/`);
-            } else {
-              msViewer.src = '';
-              msViewer.style.display = 'none';
-              pdfViewer.style.flex = '1';
-            }
-          });
+          tr.addEventListener('click', () =>
+            pdfViewer.src = `${PDF_FOLDER}/${r.year}/${r.filename}`
+          );
           fragment.appendChild(tr);
         });
         tableBody.appendChild(fragment);

@@ -333,11 +333,11 @@
     }
     .ms-toggle input { margin-right: 4px; cursor: pointer; }
 
-    /* Debug console */
+    /* Debug console - Hidden by default, triggered by keyboard shortcut */
     #debug-console {
       position: fixed;
-      bottom: 60px;
-      right: 10px;
+      bottom: 20px;
+      right: 20px;
       background: rgba(0,0,0,0.9);
       color: #0f0;
       padding: 10px;
@@ -351,30 +351,58 @@
       display: none;
       white-space: pre-wrap;
       word-wrap: break-word;
+      border: 1px solid #333;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
     #debug-console.show {
       display: block;
     }
-    #debug-toggle {
+    #debug-console .debug-header {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #debug-console .debug-header .close-btn {
+      cursor: pointer;
+      color: #ff4444;
+      background: none;
+      border: none;
+      font-size: 16px;
+      padding: 0 5px;
+    }
+    #debug-console .debug-header .close-btn:hover {
+      color: #ff6666;
+    }
+    #debug-console .debug-content {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .debug-hint {
       position: fixed;
       bottom: 10px;
       right: 10px;
-      z-index: 10000;
-      background: #333;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+      font-size: 10px;
+      font-family: monospace;
+      z-index: 9998;
+      pointer-events: none;
+      user-select: none;
+      display: none;
     }
-    #debug-toggle:hover { background: #555; }
+    .debug-hint.show {
+      display: block;
+    }
 
     /* Toast Notification - Bottom Right */
     #toast-container {
       position: fixed;
       bottom: 60px;
-      right: 10px;
+      right: 20px;
       z-index: 99998;
       display: flex;
       flex-direction: column-reverse;
@@ -542,9 +570,15 @@
   <!-- Toast Container - Bottom Right -->
   <div id="toast-container"></div>
 
-  <!-- Debug Console -->
-  <button id="debug-toggle">🐞 Debug</button>
-  <div id="debug-console"></div>
+  <!-- Debug Console - Hidden by default -->
+  <div id="debug-console">
+    <div class="debug-header">
+      <span>🐞 Debug Console</span>
+      <button class="close-btn" id="debug-close">✕</button>
+    </div>
+    <div class="debug-content" id="debug-content"></div>
+  </div>
+  <div class="debug-hint" id="debug-hint">Press Ctrl+Shift+D for debug</div>
 
   <script>
     // CONFIGURATION
@@ -559,21 +593,49 @@
     const statusEl = document.getElementById('status-msg');
     const errorEl = document.getElementById('error-msg');
     const debugConsole = document.getElementById('debug-console');
-    const debugToggle = document.getElementById('debug-toggle');
-    const toastContainer = document.getElementById('toast-container');
+    const debugContent = document.getElementById('debug-content');
+    const debugClose = document.getElementById('debug-close');
+    const debugHint = document.getElementById('debug-hint');
 
-    debugToggle.addEventListener('click', () => {
+    // Keyboard shortcut: Ctrl+Shift+D to toggle debug console
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        toggleDebug();
+      }
+    });
+
+    // Close button for debug console
+    if (debugClose) {
+      debugClose.addEventListener('click', () => {
+        if (debugVisible) toggleDebug();
+      });
+    }
+
+    function toggleDebug() {
       debugVisible = !debugVisible;
       debugConsole.classList.toggle('show', debugVisible);
-      debugToggle.textContent = debugVisible ? '🐞 Hide' : '🐞 Debug';
-    });
+      debugHint.classList.toggle('show', !debugVisible);
+      if (debugVisible) {
+        updateDebugContent();
+      }
+    }
+
+    function updateDebugContent() {
+      if (debugContent) {
+        debugContent.textContent = debugMessages.join('\n');
+        debugContent.scrollTop = debugContent.scrollHeight;
+      }
+    }
 
     function debugLog(msg) {
       const timestamp = new Date().toLocaleTimeString();
       const logMsg = `[${timestamp}] ${msg}`;
       debugMessages.push(logMsg);
       if (debugMessages.length > 100) debugMessages.shift();
-      debugConsole.textContent = debugMessages.join('\n');
+      if (debugVisible) {
+        updateDebugContent();
+      }
       console.log(logMsg);
     }
 
@@ -725,6 +787,13 @@
               startApp(mainData);
               document.getElementById('login-screen').style.display = 'none';
               document.getElementById('main-container').style.display = 'flex';
+              // Show hint after login
+              setTimeout(() => {
+                debugHint.classList.add('show');
+                setTimeout(() => {
+                  debugHint.classList.remove('show');
+                }, 5000);
+              }, 2000);
             })
             .catch(err => {
               console.warn("Update fetch error, loading main data only:", err);
@@ -764,6 +833,7 @@
       debugLog(`🚀 Starting app with ${allData.length} items`);
       debugLog(`📁 PDF_FOLDER: ${PDF_FOLDER}`);
       debugLog(`📌 MS mode: Direct file detection (no ms.json required)`);
+      debugLog(`💡 Press Ctrl+Shift+D to toggle debug console`);
 
       // Normalize Data
       allData = allData.map(item => {
@@ -971,7 +1041,6 @@
               const fullMsUrl = `${pdfBaseUrl}${year}/${msFile}`;
               debugLog(`HTML: Checking MS file: ${msFile}`);
               
-              // Check if MS file exists
               const msExists = await checkMSFileExists(fullMsUrl);
               if (msExists) {
                 msUrl = fullMsUrl;
