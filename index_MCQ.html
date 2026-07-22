@@ -131,13 +131,14 @@
     }
 
     #controls {
-      padding: 10px;
+      padding: 8px 10px;
       background: #f4f4f4;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
       border-bottom: 1px solid #ddd;
+      min-height: 44px;
     }
 
     #pdf-viewer-container {
@@ -207,19 +208,21 @@
     }
 
     .filter-button {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
       background: white;
-      min-width: 60px;
+      min-width: 50px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
     }
 
     #topic-filter-btn {
-      min-width: 320px;
+      min-width: 180px;
     }
 
     .dropdown-panel {
@@ -229,7 +232,7 @@
       border: 1px solid #ccc;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       z-index: 100;
-      min-width: 200px;
+      min-width: 160px;
       padding: 10px;
       border-radius: 4px;
     }
@@ -243,8 +246,9 @@
 
     .dropdown-list label {
       display: block;
-      padding: 6px;
+      padding: 4px 6px;
       cursor: pointer;
+      font-size: 13px;
     }
 
     .dropdown-list label:hover {
@@ -252,53 +256,103 @@
     }
 
     .dropdown-list label input[type="checkbox"] {
-      margin-right: 8px;
+      margin-right: 6px;
     }
 
     .apply-button {
       width: 100%;
-      padding: 8px;
+      padding: 6px;
       background: #007bff;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-    }
-
-    .clear-button {
-      width: 100%;
-      padding: 6px;
-      background: #6c757d;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-bottom: 6px;
       font-size: 13px;
     }
 
-    .clear-button:hover {
-      background: #5a6268;
+    .apply-button:hover {
+      background: #0056b3;
     }
 
-    /* unified dropdown for navigation links */
+    /* Tools dropdown - compact */
+    .tools-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .tools-dropdown-btn {
+      background-color: #6c757d;
+      color: white;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 40px;
+      justify-content: center;
+    }
+    .tools-dropdown-btn:hover {
+      background-color: #5a6268;
+    }
+    .tools-dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #f9f9f9;
+      min-width: 120px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      padding: 4px 0;
+    }
+    .tools-dropdown-content button {
+      display: block;
+      width: 100%;
+      padding: 8px 14px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+      border-bottom: 1px solid #eaeaea;
+    }
+    .tools-dropdown-content button:last-child {
+      border-bottom: none;
+    }
+    .tools-dropdown-content button:hover {
+      background-color: #e2e6ea;
+    }
+    .tools-dropdown-content button .icon {
+      margin-right: 8px;
+    }
+    .tools-dropdown:hover .tools-dropdown-content {
+      display: block;
+    }
+
+    /* Navigation dropdown - compact */
     .nav-dropdown {
       position: relative;
       display: inline-block;
-      margin-left: auto;
     }
     .nav-dropdown-btn {
       background-color: #3437eb;
       color: white;
-      padding: 8px 8px;
+      padding: 6px 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
+      min-width: 40px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
     }
     .nav-dropdown-btn:hover {
       background-color: #6365f7;
@@ -316,10 +370,11 @@
     }
     .nav-dropdown-content a {
       color: black;
-      padding: 10px 8px;
+      padding: 8px 14px;
       text-decoration: none;
       display: block;
       font-weight: 500;
+      font-size: 13px;
       border-bottom: 1px solid #eaeaea;
     }
     .nav-dropdown-content a:last-child {
@@ -331,75 +386,43 @@
     .nav-dropdown:hover .nav-dropdown-content {
       display: block;
     }
-
-    #generate-html-btn {
-      background-color: #28a745;
-      color: white;
-      padding: 8px 2px;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    #generate-html-btn:hover {
-      background-color: #218838;
-    }
-
-    #merge-pdf-btn {
-      background-color: #007bff;
-      color: white;
-      padding: 8px 2px;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    #download-zip-btn {
-      background-color: #ff9800; 
-      color: white; 
-      padding: 8px 2px; 
-      border: none; 
-      border-radius: 4px; 
-      font-weight: bold; 
-      cursor: pointer; 
-      font-size: 14px;
-    }
     
     #file-count-display {
       font-weight: bold;
       color: #555;
-      margin-left: 10px;
+      margin-left: 4px;
+      font-size: 12px;
+      white-space: nowrap;
     }
 
-    /* MS checkbox styling */
+    /* MS checkbox styling - compact */
     .ms-toggle {
       display: inline-flex;
       align-items: center;
-      margin-left: 10px;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       background: #e9ecef;
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 4px;
       border: 1px solid #ccc;
+      white-space: nowrap;
     }
-    .ms-toggle input { margin-right: 4px; cursor: pointer; }
+    .ms-toggle input { margin-right: 3px; cursor: pointer; }
+
+    /* Other topics checkbox - compact */
+    .other-topics-toggle {
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-left: 2px;
+    }
+    .other-topics-toggle input { margin-right: 3px; cursor: pointer; }
 
     /* Level filter - compact styling */
     #level-filter-btn {
-      min-width: 70px;
-    }
-    .level-option {
-      display: flex;
-      align-items: center;
-      padding: 4px 0;
-    }
-    .level-option input[type="checkbox"] {
-      margin-right: 8px;
+      min-width: 60px;
     }
 
     /* Debug console - Hidden by default */
@@ -578,7 +601,7 @@
         </div>
 
         <div class="dropdown-check-container">
-          <button id="question-filter-btn" class="filter-button">Question (<span id="question-filter-count">0</span>)</button>
+          <button id="question-filter-btn" class="filter-button">Q (<span id="question-filter-count">0</span>)</button>
           <div id="question-filter-panel" class="dropdown-panel">
             <div id="question-filter-list" class="dropdown-list"></div>
             <button id="question-filter-apply" class="apply-button">Apply</button>
@@ -593,36 +616,38 @@
           </div>
         </div>
 
-        <!-- Level Filter - Multi-select checkboxes -->
         <div class="dropdown-check-container">
           <button id="level-filter-btn" class="filter-button">Level (<span id="level-filter-count">0</span>)</button>
           <div id="level-filter-panel" class="dropdown-panel">
-            <div id="level-filter-list" class="dropdown-list">
-              <!-- Level options populated here -->
-            </div>
+            <div id="level-filter-list" class="dropdown-list"></div>
             <button id="level-filter-apply" class="apply-button">Apply</button>
           </div>
         </div>
 
-        <label style="display:inline-flex;align-items:center;margin-left:10px;font-size:14px;">
+        <label class="other-topics-toggle">
           <input type="checkbox" id="include-other-topics" />
-          <span style="margin-left:4px;">"Other Topics"</span>
+          <span>Other</span>
         </label>
 
-        <!-- MS TOGGLE -->
         <label class="ms-toggle">
           <input type="checkbox" id="ms-toggle-checkbox"> MS
         </label>
 
-        <button id="generate-html-btn">HTML</button>
-        <button id="merge-pdf-btn">PDFs</button>
-        <button id="download-zip-btn">ZIP</button>
+        <!-- Tools Dropdown - combines HTML, PDFs, ZIP -->
+        <div class="tools-dropdown">
+          <button class="tools-dropdown-btn">⚙️</button>
+          <div class="tools-dropdown-content">
+            <button id="generate-html-btn"><span class="icon">📄</span>HTML</button>
+            <button id="merge-pdf-btn"><span class="icon">📑</span>PDFs</button>
+            <button id="download-zip-btn"><span class="icon">📦</span>ZIP</button>
+          </div>
+        </div>
         
         <span id="file-count-display"></span>
 
-        <!-- unified dropdown for the 3 nav links -->
+        <!-- Navigation dropdown - compact "Goto" -->
         <div class="nav-dropdown">
-          <button class="nav-dropdown-btn">GoTo▾</button>
+          <button class="nav-dropdown-btn">Goto</button>
           <div class="nav-dropdown-content">
             <a href="https://sialaichai.github.io/physicsprelim/">Prelim</a>
             <a href="https://sialaichai.github.io/physicsseab/">SEAB</a>
@@ -916,7 +941,6 @@
               }
               logStatus("Loading MCQ levels...");
               return loadMCQLevels().then(levelData => {
-                // Merge level data into mainData
                 if (levelData && Array.isArray(levelData)) {
                   const levelMap = {};
                   levelData.forEach(item => {
@@ -987,7 +1011,7 @@
       let selectedYears = new Set();
       let selectedPapers = new Set();
       let selectedQuestions = new Set();
-      let selectedLevels = new Set(); // NEW: multi-select levels
+      let selectedLevels = new Set();
       let msEnabled = false;
       let lastNotifiedFile = '';
       
@@ -1130,10 +1154,9 @@
         const papers = getUniques(i => i.paper, undefined);
         const questions = getUniques(i => i.question, naturalSort);
         
-        // Level options - fixed 1-5 (checkbox, not radio)
         const levels = ['1', '2', '3', '4', '5'];
 
-        const setupList = (id, arr, cls, isRadio = false) => {
+        const setupList = (id, arr, cls) => {
           const el = document.getElementById(id);
           if (!el) return;
           el.innerHTML = '';
@@ -1141,10 +1164,9 @@
           arr.forEach(v => {
             const l = document.createElement('label');
             const c = document.createElement('input');
-            c.type = isRadio ? 'radio' : 'checkbox';
+            c.type = 'checkbox';
             c.className = cls;
             c.value = v;
-            if (isRadio) c.name = 'level-group';
             l.appendChild(c);
             l.appendChild(document.createTextNode(' ' + v));
             el.appendChild(l);
@@ -1155,11 +1177,11 @@
         setupList('year-filter-list', years, 'year-checkbox');
         setupList('paper-filter-list', papers, 'paper-checkbox');
         setupList('question-filter-list', questions, 'question-checkbox');
-        setupList('level-filter-list', levels, 'level-checkbox', false); // CHECKBOXES for multi-select
+        setupList('level-filter-list', levels, 'level-checkbox');
       }
 
       function setupEventListeners(data) {
-        const setup = (btnId, panelId, listId, applyId, set, cls, isRadio = false) => {
+        const setup = (btnId, panelId, listId, applyId, set, cls) => {
           const btn = document.getElementById(btnId),
                 panel = document.getElementById(panelId),
                 list = document.getElementById(listId),
@@ -1169,16 +1191,11 @@
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block'
           );
           apply.addEventListener('click', () => {
-            if (isRadio) {
-              // Not used for levels anymore
-            } else {
-              set.clear();
-              list.querySelectorAll(`.${cls}:checked`).forEach(b => set.add(b.value));
-              // Update count display
-              const countSpan = btn.querySelector('span');
-              if (countSpan) {
-                countSpan.textContent = set.size;
-              }
+            set.clear();
+            list.querySelectorAll(`.${cls}:checked`).forEach(b => set.add(b.value));
+            const countSpan = btn.querySelector('span');
+            if (countSpan) {
+              countSpan.textContent = set.size;
             }
             panel.style.display = 'none';
             applyFilters(data);
@@ -1189,7 +1206,7 @@
         setup('year-filter-btn', 'year-filter-panel', 'year-filter-list', 'year-filter-apply', selectedYears, 'year-checkbox');
         setup('paper-filter-btn', 'paper-filter-panel', 'paper-filter-list', 'paper-filter-apply', selectedPapers, 'paper-checkbox');
         setup('question-filter-btn', 'question-filter-panel', 'question-filter-list', 'question-filter-apply', selectedQuestions, 'question-checkbox');
-        setup('level-filter-btn', 'level-filter-panel', 'level-filter-list', 'level-filter-apply', selectedLevels, 'level-checkbox', false); // CHANGED: multi-select
+        setup('level-filter-btn', 'level-filter-panel', 'level-filter-list', 'level-filter-apply', selectedLevels, 'level-checkbox');
 
         document.addEventListener('click', (e) => {
           ['topic-filter-panel', 'year-filter-panel', 'paper-filter-panel', 'question-filter-panel', 'level-filter-panel']
@@ -1200,9 +1217,12 @@
             });
         });
 
-        // Generate Button
-        const genBtn = document.getElementById('generate-html-btn');
-        genBtn.addEventListener('click', async () => {
+        // Tools dropdown buttons - reattach event listeners
+        document.getElementById('generate-html-btn').addEventListener('click', generateHTML);
+        document.getElementById('merge-pdf-btn').addEventListener('click', mergePDFs);
+        document.getElementById('download-zip-btn').addEventListener('click', downloadZIP);
+
+        async function generateHTML() {
           const rows = tableBody.querySelectorAll('tr');
           if (rows.length > 100 && !confirm(`Generate report for ${rows.length} files? Browser may crash due to large number of files. Safer to keep < 100 files.`))
             return;
@@ -1256,11 +1276,9 @@
           } else {
             showToast(`✅ HTML report generated with ${rows.length} files`, 'success', 3000);
           }
-        });
+        }
 
-        // Merge PDF Button
-        const mergeBtn = document.getElementById('merge-pdf-btn');
-        mergeBtn.addEventListener('click', async () => {
+        async function mergePDFs() {
           const rows = Array.from(tableBody.querySelectorAll('tr'));
           if (rows.length === 0) {
             showToast("No files to merge.", 'warning', 3000);
@@ -1269,8 +1287,9 @@
           if (rows.length > 50 && !confirm(`Merging ${rows.length} PDFs is memory intensive and may crash your browser. Continue?`))
             return;
 
+          const mergeBtn = document.getElementById('merge-pdf-btn');
           const originalBtnText = mergeBtn.textContent;
-          mergeBtn.textContent = "Processing...";
+          mergeBtn.textContent = "⏳";
           mergeBtn.disabled = true;
 
           try {
@@ -1286,7 +1305,7 @@
               const r = rows[i];
               const fname = r.cells[0].textContent;
               const year = r.cells[1].textContent;
-              mergeBtn.textContent = `Merging ${i + 1}/${rows.length}...`;
+              mergeBtn.textContent = `${i+1}/${rows.length}`;
 
               const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
               const res = await fetch(fileUrl);
@@ -1337,7 +1356,7 @@
               }
             }
 
-            mergeBtn.textContent = "Finalizing...";
+            mergeBtn.textContent = "💾";
             const pdfBytes = await mergedPdf.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
             const link = document.createElement('a');
@@ -1354,19 +1373,18 @@
             console.error(err);
             showToast(`Error merging: ${err.message}`, 'error', 5000);
           } finally {
-            mergeBtn.textContent = originalBtnText;
+            mergeBtn.textContent = '📑';
             mergeBtn.disabled = false;
           }
-        });
-        
-        // --- DOWNLOAD ZIP FUNCTIONALITY ---
-        const zipBtn = document.getElementById('download-zip-btn');
-        zipBtn.addEventListener('click', async () => {
+        }
+
+        async function downloadZIP() {
           const rows = Array.from(tableBody.querySelectorAll('tr'));
           
           if (rows.length === 0) { showToast("No files to zip.", 'warning', 3000); return; }
           if (rows.length > 100 && !confirm(`Zipping ${rows.length} files might take a while. Continue?`)) return;
 
+          const zipBtn = document.getElementById('download-zip-btn');
           const originalBtnText = zipBtn.textContent;
           zipBtn.disabled = true;
 
@@ -1382,7 +1400,7 @@
               const fname = r.cells[0].textContent;
               const year = r.cells[1].textContent;
 
-              zipBtn.textContent = `Fetching ${i + 1}/${rows.length}...`;
+              zipBtn.textContent = `${i+1}/${rows.length}`;
 
               const fileUrl = `${pdfBaseUrl}${year}/${fname}`;
               const res = await fetch(fileUrl);
@@ -1408,7 +1426,7 @@
               }
             }
 
-            zipBtn.textContent = "Zipping...";
+            zipBtn.textContent = "📦";
             const content = await zip.generateAsync({ type: "blob" });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(content);
@@ -1426,13 +1444,13 @@
             console.error(err);
             showToast(`Error creating zip: ${err.message}`, 'error', 5000);
           } finally {
-            zipBtn.textContent = originalBtnText;
+            zipBtn.textContent = '📦';
             zipBtn.disabled = false;
           }
-        });
+        }
       }
 
-      // ✅ applyFilters - includes multi-select level filtering
+      // ✅ applyFilters
       function applyFilters(data) {
         let fd = [...data];
 
@@ -1452,11 +1470,9 @@
         if (selectedQuestions.size > 0)
           fd = fd.filter(i => selectedQuestions.has(i.question));
         
-        // MULTI-SELECT Level filter - show items that match ANY selected level
         if (selectedLevels.size > 0) {
           fd = fd.filter(i => selectedLevels.has(i.level));
         }
-        // If no levels selected, show ALL items (including those without levels)
 
         currentFilteredData = fd;
         renderTable(currentFilteredData);
@@ -1528,7 +1544,7 @@
         tableBody.appendChild(fragment);
         fileCountDisplay.textContent = data.length > 500
           ? `Top 500/${data.length}`
-          : `${data.length} files found`;
+          : `${data.length} files`;
       }
 
       // Dragger
