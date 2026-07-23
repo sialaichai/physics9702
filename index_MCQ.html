@@ -14,7 +14,6 @@
       overflow: hidden;
     }
 
-    /* LOGIN SCREEN STYLES */
     #login-screen {
       position: fixed;
       top: 0;
@@ -101,7 +100,6 @@
       display: block;
     }
 
-    /* MAIN APP STYLES */
     #main-container {
       display: none;
       flex-direction: column;
@@ -158,21 +156,6 @@
       height: 100%;
       border: none;
       display: none;
-    }
-
-    .split-view {
-      display: flex;
-      height: 100%;
-    }
-
-    .split-view iframe {
-      flex: 1;
-      height: 100%;
-    }
-
-    .split-view #ms-viewer {
-      display: block;
-      border-left: 2px solid #444;
     }
 
     table {
@@ -284,7 +267,6 @@
       background: #0056b3;
     }
 
-    /* Tools dropdown - compact */
     .tools-dropdown {
       position: relative;
       display: inline-block;
@@ -345,7 +327,6 @@
       display: block;
     }
 
-    /* Navigation dropdown - compact */
     .nav-dropdown {
       position: relative;
       display: inline-block;
@@ -405,7 +386,6 @@
       white-space: nowrap;
     }
 
-    /* MS checkbox styling - compact */
     .ms-toggle {
       display: inline-flex;
       align-items: center;
@@ -419,7 +399,6 @@
     }
     .ms-toggle input { margin-right: 3px; cursor: pointer; }
 
-    /* Other topics checkbox - compact */
     .other-topics-toggle {
       display: inline-flex;
       align-items: center;
@@ -430,12 +409,10 @@
     }
     .other-topics-toggle input { margin-right: 3px; cursor: pointer; }
 
-    /* Level filter - compact styling */
     #level-filter-btn {
       min-width: 60px;
     }
 
-    /* Debug console - Hidden by default */
     #debug-console {
       position: fixed;
       bottom: 20px;
@@ -500,7 +477,6 @@
       display: block;
     }
 
-    /* Toast Notification - Bottom Right */
     #toast-container {
       position: fixed;
       bottom: 60px;
@@ -645,7 +621,6 @@
           <input type="checkbox" id="ms-toggle-checkbox"> MS
         </label>
 
-        <!-- Tools Dropdown - with download icon -->
         <div class="tools-dropdown">
           <button class="tools-dropdown-btn">⬇️</button>
           <div class="tools-dropdown-content">
@@ -657,7 +632,6 @@
         
         <span id="file-count-display"></span>
 
-        <!-- Navigation dropdown - compact "Goto" -->
         <div class="nav-dropdown">
           <button class="nav-dropdown-btn">Goto</button>
           <div class="nav-dropdown-content">
@@ -692,10 +666,8 @@
     </div>
   </div>
 
-  <!-- Toast Container - Bottom Right -->
   <div id="toast-container"></div>
 
-  <!-- Debug Console - Hidden by default -->
   <div id="debug-console">
     <div class="debug-header">
       <span>🐞 Debug Console</span>
@@ -725,7 +697,6 @@
     const debugHint = document.getElementById('debug-hint');
     const toastContainer = document.getElementById('toast-container');
 
-    // Keyboard shortcut: Ctrl+Shift+D to toggle debug console
     document.addEventListener('keydown', (e) => {
       if (!debugEnabled) return;
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'd' || e.key === 'D')) {
@@ -734,7 +705,6 @@
       }
     });
 
-    // Close button for debug console
     if (debugClose) {
       debugClose.addEventListener('click', () => {
         if (debugVisible) toggleDebug();
@@ -775,7 +745,6 @@
       console.log(logMsg);
     }
 
-    // Toast notification system
     function showToast(message, type = 'info', duration = 4000) {
       if (toastTimeout) {
         clearTimeout(toastTimeout);
@@ -836,13 +805,11 @@
       debugLog('STATUS: ' + msg);
     }
 
-    // Helper function to get MS filename with question number
     function getMSFilename(baseFilename) {
       const base = baseFilename.replace(/\.pdf$/i, '');
       return `${base}_ms.pdf`;
     }
 
-    // Helper function to check if MS file exists
     async function checkMSFileExists(msUrl) {
       try {
         const res = await fetch(msUrl, { method: 'HEAD' });
@@ -852,7 +819,6 @@
       }
     }
 
-    // 1. PRELOAD THE ENCRYPTED DATA with retry logic
     logStatus("Loading secure data...");
     
     async function loadPayloadWithRetry(retries = 3) {
@@ -880,7 +846,6 @@
       .then(text => {
         ENCRYPTED_TEXT = text.trim();
         logStatus(`Ready.`);
-        // AUTO-LOGIN CHECK
         const savedPass = sessionStorage.getItem('physics_session_key');
         if (savedPass) {
           logStatus("Restoring Session...");
@@ -896,7 +861,6 @@
       if (e.key === 'Enter') unlock();
     }
 
-    // Load MCQ levels from separate JSON file - SIMPLE VERSION
     async function loadMCQLevels() {
       try {
         debugLog(`🔍 Attempting to load ${MCQ_LEVELS_FILE}...`);
@@ -915,7 +879,6 @@
         const data = await res.json();
         debugLog(`📊 Loaded ${data.length} level mappings from MCQ.json`);
         
-        // Log first few items as sample
         if (data.length > 0) {
           debugLog(`📝 Sample: ${JSON.stringify(data.slice(0, 3))}`);
         }
@@ -927,115 +890,116 @@
       }
     }
 
-    // 2. UNLOCK FUNCTION
     function unlock(isAuto = false) {
       const passInput = document.getElementById('pass-input');
       const pass = passInput.value;
+      
       if (!pass) {
         if (!isAuto) logError("Please enter a password.");
         return;
       }
+      
       if (!ENCRYPTED_TEXT) {
         logError("Data not loaded.");
         return;
       }
+      
       if (!isAuto) logStatus("Decrypting...");
-      setTimeout(() => {
-        try {
-          const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TEXT, pass);
-          if (bytes.sigBytes < 0) throw new Error("Decryption Key Mismatch.");
-          let decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
-          if (!decryptedStr) throw new Error("Incorrect Password.");
-          let bundle = JSON.parse(decryptedStr);
+      
+      try {
+        const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TEXT, pass);
+        if (bytes.sigBytes < 0) throw new Error("Decryption Key Mismatch.");
+        let decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
+        if (!decryptedStr) throw new Error("Incorrect Password.");
+        let bundle = JSON.parse(decryptedStr);
 
-          sessionStorage.setItem('physics_session_key', pass);
-          PDF_FOLDER = bundle.secure_folder;
-          let mainData = bundle.data;
+        sessionStorage.setItem('physics_session_key', pass);
+        PDF_FOLDER = bundle.secure_folder;
+        let mainData = bundle.data;
 
-          logStatus("Checking for updates...");
-          fetch(UPDATES_FILE)
-            .then(res => {
-              if (res.status === 404) return [];
-              if (!res.ok) throw new Error("Update check failed");
-              return res.json();
-            })
-            .then(updateData => {
-              if (Array.isArray(updateData) && updateData.length > 0) {
-                console.log(`Merging ${updateData.length} new items.`);
-                mainData = mainData.concat(updateData);
-              }
-              logStatus("Loading MCQ levels...");
-              return loadMCQLevels().then(levelData => {
-                // Merge level data into mainData
-                if (levelData && Array.isArray(levelData) && levelData.length > 0) {
-                  const levelMap = {};
-                  levelData.forEach(item => {
-                    if (item.filename && item.level) {
-                      levelMap[item.filename] = item.level;
-                    }
-                  });
-                  mainData = mainData.map(item => {
-                    const level = levelMap[item.filename] || '';
-                    return { ...item, level: level };
-                  });
-                  debugLog(`✅ Merged level data into ${mainData.length} items`);
-                  showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
-                } else {
-                  mainData = mainData.map(item => ({ ...item, level: '' }));
-                  debugLog('ℹ️ No level data loaded, all items have empty level');
-                  if (levelData && levelData.length === 0) {
-                    showToast('MCQ.json is empty!', 'warning', 3000);
+        logStatus("Checking for updates...");
+        fetch(UPDATES_FILE)
+          .then(res => {
+            if (res.status === 404) return [];
+            if (!res.ok) throw new Error("Update check failed");
+            return res.json();
+          })
+          .then(updateData => {
+            if (Array.isArray(updateData) && updateData.length > 0) {
+              console.log(`Merging ${updateData.length} new items.`);
+              mainData = mainData.concat(updateData);
+            }
+            
+            logStatus("Loading MCQ levels...");
+            return loadMCQLevels().then(levelData => {
+              if (levelData && Array.isArray(levelData) && levelData.length > 0) {
+                const levelMap = {};
+                levelData.forEach(item => {
+                  if (item.filename && item.level) {
+                    levelMap[item.filename] = item.level;
                   }
+                });
+                mainData = mainData.map(item => {
+                  const level = levelMap[item.filename] || '';
+                  return { ...item, level: level };
+                });
+                debugLog(`✅ Merged level data into ${mainData.length} items`);
+                showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
+              } else {
+                mainData = mainData.map(item => ({ ...item, level: '' }));
+                debugLog('ℹ️ No level data loaded, all items have empty level');
+                if (levelData && levelData.length === 0) {
+                  showToast('MCQ.json is empty!', 'warning', 3000);
                 }
-                showToast('Mark scheme: Direct file detection mode', 'info', 3000);
-                startApp(mainData);
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-container').style.display = 'flex';
-                debugEnabled = true;
-                setTimeout(showDebugHint, 1500);
-              });
-            })
-            .catch(err => {
-              console.warn("Update fetch error, loading main data only:", err);
-              return loadMCQLevels().then(levelData => {
-                if (levelData && Array.isArray(levelData) && levelData.length > 0) {
-                  const levelMap = {};
-                  levelData.forEach(item => {
-                    if (item.filename && item.level) {
-                      levelMap[item.filename] = item.level;
-                    }
-                  });
-                  mainData = mainData.map(item => {
-                    const level = levelMap[item.filename] || '';
-                    return { ...item, level: level };
-                  });
-                  showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
-                } else {
-                  mainData = mainData.map(item => ({ ...item, level: '' }));
-                }
-                showToast('Mark scheme: Direct file detection mode', 'info', 3000);
-                startApp(mainData);
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-container').style.display = 'flex';
-                debugEnabled = true;
-                setTimeout(showDebugHint, 1500);
-              });
+              }
+              
+              showToast('Mark scheme: Direct file detection mode', 'info', 3000);
+              startApp(mainData);
+              document.getElementById('login-screen').style.display = 'none';
+              document.getElementById('main-container').style.display = 'flex';
+              debugEnabled = true;
+              setTimeout(showDebugHint, 1500);
             });
-        } catch (e) {
-          if (isAuto) {
-            sessionStorage.removeItem('physics_session_key');
-            passInput.value = '';
-            logStatus("Session expired. Please login.");
-          } else {
-            logError(e.message);
-          }
+          })
+          .catch(err => {
+            console.warn("Update fetch error, loading main data only:", err);
+            return loadMCQLevels().then(levelData => {
+              if (levelData && Array.isArray(levelData) && levelData.length > 0) {
+                const levelMap = {};
+                levelData.forEach(item => {
+                  if (item.filename && item.level) {
+                    levelMap[item.filename] = item.level;
+                  }
+                });
+                mainData = mainData.map(item => {
+                  const level = levelMap[item.filename] || '';
+                  return { ...item, level: level };
+                });
+                showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
+              } else {
+                mainData = mainData.map(item => ({ ...item, level: '' }));
+              }
+              showToast('Mark scheme: Direct file detection mode', 'info', 3000);
+              startApp(mainData);
+              document.getElementById('login-screen').style.display = 'none';
+              document.getElementById('main-container').style.display = 'flex';
+              debugEnabled = true;
+              setTimeout(showDebugHint, 1500);
+            });
+          });
+      } catch (e) {
+        if (isAuto) {
+          sessionStorage.removeItem('physics_session_key');
+          passInput.value = '';
+          logStatus("Session expired. Please login.");
+        } else {
+          logError(e.message);
         }
-      }, 100);
+      }
     }
 
-    // 3. MAIN APP LOGIC
+    // MAIN APP LOGIC - Simplified version
     function startApp(allData) {
-      // - 1. INITIALIZE VARIABLES -
       let selectedTopics = new Set();
       let selectedYears = new Set();
       let selectedPapers = new Set();
@@ -1052,10 +1016,7 @@
 
       debugLog(`🚀 Starting app with ${allData.length} items`);
       debugLog(`📁 PDF_FOLDER: ${PDF_FOLDER}`);
-      debugLog(`📌 MS mode: Direct file detection (no ms.json required)`);
-      debugLog(`💡 Press Ctrl+Shift+D to toggle debug console`);
 
-      // Normalize Data
       allData = allData.map(item => {
         let q = (item.question || '').trim();
         q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
@@ -1072,7 +1033,6 @@
         };
       });
 
-      // --- Sort State & Listeners ---
       let currentFilteredData = [...allData]; 
       let currentSort = { column: 1, asc: false };
       const baseHeaders = ['Filename', 'Year', 'Paper', 'Question', 'Main Topic', 'Other Topics'];
@@ -1090,7 +1050,6 @@
         });
       });
 
-      // --- MS Toggle Handler ---
       msToggle.addEventListener('change', function() {
         msEnabled = this.checked;
         debugLog(`🔄 MS toggle: ${msEnabled ? 'ON' : 'OFF'}`);
@@ -1106,7 +1065,6 @@
         if (currentSrc) {
           const parts = currentSrc.split('/');
           const fname = parts[parts.length - 1];
-          debugLog(`Current PDF: ${fname}`);
           if (fname) {
             loadMSFile(fname, currentSrc.replace(/[^/]+$/, ''));
           }
@@ -1115,29 +1073,20 @@
         }
       });
 
-      // Helper function to load MS file
       function loadMSFile(fname, baseUrl) {
-        debugLog(`🔍 Attempting to load MS for: ${fname}`);
-        debugLog(`📁 Base URL: ${baseUrl}`);
-        
         const msFile = getMSFilename(fname);
         const msUrl = baseUrl + msFile;
-        debugLog(`📄 Trying MS file: ${msFile}`);
-        debugLog(`🌐 URL: ${msUrl}`);
         
         fetch(msUrl, { method: 'HEAD' })
           .then(res => {
-            debugLog(`📡 HEAD request for ${msFile}: ${res.status}`);
             if (res.ok) {
               msViewer.src = msUrl;
               msViewer.style.display = 'block';
               pdfViewer.style.flex = '1';
               msViewer.style.flex = '1';
-              debugLog(`✅ SUCCESS: Found MS file: ${msFile}`);
               showToast(`✅ Mark scheme loaded: ${msFile}`, 'success', 3000);
               lastNotifiedFile = fname;
             } else {
-              debugLog(`❌ ${msFile} not found (${res.status})`);
               msViewer.src = '';
               msViewer.style.display = 'none';
               pdfViewer.style.flex = '1';
@@ -1148,7 +1097,6 @@
             }
           })
           .catch(err => {
-            debugLog(`❌ Failed to load ${msFile}: ${err.message}`);
             msViewer.src = '';
             msViewer.style.display = 'none';
             pdfViewer.style.flex = '1';
@@ -1159,12 +1107,10 @@
           });
       }
 
-      // Initial Render
       populateDropdowns(allData);
       setupEventListeners(allData);
       renderTable(currentFilteredData);
 
-      // - Helper Functions -
       function populateDropdowns(data) {
         const getUniques = (mapper, sorter) =>
           [...new Set(data.map(mapper).flat().filter(Boolean))].sort(sorter);
@@ -1183,7 +1129,6 @@
         const papers = getUniques(i => i.paper, undefined);
         const questions = getUniques(i => i.question, naturalSort);
         
-        // Level options with descriptive labels
         const levelOptions = [
           { value: '1', label: '1 Recall' },
           { value: '2', label: '2 Comprehension' },
@@ -1196,11 +1141,9 @@
           const el = document.getElementById(id);
           if (!el) return;
           
-          // For level filter, keep the label already in HTML
           if (!isLevel) {
             el.innerHTML = '';
           } else {
-            // Clear everything except the label
             const label = el.querySelector('.dropdown-label');
             el.innerHTML = '';
             if (label) el.appendChild(label);
@@ -1264,7 +1207,6 @@
             });
         });
 
-        // Tools dropdown buttons - reattach event listeners
         document.getElementById('generate-html-btn').addEventListener('click', generateHTML);
         document.getElementById('merge-pdf-btn').addEventListener('click', mergePDFs);
         document.getElementById('download-zip-btn').addEventListener('click', downloadZIP);
@@ -1289,16 +1231,13 @@
             if (msEnabled) {
               const msFile = getMSFilename(fname);
               const fullMsUrl = `${pdfBaseUrl}${year}/${msFile}`;
-              debugLog(`HTML: Checking MS file: ${msFile}`);
               
               const msExists = await checkMSFileExists(fullMsUrl);
               if (msExists) {
                 msUrl = fullMsUrl;
                 msFound++;
-                debugLog(`HTML: MS file found: ${msFile}`);
               } else {
                 msNotFound++;
-                debugLog(`HTML: MS file NOT found: ${msFile}`);
               }
             }
             
@@ -1335,7 +1274,6 @@
             return;
 
           const mergeBtn = document.getElementById('merge-pdf-btn');
-          const originalBtnText = mergeBtn.textContent;
           mergeBtn.textContent = "⏳";
           mergeBtn.disabled = true;
 
@@ -1381,7 +1319,6 @@
               if (msEnabled) {
                 const msFile = getMSFilename(fname);
                 const msUrl = `${pdfBaseUrl}${year}/${msFile}`;
-                debugLog(`PDF Merge: Trying MS file: ${msFile}`);
                 const msRes = await fetch(msUrl);
                 if (msRes.ok) {
                   const msBytes = await msRes.arrayBuffer();
@@ -1432,7 +1369,6 @@
           if (rows.length > 100 && !confirm(`Zipping ${rows.length} files might take a while. Continue?`)) return;
 
           const zipBtn = document.getElementById('download-zip-btn');
-          const originalBtnText = zipBtn.textContent;
           zipBtn.disabled = true;
 
           try {
@@ -1461,7 +1397,6 @@
               if (msEnabled) {
                 const msFile = getMSFilename(fname);
                 const msUrl = `${pdfBaseUrl}${year}/${msFile}`;
-                debugLog(`ZIP: Trying MS file: ${msFile}`);
                 const msRes = await fetch(msUrl);
                 if (msRes.ok) {
                   const msBlob = await msRes.blob();
@@ -1497,7 +1432,6 @@
         }
       }
 
-      // ✅ applyFilters
       function applyFilters(data) {
         let fd = [...data];
 
@@ -1576,7 +1510,6 @@
             const pdfUrl = `${pdfBaseUrl}${r.year}/${r.filename}`;
             pdfViewer.src = pdfUrl;
             pdfViewer.style.flex = '1';
-            debugLog(`🖱️ Row clicked: ${r.filename}`);
             lastNotifiedFile = '';
             if (msEnabled) {
               loadMSFile(r.filename, `${pdfBaseUrl}${r.year}/`);
@@ -1594,7 +1527,6 @@
           : `${data.length} files`;
       }
 
-      // Dragger
       const dragger = document.getElementById('dragger');
       const lowerPanel = document.getElementById('lower-panel');
       if (dragger && lowerPanel) {
