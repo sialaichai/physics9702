@@ -861,18 +861,19 @@
       if (e.key === 'Enter') unlock();
     }
 
-    // FIXED: Load MCQ with timeout and error handling
+    // FIXED: Load MCQ with AbortController for proper cancellation
     async function loadMCQLevels() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      
       try {
         debugLog(`🔍 Attempting to load ${MCQ_LEVELS_FILE}...`);
         
-        // Create a promise with a timeout
-        const fetchPromise = fetch(MCQ_LEVELS_FILE);
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Timeout loading MCQ.json')), 3000);
+        const res = await fetch(MCQ_LEVELS_FILE, { 
+          signal: controller.signal 
         });
         
-        const res = await Promise.race([fetchPromise, timeoutPromise]);
+        clearTimeout(timeoutId);
         
         if (res.status === 404) {
           debugLog('⚠️ MCQ.json not found - continuing without level filter');
@@ -893,9 +894,14 @@
         
         return data;
       } catch (err) {
-        debugLog(`❌ Error loading MCQ.json: ${err.message}`);
-        // Don't throw - just return null and continue
+        if (err.name === 'AbortError') {
+          debugLog('⏱️ MCQ.json loading timed out (2s) - continuing without level filter');
+        } else {
+          debugLog(`❌ Error loading MCQ.json: ${err.message}`);
+        }
         return null;
+      } finally {
+        clearTimeout(timeoutId);
       }
     }
 
@@ -939,9 +945,13 @@
               mainData = mainData.concat(updateData);
             }
             
-            logStatus("Loading MCQ levels (timeout 3s)...");
-            // Load MCQ with a timeout - if it fails, continue anyway
-            return loadMCQLevels().then(levelData => {
+            // LAUNCH APP IMMEDIATELY - don't wait for MCQ
+            logStatus("Launching app...");
+            finishAppLaunch(mainData);
+            
+            // Then try to load MCQ in the background (non-blocking)
+            logStatus("Loading MCQ levels in background...");
+            loadMCQLevels().then(levelData => {
               if (levelData && Array.isArray(levelData) && levelData.length > 0) {
                 const levelMap = {};
                 levelData.forEach(item => {
@@ -949,44 +959,23 @@
                     levelMap[item.filename] = item.level;
                   }
                 });
-                mainData = mainData.map(item => {
+                // Update the data with levels
+                const updatedData = mainData.map(item => {
                   const level = levelMap[item.filename] || '';
                   return { ...item, level: level };
                 });
-                debugLog(`✅ Merged level data into ${mainData.length} items`);
+                // Re-populate dropdowns and re-render with levels
+                debugLog(`✅ Background load: Added ${Object.keys(levelMap).length} level mappings`);
                 showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
-              } else {
-                mainData = mainData.map(item => ({ ...item, level: '' }));
-                debugLog('ℹ️ No level data loaded, all items have empty level');
+                // Update the app with new level data
+                updateAppWithLevels(updatedData);
               }
-              
-              // Continue to app launch
-              finishAppLaunch(mainData);
             });
           })
           .catch(err => {
-            console.warn("Update fetch error, loading main data only:", err);
-            // Still try to load MCQ levels
-            return loadMCQLevels().then(levelData => {
-              if (levelData && Array.isArray(levelData) && levelData.length > 0) {
-                const levelMap = {};
-                levelData.forEach(item => {
-                  if (item.filename && item.level) {
-                    levelMap[item.filename] = item.level;
-                  }
-                });
-                mainData = mainData.map(item => {
-                  const level = levelMap[item.filename] || '';
-                  return { ...item, level: level };
-                });
-                showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
-              } else {
-                mainData = mainData.map(item => ({ ...item, level: '' }));
-              }
-              
-              // Continue to app launch
-              finishAppLaunch(mainData);
-            });
+            console.warn("Update fetch error:", err);
+            // Launch app immediately even if updates fail
+            finishAppLaunch(mainData);
           });
       } catch (e) {
         if (isAuto) {
@@ -999,14 +988,78 @@
       }
     }
 
-    // Separate function to finish app launch
+    // Store the app data globally so we can update it
+    let globalAppData = null;
+    let globalAppFunctions = null;
+
     function finishAppLaunch(mainData) {
       showToast('Mark scheme: Direct file detection mode', 'info', 3000);
+      globalAppData = mainData;
       startApp(mainData);
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('main-container').style.display = 'flex';
       debugEnabled = true;
       setTimeout(showDebugHint, 1500);
+    }
+
+    function updateAppWithLevels(updatedData) {
+      globalAppData = updatedData;
+      // Re-initialize the app with the updated data
+      // We need to re-run the startApp logic with the new data
+      // For simplicity, we'll reload the page or re-render
+      // Let's just re-render the table and update dropdowns
+      const tableBody = document.getElementById('data-table-body');
+      const fileCountDisplay = document.getElementById('file-count-display');
+      
+      // Update the data in the current view
+      // Since we can't easily re-run all the startup logic, 
+      // we'll just update the data and re-render
+      const allData = updatedData.map(item => {
+        let q = (item.question || '').trim();
+        q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
+        return {
+          filename: (item.filename || '').trim(),
+          year: (item.year || '').trim(),
+          paper: (item.paper || '').trim(),
+          question: q,
+          mainTopic: (item.mainTopic || '').trim(),
+          otherTopics: Array.isArray(item.otherTopics)
+            ? item.otherTopics.map(t => t.trim()).filter(t => t !== "")
+            : [],
+          level: (item.level || '').trim()
+        };
+      });
+      
+      // Re-populate level dropdown
+      const levelOptions = [
+        { value: '1', label: '1 Recall' },
+        { value: '2', label: '2 Comprehension' },
+        { value: '3', label: '3 Application' },
+        { value: '4', label: '4 Analysis' },
+        { value: '5', label: '5 Mastery/Synthesis' }
+      ];
+      
+      const levelList = document.getElementById('level-filter-list');
+      if (levelList) {
+        const label = levelList.querySelector('.dropdown-label');
+        levelList.innerHTML = '';
+        if (label) levelList.appendChild(label);
+        
+        levelOptions.forEach(v => {
+          const l = document.createElement('label');
+          const c = document.createElement('input');
+          c.type = 'checkbox';
+          c.className = 'level-checkbox';
+          c.value = v.value;
+          l.appendChild(c);
+          l.appendChild(document.createTextNode(' ' + v.label));
+          levelList.appendChild(l);
+        });
+      }
+      
+      // Update file count
+      fileCountDisplay.textContent = `${allData.length} files`;
+      debugLog(`✅ App updated with levels for ${allData.length} items`);
     }
 
     // MAIN APP LOGIC
