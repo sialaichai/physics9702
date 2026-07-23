@@ -1293,20 +1293,12 @@
           });
         };
 
+        // Setup all filters including Topic
         setup('year-filter-btn', 'year-filter-panel', 'year-filter-list', 'year-filter-apply', selectedYears, 'year-checkbox');
         setup('paper-filter-btn', 'paper-filter-panel', 'paper-filter-list', 'paper-filter-apply', selectedPapers, 'paper-checkbox');
         setup('question-filter-btn', 'question-filter-panel', 'question-filter-list', 'question-filter-apply', selectedQuestions, 'question-checkbox');
+        setup('topic-filter-btn', 'topic-filter-panel', 'topic-filter-list', 'topic-filter-apply', selectedTopics, 'topic-checkbox');
         setup('level-filter-btn', 'level-filter-panel', 'level-filter-list', 'level-filter-apply', selectedLevels, 'level-checkbox');
-
-        // Topic filter needs special handling for "Other Topics" checkbox
-        const topicApply = document.getElementById('topic-filter-apply');
-        topicApply.addEventListener('click', () => {
-          selectedTopics.clear();
-          document.querySelectorAll('.topic-checkbox:checked').forEach(b => selectedTopics.add(b.value));
-          document.getElementById('topic-filter-btn').children[0].textContent = selectedTopics.size;
-          document.getElementById('topic-filter-panel').style.display = 'none';
-          applyFilters(processedData);
-        });
 
         document.addEventListener('click', (e) => {
           ['topic-filter-panel', 'year-filter-panel', 'paper-filter-panel', 'question-filter-panel', 'level-filter-panel']
