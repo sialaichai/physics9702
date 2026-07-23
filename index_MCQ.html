@@ -1267,16 +1267,19 @@
         setupList('level-filter-list', [], 'level-checkbox', true);
       }
 
-      function setupEventListeners(data) {
+      function setupEventListeners(initialData) {
+        // Use a function that always uses the current processedData
         const setup = (btnId, panelId, listId, applyId, set, cls) => {
           const btn = document.getElementById(btnId),
                 panel = document.getElementById(panelId),
                 list = document.getElementById(listId),
                 apply = document.getElementById(applyId);
           if (!btn) return;
+          
           btn.addEventListener('click', () =>
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block'
           );
+          
           apply.addEventListener('click', () => {
             set.clear();
             list.querySelectorAll(`.${cls}:checked`).forEach(b => set.add(b.value));
@@ -1285,16 +1288,17 @@
               countSpan.textContent = set.size;
             }
             panel.style.display = 'none';
+            // CRITICAL: Always use the current processedData, not the initial data
             applyFilters(processedData);
           });
         };
 
-        setup('topic-filter-btn', 'topic-filter-panel', 'topic-filter-list', 'topic-filter-apply', selectedTopics, 'topic-checkbox');
+        setup('year-filter-btn', 'year-filter-panel', 'year-filter-list', 'year-filter-apply', selectedYears, 'year-checkbox');
         setup('paper-filter-btn', 'paper-filter-panel', 'paper-filter-list', 'paper-filter-apply', selectedPapers, 'paper-checkbox');
         setup('question-filter-btn', 'question-filter-panel', 'question-filter-list', 'question-filter-apply', selectedQuestions, 'question-checkbox');
         setup('level-filter-btn', 'level-filter-panel', 'level-filter-list', 'level-filter-apply', selectedLevels, 'level-checkbox');
 
-        // Fix for Topic filter - needs to use processedData too
+        // Topic filter needs special handling for "Other Topics" checkbox
         const topicApply = document.getElementById('topic-filter-apply');
         topicApply.addEventListener('click', () => {
           selectedTopics.clear();
@@ -1601,7 +1605,7 @@
 
         tableBody.innerHTML = '';
         const fragment = document.createDocumentFragment();
-        const displayData = data.length > 800 ? data.slice(0, 800) : data;
+        const displayData = data.length > 500 ? data.slice(0, 500) : data;
         
         displayData.forEach(r => {
           const tr = document.createElement('tr');
@@ -1659,8 +1663,8 @@
           fragment.appendChild(tr);
         });
         tableBody.appendChild(fragment);
-        fileCountDisplay.textContent = data.length > 800
-          ? `Top 800/${data.length}`
+        fileCountDisplay.textContent = data.length > 500
+          ? `Top 500/${data.length}`
           : `${data.length} files`;
       }
 
