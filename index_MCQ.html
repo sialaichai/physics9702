@@ -232,7 +232,7 @@
       border: 1px solid #ccc;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       z-index: 100;
-      min-width: 160px;
+      min-width: 200px;
       padding: 10px;
       border-radius: 4px;
     }
@@ -242,6 +242,16 @@
       overflow-y: auto;
       border-bottom: 1px solid #eee;
       margin-bottom: 10px;
+    }
+
+    .dropdown-list .dropdown-label {
+      display: block;
+      padding: 6px 6px 4px 6px;
+      font-weight: 600;
+      color: #495057;
+      font-size: 12px;
+      border-bottom: 1px solid #dee2e6;
+      margin-bottom: 4px;
     }
 
     .dropdown-list label {
@@ -601,7 +611,7 @@
         </div>
 
         <div class="dropdown-check-container">
-          <button id="question-filter-btn" class="filter-button">Q (<span id="question-filter-count">0</span>)</button>
+          <button id="question-filter-btn" class="filter-button">Qn (<span id="question-filter-count">0</span>)</button>
           <div id="question-filter-panel" class="dropdown-panel">
             <div id="question-filter-list" class="dropdown-list"></div>
             <button id="question-filter-apply" class="apply-button">Apply</button>
@@ -619,7 +629,9 @@
         <div class="dropdown-check-container">
           <button id="level-filter-btn" class="filter-button">Level (<span id="level-filter-count">0</span>)</button>
           <div id="level-filter-panel" class="dropdown-panel">
-            <div id="level-filter-list" class="dropdown-list"></div>
+            <div id="level-filter-list" class="dropdown-list">
+              <div class="dropdown-label">MCQ Level</div>
+            </div>
             <button id="level-filter-apply" class="apply-button">Apply</button>
           </div>
         </div>
@@ -633,9 +645,9 @@
           <input type="checkbox" id="ms-toggle-checkbox"> MS
         </label>
 
-        <!-- Tools Dropdown - combines HTML, PDFs, ZIP -->
+        <!-- Tools Dropdown - with download icon -->
         <div class="tools-dropdown">
-          <button class="tools-dropdown-btn">⚙️</button>
+          <button class="tools-dropdown-btn">⬇️</button>
           <div class="tools-dropdown-content">
             <button id="generate-html-btn"><span class="icon">📄</span>HTML</button>
             <button id="merge-pdf-btn"><span class="icon">📑</span>PDFs</button>
@@ -1154,21 +1166,39 @@
         const papers = getUniques(i => i.paper, undefined);
         const questions = getUniques(i => i.question, naturalSort);
         
-        const levels = ['1', '2', '3', '4', '5'];
+        // Level options with descriptive labels
+        const levelOptions = [
+          { value: '1', label: '1 Recall' },
+          { value: '2', label: '2 Comprehension' },
+          { value: '3', label: '3 Application' },
+          { value: '4', label: '4 Analysis' },
+          { value: '5', label: '5 Mastery/Synthesis' }
+        ];
 
-        const setupList = (id, arr, cls) => {
+        const setupList = (id, arr, cls, isLevel = false) => {
           const el = document.getElementById(id);
           if (!el) return;
-          el.innerHTML = '';
           
-          arr.forEach(v => {
+          // For level filter, keep the label already in HTML
+          if (!isLevel) {
+            el.innerHTML = '';
+          } else {
+            // Clear everything except the label
+            const label = el.querySelector('.dropdown-label');
+            el.innerHTML = '';
+            if (label) el.appendChild(label);
+          }
+          
+          const items = isLevel ? levelOptions : arr;
+          
+          items.forEach(v => {
             const l = document.createElement('label');
             const c = document.createElement('input');
             c.type = 'checkbox';
             c.className = cls;
-            c.value = v;
+            c.value = isLevel ? v.value : v;
             l.appendChild(c);
-            l.appendChild(document.createTextNode(' ' + v));
+            l.appendChild(document.createTextNode(' ' + (isLevel ? v.label : v)));
             el.appendChild(l);
           });
         };
@@ -1177,7 +1207,7 @@
         setupList('year-filter-list', years, 'year-checkbox');
         setupList('paper-filter-list', papers, 'paper-checkbox');
         setupList('question-filter-list', questions, 'question-checkbox');
-        setupList('level-filter-list', levels, 'level-checkbox');
+        setupList('level-filter-list', [], 'level-checkbox', true);
       }
 
       function setupEventListeners(data) {
