@@ -185,6 +185,37 @@
       cursor: pointer;
     }
 
+    /* Level Badge Styles */
+    .level-badge {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: bold;
+      margin-left: 6px;
+      color: white;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+      vertical-align: middle;
+    }
+    .level-1 { background-color: #28a745; }
+    .level-2 { background-color: #17a2b8; }
+    .level-3 { background-color: #fd7e14; }
+    .level-4 { background-color: #dc3545; }
+    .level-5 { background-color: #6f42c1; }
+    
+    /* Row background colors for MCQ levels */
+    .level-row-1 { background-color: #e8f5e9; }
+    .level-row-2 { background-color: #e0f7fa; }
+    .level-row-3 { background-color: #fff3e0; }
+    .level-row-4 { background-color: #ffebee; }
+    .level-row-5 { background-color: #f3e5f5; }
+    
+    .level-row-hover-1:hover { background-color: #c8e6c9 !important; }
+    .level-row-hover-2:hover { background-color: #b2ebf2 !important; }
+    .level-row-hover-3:hover { background-color: #ffe0b2 !important; }
+    .level-row-hover-4:hover { background-color: #ffcdd2 !important; }
+    .level-row-hover-5:hover { background-color: #e1bee7 !important; }
+
     .dropdown-check-container {
       position: relative;
       display: inline-block;
@@ -1254,7 +1285,6 @@
               countSpan.textContent = set.size;
             }
             panel.style.display = 'none';
-            // CRITICAL FIX: Use processedData instead of data parameter
             applyFilters(processedData);
           });
         };
@@ -1571,17 +1601,47 @@
 
         tableBody.innerHTML = '';
         const fragment = document.createDocumentFragment();
-        const displayData = data.length > 1000 ? data.slice(0, 1000) : data;
+        const displayData = data.length > 800 ? data.slice(0, 800) : data;
+        
         displayData.forEach(r => {
           const tr = document.createElement('tr');
+          
+          // Check if this item has a level badge
+          let rowClass = '';
+          let badgeHtml = '';
+          if (r.level && ['1','2','3','4','5'].includes(r.level)) {
+            rowClass = `level-row-${r.level}`;
+            const levelLabels = {
+              '1': 'L1',
+              '2': 'L2', 
+              '3': 'L3',
+              '4': 'L4',
+              '5': 'L5'
+            };
+            badgeHtml = `<span class="level-badge level-${r.level}">${levelLabels[r.level]}</span>`;
+          }
+          
+          // Apply row class for MCQ levels
+          if (rowClass) {
+            tr.className = rowClass;
+            // Add hover effect
+            tr.addEventListener('mouseenter', () => {
+              tr.className = `level-row-hover-${r.level}`;
+            });
+            tr.addEventListener('mouseleave', () => {
+              tr.className = rowClass;
+            });
+          }
+          
           tr.innerHTML = `
-            <td>${r.filename}</td>
+            <td>${r.filename} ${badgeHtml}</td>
             <td>${r.year}</td>
             <td>${r.paper}</td>
             <td>${r.question}</td>
             <td>${r.mainTopic}</td>
             <td>${r.otherTopics.join(', ')}</td>
           `;
+          
           tr.addEventListener('click', () => {
             const pdfBaseUrl = `https://sialaichai.github.io/physics9702/${PDF_FOLDER}/`;
             const pdfUrl = `${pdfBaseUrl}${r.year}/${r.filename}`;
@@ -1599,8 +1659,8 @@
           fragment.appendChild(tr);
         });
         tableBody.appendChild(fragment);
-        fileCountDisplay.textContent = data.length > 1000
-          ? `Top 1000/${data.length}`
+        fileCountDisplay.textContent = data.length > 800
+          ? `Top 800/${data.length}`
           : `${data.length} files`;
       }
 
