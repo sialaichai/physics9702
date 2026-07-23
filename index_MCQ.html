@@ -896,17 +896,30 @@
       if (e.key === 'Enter') unlock();
     }
 
-    // Load MCQ levels from separate JSON file
+    // Load MCQ levels from separate JSON file - SIMPLE VERSION
     async function loadMCQLevels() {
       try {
+        debugLog(`🔍 Attempting to load ${MCQ_LEVELS_FILE}...`);
         const res = await fetch(MCQ_LEVELS_FILE);
+        
         if (res.status === 404) {
           debugLog('⚠️ MCQ.json not found - level filtering will be disabled');
           return null;
         }
-        if (!res.ok) throw new Error(`Failed to load MCQ.json: ${res.status}`);
+        
+        if (!res.ok) {
+          debugLog(`❌ Failed to load MCQ.json: ${res.status}`);
+          return null;
+        }
+        
         const data = await res.json();
-        debugLog(`✅ Loaded ${data.length} level mappings from MCQ.json`);
+        debugLog(`📊 Loaded ${data.length} level mappings from MCQ.json`);
+        
+        // Log first few items as sample
+        if (data.length > 0) {
+          debugLog(`📝 Sample: ${JSON.stringify(data.slice(0, 3))}`);
+        }
+        
         return data;
       } catch (err) {
         debugLog(`❌ Error loading MCQ.json: ${err.message}`);
@@ -953,7 +966,8 @@
               }
               logStatus("Loading MCQ levels...");
               return loadMCQLevels().then(levelData => {
-                if (levelData && Array.isArray(levelData)) {
+                // Merge level data into mainData
+                if (levelData && Array.isArray(levelData) && levelData.length > 0) {
                   const levelMap = {};
                   levelData.forEach(item => {
                     if (item.filename && item.level) {
@@ -969,6 +983,9 @@
                 } else {
                   mainData = mainData.map(item => ({ ...item, level: '' }));
                   debugLog('ℹ️ No level data loaded, all items have empty level');
+                  if (levelData && levelData.length === 0) {
+                    showToast('MCQ.json is empty!', 'warning', 3000);
+                  }
                 }
                 showToast('Mark scheme: Direct file detection mode', 'info', 3000);
                 startApp(mainData);
@@ -981,7 +998,7 @@
             .catch(err => {
               console.warn("Update fetch error, loading main data only:", err);
               return loadMCQLevels().then(levelData => {
-                if (levelData && Array.isArray(levelData)) {
+                if (levelData && Array.isArray(levelData) && levelData.length > 0) {
                   const levelMap = {};
                   levelData.forEach(item => {
                     if (item.filename && item.level) {
