@@ -861,7 +861,7 @@
       if (e.key === 'Enter') unlock();
     }
 
-    // FIXED: Load MCQ with AbortController for proper cancellation
+    // Load MCQ with AbortController
     async function loadMCQLevels() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
@@ -945,18 +945,18 @@
               mainData = mainData.concat(updateData);
             }
             
-            // LAUNCH APP IMMEDIATELY - don't wait for MCQ
             logStatus("Launching app...");
             finishAppLaunch(mainData);
             
-            // Then try to load MCQ in the background (non-blocking)
             logStatus("Loading MCQ levels in background...");
             loadMCQLevels().then(levelData => {
               if (levelData && Array.isArray(levelData) && levelData.length > 0) {
                 const levelMap = {};
                 levelData.forEach(item => {
                   if (item.filename && item.level) {
-                    levelMap[item.filename] = item.level;
+                    // Convert level to string if it's a number
+                    const levelStr = String(item.level);
+                    levelMap[item.filename] = levelStr;
                   }
                 });
                 // Update the data with levels
@@ -964,7 +964,6 @@
                   const level = levelMap[item.filename] || '';
                   return { ...item, level: level };
                 });
-                // Re-populate dropdowns and re-render with levels
                 debugLog(`✅ Background load: Added ${Object.keys(levelMap).length} level mappings`);
                 showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
                 // Update the app with new level data
@@ -974,7 +973,6 @@
           })
           .catch(err => {
             console.warn("Update fetch error:", err);
-            // Launch app immediately even if updates fail
             finishAppLaunch(mainData);
           });
       } catch (e) {
@@ -988,9 +986,7 @@
       }
     }
 
-    // Store the app data globally so we can update it
     let globalAppData = null;
-    let globalAppFunctions = null;
 
     function finishAppLaunch(mainData) {
       showToast('Mark scheme: Direct file detection mode', 'info', 3000);
@@ -1004,33 +1000,8 @@
 
     function updateAppWithLevels(updatedData) {
       globalAppData = updatedData;
-      // Re-initialize the app with the updated data
-      // We need to re-run the startApp logic with the new data
-      // For simplicity, we'll reload the page or re-render
-      // Let's just re-render the table and update dropdowns
-      const tableBody = document.getElementById('data-table-body');
-      const fileCountDisplay = document.getElementById('file-count-display');
       
-      // Update the data in the current view
-      // Since we can't easily re-run all the startup logic, 
-      // we'll just update the data and re-render
-      const allData = updatedData.map(item => {
-        let q = (item.question || '').trim();
-        q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
-        return {
-          filename: (item.filename || '').trim(),
-          year: (item.year || '').trim(),
-          paper: (item.paper || '').trim(),
-          question: q,
-          mainTopic: (item.mainTopic || '').trim(),
-          otherTopics: Array.isArray(item.otherTopics)
-            ? item.otherTopics.map(t => t.trim()).filter(t => t !== "")
-            : [],
-          level: (item.level || '').trim()
-        };
-      });
-      
-      // Re-populate level dropdown
+      // Re-populate level dropdown with proper values
       const levelOptions = [
         { value: '1', label: '1 Recall' },
         { value: '2', label: '2 Comprehension' },
@@ -1057,9 +1028,27 @@
         });
       }
       
-      // Update file count
-      fileCountDisplay.textContent = `${allData.length} files`;
-      debugLog(`✅ App updated with levels for ${allData.length} items`);
+      // Re-apply any active level filters
+      // Get current selected levels from the button
+      const levelBtn = document.getElementById('level-filter-btn');
+      const countSpan = levelBtn.querySelector('span');
+      if (countSpan && countSpan.textContent !== '0') {
+        // There are selected levels, re-apply filter
+        const selected = document.querySelectorAll('.level-checkbox:checked');
+        const selectedLevels = new Set();
+        selected.forEach(cb => selectedLevels.add(cb.value));
+        
+        // Re-filter the data
+        const tableBody = document.getElementById('data-table-body');
+        const rows = tableBody.querySelectorAll('tr');
+        // We need to re-apply filters - trigger the apply button
+        const applyBtn = document.getElementById('level-filter-apply');
+        if (applyBtn) {
+          applyBtn.click();
+        }
+      }
+      
+      debugLog(`✅ App updated with levels for ${updatedData.length} items`);
     }
 
     // MAIN APP LOGIC
