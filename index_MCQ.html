@@ -861,13 +861,21 @@
       if (e.key === 'Enter') unlock();
     }
 
+    // FIXED: Load MCQ with timeout and error handling
     async function loadMCQLevels() {
       try {
         debugLog(`🔍 Attempting to load ${MCQ_LEVELS_FILE}...`);
-        const res = await fetch(MCQ_LEVELS_FILE);
+        
+        // Create a promise with a timeout
+        const fetchPromise = fetch(MCQ_LEVELS_FILE);
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout loading MCQ.json')), 3000);
+        });
+        
+        const res = await Promise.race([fetchPromise, timeoutPromise]);
         
         if (res.status === 404) {
-          debugLog('⚠️ MCQ.json not found - level filtering will be disabled');
+          debugLog('⚠️ MCQ.json not found - continuing without level filter');
           return null;
         }
         
@@ -880,12 +888,13 @@
         debugLog(`📊 Loaded ${data.length} level mappings from MCQ.json`);
         
         if (data.length > 0) {
-          debugLog(`📝 Sample: ${JSON.stringify(data.slice(0, 3))}`);
+          debugLog(`📝 Sample: ${JSON.stringify(data.slice(0, 2))}`);
         }
         
         return data;
       } catch (err) {
         debugLog(`❌ Error loading MCQ.json: ${err.message}`);
+        // Don't throw - just return null and continue
         return null;
       }
     }
@@ -930,7 +939,8 @@
               mainData = mainData.concat(updateData);
             }
             
-            logStatus("Loading MCQ levels...");
+            logStatus("Loading MCQ levels (timeout 3s)...");
+            // Load MCQ with a timeout - if it fails, continue anyway
             return loadMCQLevels().then(levelData => {
               if (levelData && Array.isArray(levelData) && levelData.length > 0) {
                 const levelMap = {};
@@ -948,21 +958,15 @@
               } else {
                 mainData = mainData.map(item => ({ ...item, level: '' }));
                 debugLog('ℹ️ No level data loaded, all items have empty level');
-                if (levelData && levelData.length === 0) {
-                  showToast('MCQ.json is empty!', 'warning', 3000);
-                }
               }
               
-              showToast('Mark scheme: Direct file detection mode', 'info', 3000);
-              startApp(mainData);
-              document.getElementById('login-screen').style.display = 'none';
-              document.getElementById('main-container').style.display = 'flex';
-              debugEnabled = true;
-              setTimeout(showDebugHint, 1500);
+              // Continue to app launch
+              finishAppLaunch(mainData);
             });
           })
           .catch(err => {
             console.warn("Update fetch error, loading main data only:", err);
+            // Still try to load MCQ levels
             return loadMCQLevels().then(levelData => {
               if (levelData && Array.isArray(levelData) && levelData.length > 0) {
                 const levelMap = {};
@@ -979,12 +983,9 @@
               } else {
                 mainData = mainData.map(item => ({ ...item, level: '' }));
               }
-              showToast('Mark scheme: Direct file detection mode', 'info', 3000);
-              startApp(mainData);
-              document.getElementById('login-screen').style.display = 'none';
-              document.getElementById('main-container').style.display = 'flex';
-              debugEnabled = true;
-              setTimeout(showDebugHint, 1500);
+              
+              // Continue to app launch
+              finishAppLaunch(mainData);
             });
           });
       } catch (e) {
@@ -998,7 +999,17 @@
       }
     }
 
-    // MAIN APP LOGIC - Simplified version
+    // Separate function to finish app launch
+    function finishAppLaunch(mainData) {
+      showToast('Mark scheme: Direct file detection mode', 'info', 3000);
+      startApp(mainData);
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('main-container').style.display = 'flex';
+      debugEnabled = true;
+      setTimeout(showDebugHint, 1500);
+    }
+
+    // MAIN APP LOGIC
     function startApp(allData) {
       let selectedTopics = new Set();
       let selectedYears = new Set();
