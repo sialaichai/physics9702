@@ -688,6 +688,7 @@
     let debugVisible = false;
     let toastTimeout = null;
     let debugEnabled = false;
+    let globalAllData = []; // Store all data globally
 
     const statusEl = document.getElementById('status-msg');
     const errorEl = document.getElementById('error-msg');
@@ -945,6 +946,9 @@
               mainData = mainData.concat(updateData);
             }
             
+            // Store globally for later updates
+            globalAllData = mainData;
+            
             logStatus("Launching app...");
             finishAppLaunch(mainData);
             
@@ -954,17 +958,23 @@
                 const levelMap = {};
                 levelData.forEach(item => {
                   if (item.filename && item.level) {
-                    // Convert level to string if it's a number
                     const levelStr = String(item.level);
                     levelMap[item.filename] = levelStr;
                   }
                 });
+                debugLog(`✅ Background load: Added ${Object.keys(levelMap).length} level mappings`);
+                debugLog(`📝 Level map sample: ${JSON.stringify(Object.entries(levelMap).slice(0, 3))}`);
+                
                 // Update the data with levels
                 const updatedData = mainData.map(item => {
                   const level = levelMap[item.filename] || '';
                   return { ...item, level: level };
                 });
-                debugLog(`✅ Background load: Added ${Object.keys(levelMap).length} level mappings`);
+                
+                // Count items with levels
+                const itemsWithLevels = updatedData.filter(item => item.level !== '');
+                debugLog(`📊 Items with levels: ${itemsWithLevels.length} out of ${updatedData.length}`);
+                
                 showToast(`Loaded ${Object.keys(levelMap).length} level mappings`, 'success', 3000);
                 // Update the app with new level data
                 updateAppWithLevels(updatedData);
@@ -987,11 +997,12 @@
     }
 
     let globalAppData = null;
+    let appInstance = null;
 
     function finishAppLaunch(mainData) {
       showToast('Mark scheme: Direct file detection mode', 'info', 3000);
       globalAppData = mainData;
-      startApp(mainData);
+      appInstance = startApp(mainData);
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('main-container').style.display = 'flex';
       debugEnabled = true;
@@ -1028,30 +1039,49 @@
         });
       }
       
-      // Re-apply any active level filters
-      // Get current selected levels from the button
-      const levelBtn = document.getElementById('level-filter-btn');
-      const countSpan = levelBtn.querySelector('span');
-      if (countSpan && countSpan.textContent !== '0') {
-        // There are selected levels, re-apply filter
-        const selected = document.querySelectorAll('.level-checkbox:checked');
-        const selectedLevels = new Set();
-        selected.forEach(cb => selectedLevels.add(cb.value));
-        
-        // Re-filter the data
-        const tableBody = document.getElementById('data-table-body');
-        const rows = tableBody.querySelectorAll('tr');
-        // We need to re-apply filters - trigger the apply button
-        const applyBtn = document.getElementById('level-filter-apply');
-        if (applyBtn) {
-          applyBtn.click();
-        }
+      // Update the data in the current view
+      const tableBody = document.getElementById('data-table-body');
+      const fileCountDisplay = document.getElementById('file-count-display');
+      
+      // Re-process the data
+      const processedData = updatedData.map(item => {
+        let q = (item.question || '').trim();
+        q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
+        return {
+          filename: (item.filename || '').trim(),
+          year: (item.year || '').trim(),
+          paper: (item.paper || '').trim(),
+          question: q,
+          mainTopic: (item.mainTopic || '').trim(),
+          otherTopics: Array.isArray(item.otherTopics)
+            ? item.otherTopics.map(t => t.trim()).filter(t => t !== "")
+            : [],
+          level: (item.level || '').trim()
+        };
+      });
+      
+      // Store the processed data globally for filtering
+      if (appInstance && appInstance.updateData) {
+        appInstance.updateData(processedData);
       }
       
-      debugLog(`✅ App updated with levels for ${updatedData.length} items`);
+      // Count items with levels
+      const itemsWithLevels = processedData.filter(item => item.level !== '');
+      debugLog(`📊 Updated app: ${itemsWithLevels.length} items have levels out of ${processedData.length}`);
+      
+      // Show counts per level
+      const levelCounts = {};
+      processedData.forEach(item => {
+        if (item.level) {
+          levelCounts[item.level] = (levelCounts[item.level] || 0) + 1;
+        }
+      });
+      debugLog(`📊 Level counts: ${JSON.stringify(levelCounts)}`);
+      
+      fileCountDisplay.textContent = `${processedData.length} files`;
     }
 
-    // MAIN APP LOGIC
+    // MAIN APP LOGIC - Returns instance with updateData method
     function startApp(allData) {
       let selectedTopics = new Set();
       let selectedYears = new Set();
@@ -1070,7 +1100,7 @@
       debugLog(`🚀 Starting app with ${allData.length} items`);
       debugLog(`📁 PDF_FOLDER: ${PDF_FOLDER}`);
 
-      allData = allData.map(item => {
+      let processedData = allData.map(item => {
         let q = (item.question || '').trim();
         q = q.replace(/\.pdf$/i, '').replace(/^q0+(\d)/i, 'q$1');
         return {
@@ -1086,7 +1116,7 @@
         };
       });
 
-      let currentFilteredData = [...allData]; 
+      let currentFilteredData = [...processedData]; 
       let currentSort = { column: 1, asc: false };
       const baseHeaders = ['Filename', 'Year', 'Paper', 'Question', 'Main Topic', 'Other Topics'];
       const headers = document.querySelectorAll('#data-table th');
@@ -1160,8 +1190,8 @@
           });
       }
 
-      populateDropdowns(allData);
-      setupEventListeners(allData);
+      populateDropdowns(processedData);
+      setupEventListeners(processedData);
       renderTable(currentFilteredData);
 
       function populateDropdowns(data) {
@@ -1599,6 +1629,19 @@
             lowerPanel.style.height = `${window.innerHeight - e.clientY - 2.5}px`;
         });
       }
+
+      // Return instance with updateData method
+      return {
+        updateData: function(newData) {
+          processedData = newData;
+          currentFilteredData = [...processedData];
+          // Re-populate dropdowns with new data
+          populateDropdowns(processedData);
+          // Re-render table
+          renderTable(currentFilteredData);
+          debugLog(`🔄 Data updated: ${processedData.length} items`);
+        }
+      };
     }
   </script>
 </body>
