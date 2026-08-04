@@ -1,0 +1,380 @@
+[
+  {
+    "filename": "2008_9745_P2_q1.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Determine vertical component of velocity", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)", "description": "Determine angle to horizontal", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)", "description": "Calculate average force on stone", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)", "description": "Explain effect of splash on stopping distance", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 28,
+    "overall_difficulty": 3.50
+  },
+  {
+    "filename": "2008_9745_P2_q2.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain how graph shows SHM", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(i)", "description": "State acceleration when sand loses contact", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Determine amplitude from graph", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 24,
+    "overall_difficulty": 3.43
+  },
+  {
+    "filename": "2008_9745_P2_q3.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Derive expression for kinetic energy", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(a)(ii)", "description": "Show ratio PE/KE equals -2", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Draw kinetic energy vs radius graph", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(ii)", "description": "Determine change in orbital speed", "level": 4, "marks": 5, "weighted_score": 20}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 46,
+    "overall_difficulty": 3.83
+  },
+  {
+    "filename": "2008_9745_P2_q4.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Calculate current from power graph", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(a)(ii)", "description": "Show resistance is 3.6 Ω", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)", "description": "Determine internal resistance of battery", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 23,
+    "overall_difficulty": 3.83
+  },
+  {
+    "filename": "2008_9745_P2_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain resistance decrease in semiconductor with temperature", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 3,
+    "weighted_sum": 12,
+    "overall_difficulty": 4.00
+  },
+  {
+    "filename": "2008_9745_P2_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain meaning of radioactive", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Define decay constant", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(ii)", "description": "Calculate decay constant from mass and activity", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)", "description": "Suggest why method works only for small decay constants", "level": 4, "marks": 1, "weighted_score": 4}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 15,
+    "overall_difficulty": 2.50
+  },
+  {
+    "filename": "2008_9745_P2_q7.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Describe variation of rate of radius increase", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(a)(ii)", "description": "Suggest why explosion is hazardous in a room", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(i)", "description": "Plot point and draw best‑fit line on log graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Determine gradient of log graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Suggest integers n and m from gradient", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)", "description": "Show R⁵ = cV from data", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)(i)", "description": "Suggest physical quantity constant c depends on", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)(ii)", "description": "Suggest another hazardous situation", "level": 2, "marks": 1, "weighted_score": 2}
+    ],
+    "total_marks": 16,
+    "weighted_sum": 52,
+    "overall_difficulty": 3.25
+  },
+  {
+    "filename": "2008_9745_P3_q1.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Plot graph to show inverse proportion", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)", "description": "State how graph demonstrates inverse proportion", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)", "description": "Draw work done vs displacement graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Determine gradient of log g vs log r graph", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(ii)", "description": "Summarise what gradient suggests", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 10,
+    "weighted_sum": 31,
+    "overall_difficulty": 3.10
+  },
+  {
+    "filename": "2008_9745_P3_q2.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Explain why e.m.f. is generated", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(a)(ii)", "description": "State two factors affecting maximum e.m.f.", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(a)(iii)", "description": "Explain why e.m.f. is sinusoidal", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(i)", "description": "Calculate peak input e.m.f.", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Calculate r.m.s. p.d. across resistor", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(iii)", "description": "Calculate r.m.s. current in resistor", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(iv)", "description": "Calculate mean power dissipated", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(v)", "description": "Calculate r.m.s. current from generator", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 32,
+    "overall_difficulty": 2.67
+  },
+  {
+    "filename": "2008_9745_P3_q3.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain stationary wave", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)", "description": "Explain diffraction", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)", "description": "Explain coherence", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(d)", "description": "Explain polarisation", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 16,
+    "overall_difficulty": 2.00
+  },
+  {
+    "filename": "2008_9745_P3_q4.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State meaning of internal energy", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "State first law of thermodynamics", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Calculate work done during C→A", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Complete energy table for cycle", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 20,
+    "overall_difficulty": 2.86
+  },
+  {
+    "filename": "2008_9745_P3_q5.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Define electric field strength", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Deduce expression for work done", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(iii)", "description": "Deduce V = Ed", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "Calculate number of electrons per second", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate speed of electrons at anode", "level": 3, "marks": 4, "weighted_score": 12},
+      {"part": "(b)(iii)", "description": "Calculate power supplied by electrons", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)", "description": "Calculate coolant flow rate", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(d)(i)", "description": "Explain why charge appears concentrated at centre", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)(ii)", "description": "Calculate electric field strength at surface", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(iii)", "description": "Calculate distance to point C", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 20,
+    "weighted_sum": 59,
+    "overall_difficulty": 2.95
+  },
+  {
+    "filename": "2008_9745_P3_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Distinguish frequency and angular frequency", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(i)", "description": "Calculate loss in gravitational potential energy", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Calculate elastic potential energy gained", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)", "description": "Explain why answers to (b) differ", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)(i)", "description": "Calculate resultant force at lowest point", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(ii)", "description": "Calculate angular frequency of oscillation", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(iii)", "description": "Calculate maximum speed of mass", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(e)", "description": "Complete energy table for SHM", "level": 4, "marks": 5, "weighted_score": 20},
+      {"part": "(f)", "description": "Sketch energy vs position graphs", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 19,
+    "weighted_sum": 64,
+    "overall_difficulty": 3.37
+  },
+  {
+    "filename": "2008_9745_P3_q7.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Describe evidence for small charged nucleus", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "State x and y in fission equation", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate energy released in fission", "level": 3, "marks": 4, "weighted_score": 12},
+      {"part": "(b)(iii)", "description": "State how remaining energy is released", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(iv)1", "description": "Calculate ratio of speeds of nuclei", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(iv)2", "description": "Calculate ratio of kinetic energies", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(v)", "description": "Calculate speed of zirconium nucleus", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(vi)", "description": "State two assumptions made", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 19,
+    "weighted_sum": 57,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2007_9745_P2_q1.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Determine acceleration of free fall g", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)1", "description": "Calculate percentage uncertainty in h", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)2", "description": "Calculate percentage uncertainty in t", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)", "description": "Determine uncertainty in g and state value", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)", "description": "Suggest reasons why t may not be accurate", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 28,
+    "overall_difficulty": 3.11
+  },
+  {
+    "filename": "2007_9745_P2_q2.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Define electric field strength", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Mark direction of electric field", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(ii)", "description": "Calculate force on electron at midpoint", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Estimate potential difference", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Suggest over- or under-estimate", "level": 4, "marks": 1, "weighted_score": 4}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 19,
+    "overall_difficulty": 2.38
+  },
+  {
+    "filename": "2007_9745_P2_q3.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State meaning of progressive wave", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "State three conditions for interference", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(b)(ii)1", "description": "Determine number of maxima directions", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)2", "description": "Draw line of minimum amplitude", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 14,
+    "overall_difficulty": 2.00
+  },
+  {
+    "filename": "2007_9745_P2_q4.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State direction of magnetic field", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Show p = 2Ber", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Show kinetic energy expression", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)", "description": "Sketch path for faster α-particle", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 16,
+    "overall_difficulty": 2.67
+  },
+  {
+    "filename": "2007_9745_P2_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Draw arrow for electron movement", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)", "description": "Describe origin of depletion region", "level": 4, "marks": 4, "weighted_score": 16},
+      {"part": "(c)", "description": "Draw battery to increase depletion width", "level": 2, "marks": 1, "weighted_score": 2}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 19,
+    "overall_difficulty": 3.17
+  },
+  {
+    "filename": "2007_9745_P2_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Identify nucleus X", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "Deduce change in rest-mass energy", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Suggest how reaction can occur", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(iii)", "description": "Describe effect of movement on energy", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 25,
+    "overall_difficulty": 3.57
+  },
+  {
+    "filename": "2007_9745_P2_q7.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Show gradient gives force", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(a)(ii)", "description": "Suggest attractive/repulsive from graph", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(a)(iii)1", "description": "Determine force at r = 2.8×10⁻¹⁰ m", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(iii)2", "description": "Determine force at r = 5.0×10⁻¹⁰ m", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)", "description": "State features of B/r⁸ force term", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(i)1", "description": "Determine minimum and maximum r", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)2", "description": "Determine kinetic energy at r = 3.5×10⁻¹⁰ m", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Explain why motion is not SHM", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)", "description": "Suggest why lattice expands on heating", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 18,
+    "weighted_sum": 60,
+    "overall_difficulty": 3.33
+  },
+  {
+    "filename": "2007_9745_P3_q1.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State why nuclei repel", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "State what happens if v is high", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(iii)", "description": "Explain why nuclei cannot stop simultaneously", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)", "description": "Calculate speed when nuclei move together", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Label velocity‑time graph", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(ii)", "description": "Determine final speeds of nuclei", "level": 4, "marks": 4, "weighted_score": 16}
+    ],
+    "total_marks": 13,
+    "weighted_sum": 41,
+    "overall_difficulty": 3.15
+  },
+  {
+    "filename": "2007_9745_P3_q2.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Deduce electric field strength from diagram", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(a)(ii)", "description": "Calculate work done moving charge", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)", "description": "Explain zero potential along centre line", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 19,
+    "overall_difficulty": 2.71
+  },
+  {
+    "filename": "2007_9745_P3_q3.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Calculate resistance at 6.0 V", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)", "description": "Deduce minimum resistance over 0–10 V", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Calculate p.d. across component C", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate total current from supply", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(iii)", "description": "Calculate e.m.f. of supply", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iv)", "description": "Calculate energy supplied to C in 20 min", "level": 3, "marks": 3, "weighted_score": 9}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 38,
+    "overall_difficulty": 3.17
+  },
+  {
+    "filename": "2007_9745_P3_q4.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Discuss energy changes in oscillating spring‑mass", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)", "description": "Discuss energy changes in radioactive decay", "level": 4, "marks": 4, "weighted_score": 16}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 28,
+    "overall_difficulty": 4.00
+  },
+  {
+    "filename": "2007_9745_P3_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Convert rpm to rad s⁻¹", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Show Earth's angular velocity", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Calculate centripetal acceleration at equator", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Explain why g differs at equator and poles", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)(ii)", "description": "Explain why difference is small", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)(i)", "description": "State Newton's law of gravitation", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(d)(ii)", "description": "Derive g = GM/R²", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(e)(i)", "description": "Calculate radius for geostationary satellite", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)(ii)", "description": "State two conditions for geostationary", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(f)", "description": "Give advantages of polar and geostationary orbits", "level": 2, "marks": 4, "weighted_score": 8}
+    ],
+    "total_marks": 20,
+    "weighted_sum": 53,
+    "overall_difficulty": 2.65
+  },
+  {
+    "filename": "2007_9745_P3_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Convert K to Celsius", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)", "description": "State meaning of absolute scale", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(c)(i)", "description": "Explain internal energy of gas", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(ii)", "description": "Explain ideal gas", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(d)(i)", "description": "Calculate amount of air to supply", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(d)(ii)", "description": "Show enough air in portable supply", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)(i)", "description": "Show internal energy of air molecule", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(e)(ii)", "description": "Calculate internal energy of one mole", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(e)(iii)", "description": "Calculate increase in internal energy", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(f)(i)", "description": "State first law of thermodynamics", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(f)(ii)", "description": "Apply first law to calculate work done", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 21,
+    "weighted_sum": 53,
+    "overall_difficulty": 2.52
+  },
+  {
+    "filename": "2007_9745_P3_q7.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain photoelectric effect and evidence for particles", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(b)", "description": "State photoelectric equation and explain terms", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(c)", "description": "Calculate work function energy", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(d)(i)", "description": "Calculate length of radio pulse", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(ii)", "description": "Calculate uncertainty in photon position", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(iii)", "description": "Calculate uncertainty in photon momentum", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)", "description": "Explain potential barrier and quantum tunnelling", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 17,
+    "weighted_sum": 48,
+    "overall_difficulty": 2.82
+  }
+]
