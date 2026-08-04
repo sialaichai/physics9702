@@ -776,5 +776,395 @@
     "total_marks": 21,
     "weighted_sum": 72,
     "overall_difficulty": 3.43
+  },
+  {
+    "filename": "2011_9646_P2_q1.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Calculate vertical component of initial velocity", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)", "description": "Show maximum height is 16 m", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(iii)1", "description": "Determine KE and PE at maximum height", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(iii)2", "description": "Determine KE and PE at 8.0 m height", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Sketch potential energy vs horizontal distance graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Sketch kinetic energy vs horizontal distance graph", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 11,
+    "weighted_sum": 33,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2011_9646_P2_q2.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Describe band theory for insulators and semiconductors", "level": 4, "marks": 4, "weighted_score": 16},
+      {"part": "(b)", "description": "Explain doping to change conduction properties", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 28,
+    "overall_difficulty": 4.00
+  },
+  {
+    "filename": "2011_9646_P2_q3.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Determine frequency from c.r.o. trace", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)", "description": "Determine peak p.d. from c.r.o. trace", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "Calculate r.m.s. current in resistor", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate mean power transformed in resistor", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 21,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2011_9646_P2_q4.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Draw electric field lines between spheres", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(a)(ii)", "description": "Calculate electric field strength at midpoint", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(iii)", "description": "Show electric force on S is 6.5 × 10⁻⁵ N", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 21,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2011_9646_P2_q5.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Explain term isotope", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Define half-life", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(iii)", "description": "Complete nuclear equation for α-decay", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Sketch decay graph for plutonium-239", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Sketch decay graph for uranium-X", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)", "description": "Suggest why energy values differ", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 10,
+    "weighted_sum": 28,
+    "overall_difficulty": 2.80
+  },
+  {
+    "filename": "2011_9646_P2_q6.pdf",
+    "parts": [
+      {"part": "(b)(i)1", "description": "Plot point on log graph", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)2", "description": "Draw line of best fit", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Determine gradient of log graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Determine magnitude of k", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Calculate viscosity magnitude", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Determine SI base units for viscosity", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)", "description": "Determine pressure ratio for reduced radius", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(e)", "description": "Suggest change to graph for cooking oil", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 15,
+    "weighted_sum": 48,
+    "overall_difficulty": 3.20
+  },
+  {
+    "filename": "2011_9646_P2_q7.pdf",
+    "parts": [
+      {"part": "(a-e)", "description": "Design experiment to determine n in f = k μⁿ", "level": 5, "marks": 12, "weighted_score": 60}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 60,
+    "overall_difficulty": 5.00
+  },
+  {
+    "filename": "2011_9646_P3_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain rocket produces forward force using momentum", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(i)1", "description": "Determine acceleration from speed-time graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)2", "description": "Determine resistive force magnitude", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Deduce resistive forces increase with speed", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)", "description": "Comment on rocket propelling car vertically", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 11,
+    "weighted_sum": 40,
+    "overall_difficulty": 3.64
+  },
+  {
+    "filename": "2011_9646_P3_q2.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Calculate thermal energy for temperature rise at constant volume", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Calculate change in volume at constant pressure", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate external work done by gas", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "State first law of thermodynamics with directions", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(c)(ii)", "description": "Determine thermal energy at constant pressure", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 23,
+    "overall_difficulty": 2.56
+  },
+  {
+    "filename": "2011_9646_P3_q3.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain principle of superposition", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Calculate separation of bright fringes", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Determine dark fringe intensity", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 23,
+    "overall_difficulty": 2.88
+  },
+  {
+    "filename": "2011_9646_P3_q4.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain minimum wavelength in X-ray spectrum", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)", "description": "Calculate energy change from characteristic wavelength", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 4,
+    "weighted_sum": 14,
+    "overall_difficulty": 3.50
+  },
+  {
+    "filename": "2011_9646_P3_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State approximate maximum binding energy per nucleon", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Mark uranium-235 on binding energy graph", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(ii)", "description": "Mark barium-141 on binding energy graph", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(iii)", "description": "Mark krypton-92 on binding energy graph", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(c)", "description": "Explain energy release in fission by binding energy per nucleon", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 15,
+    "overall_difficulty": 2.50
+  },
+  {
+    "filename": "2011_9646_P3_q6.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Define gravitational potential", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Explain why gravitational potential is negative", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(i)", "description": "Show kinetic energy in orbit E_K = GMm/2R", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Show total energy in orbit E_T = -GMm/2R", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Determine satellite speed", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(ii)", "description": "Determine if satellite is geostationary", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)", "description": "Suggest why satellites burn up in atmosphere", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 16,
+    "weighted_sum": 49,
+    "overall_difficulty": 3.06
+  },
+  {
+    "filename": "2011_9646_P3_q7.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State meaning of simple harmonic motion", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Determine frequency of oscillation", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Show total energy E_T = 2π²mf²a²", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Calculate energy of oscillations", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "State and explain type of damping", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)(ii)1", "description": "State Faraday's law", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(c)(ii)2", "description": "Explain damping using Faraday's law", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)(iii)", "description": "Calculate energy loss during first 1.8 s", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(d)", "description": "State and explain effect of iron core", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 19,
+    "weighted_sum": 59,
+    "overall_difficulty": 3.11
+  },
+  {
+    "filename": "2011_9646_P3_q8.pdf",
+    "parts": [
+      {"part": "(c)(i)1", "description": "Calculate maximum possible current from supply", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(i)2", "description": "Calculate minimum safe power rating of resistor", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Suggest purpose of 3.0 Ω resistor", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)(i)", "description": "State two values of R for 9.0 W power", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(ii)", "description": "Calculate efficiency for each resistance", "level": 3, "marks": 4, "weighted_score": 12},
+      {"part": "(e)", "description": "State and explain choice of internal resistance for max efficiency", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 38,
+    "overall_difficulty": 3.17
+  },
+  {
+    "filename": "2012_9646_P2_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State and explain if spring obeys Hooke's law", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)", "description": "Calculate work done on spring", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Calculate maximum speed of object", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Draw velocity vs time graph for oscillations", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(i)", "description": "Determine new length of spring with immersed object", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)(ii)", "description": "State two differences in oscillations with liquid", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 13,
+    "weighted_sum": 42,
+    "overall_difficulty": 3.23
+  },
+  {
+    "filename": "2012_9646_P2_q2.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Calculate power of heater", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)", "description": "Calculate specific heat capacity of liquid", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)", "description": "Suggest cause for difference from accepted value", "level": 2, "marks": 1, "weighted_score": 2}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 17,
+    "overall_difficulty": 2.83
+  },
+  {
+    "filename": "2012_9646_P2_q3.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Describe diode characteristics from graph", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(a)(ii)", "description": "Determine resistance of diode at 0.80 V", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)", "description": "Explain why circuit is inappropriate", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)(i)", "description": "Draw appropriate circuit diagram", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(ii)", "description": "Explain why circuit is appropriate", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 25,
+    "overall_difficulty": 2.78
+  },
+  {
+    "filename": "2012_9646_P2_q4.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain how molecules produce force on piston", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(i)", "description": "Explain how pressure remains constant as volume increases", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(ii)", "description": "Calculate volume of gas at 90°C", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Calculate work done by gas", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)", "description": "Apply first law to describe process", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 29,
+    "overall_difficulty": 3.22
+  },
+  {
+    "filename": "2012_9646_P2_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State Faraday's law of electromagnetic induction", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Calculate maximum current in resistor", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Sketch current vs time graph", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 16,
+    "overall_difficulty": 2.67
+  },
+  {
+    "filename": "2012_9646_P2_q6.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Determine ln r for A = 60", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)1", "description": "Plot point on log graph", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)2", "description": "Draw line of best fit", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(iii)", "description": "Determine gradient of line", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(iv)", "description": "Show magnitude of k is 1.3 × 10⁻¹⁵ m", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(v)", "description": "Suggest what k represents", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Calculate radius of uranium-235 nucleus", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Calculate ratio of densities", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)", "description": "Give two reasons for different density ratio", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 16,
+    "weighted_sum": 47,
+    "overall_difficulty": 2.94
+  },
+  {
+    "filename": "2012_9646_P2_q7.pdf",
+    "parts": [
+      {"part": "(a-e)", "description": "Design experiment to determine b in η = aωᵇ", "level": 5, "marks": 12, "weighted_score": 60}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 60,
+    "overall_difficulty": 5.00
+  },
+  {
+    "filename": "2012_9646_P3_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Draw speed-time graph for falling in vacuum", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)", "description": "Determine acceleration from graph at t = 0.20 s", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(i)", "description": "Calculate maximum resistive force", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(ii)", "description": "Show resistive force at 0.20 s is about 0.083 N", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)", "description": "Suggest if air resistance is proportional to speed", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 25,
+    "overall_difficulty": 3.13
+  },
+  {
+    "filename": "2012_9646_P3_q2.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Show ω²x³ = GM for circular orbit", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(i)", "description": "Calculate distance of star from Earth", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Order planets by orbital distance", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(iii)", "description": "Calculate mass of star using planetary data", "level": 4, "marks": 5, "weighted_score": 20}
+    ],
+    "total_marks": 11,
+    "weighted_sum": 38,
+    "overall_difficulty": 3.45
+  },
+  {
+    "filename": "2012_9646_P3_q3.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Calculate frequency of oscillation from KE-displacement graph", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)", "description": "Determine amplitude after energy loss", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 5,
+    "weighted_sum": 20,
+    "overall_difficulty": 4.00
+  },
+  {
+    "filename": "2012_9646_P3_q4.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State meaning of coherent light", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Explain why vapour light is not coherent", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)", "description": "Calculate slit separation from fringe pattern", "level": 3, "marks": 4, "weighted_score": 12}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 21,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2012_9646_P3_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Account for semiconductor resistance decrease with temperature", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)", "description": "Account for metal resistance increase with temperature", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 24,
+    "overall_difficulty": 4.00
+  },
+  {
+    "filename": "2012_9646_P3_q6.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Define linear momentum", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "State relation between force and momentum", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "State principle of conservation of linear momentum", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(ii)", "description": "Explain if both trolleys can be at rest simultaneously", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)(i)", "description": "Calculate momentum of β-particle", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(ii)1", "description": "Calculate wavelength of γ-photon", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)2", "description": "Calculate momentum of γ-photon", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(i)", "description": "Explain why particles move in opposite directions", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)(ii)", "description": "Suggest relation between angles θ and φ", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 19,
+    "weighted_sum": 60,
+    "overall_difficulty": 3.16
+  },
+  {
+    "filename": "2012_9646_P3_q7.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State meaning of field of force", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Define electric field strength", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(iii)", "description": "Suggest why test particle must be stationary", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "State relation between E and V", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(ii)1", "description": "State and explain electric field direction at P", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(ii)2", "description": "Determine force on electron at P", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)3", "description": "Explain why potential is constant near sphere", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(i)", "description": "Show whether Vx = constant is correct", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)(ii)", "description": "Suggest explanation for conclusion", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)(i)", "description": "Calculate minimum speed of electron", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)(ii)", "description": "Describe path of electron", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 21,
+    "weighted_sum": 62,
+    "overall_difficulty": 2.95
+  },
+  {
+    "filename": "2012_9646_P3_q8.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Explain spontaneous decay", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(a)(ii)", "description": "Explain random decay", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Give expression for activity", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Give expression for probability of decay", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(iii)", "description": "Give expression for decay constant", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(i)", "description": "Complete nuclear equations for β⁻ decay chain", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Calculate decay constant of yttrium isotope", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(i)", "description": "Calculate fraction of strontium-90 remaining", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(ii)", "description": "Explain zirconium nuclei observation", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)(iii)", "description": "Explain why X-rays may be detected outside lead container", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 17,
+    "weighted_sum": 47,
+    "overall_difficulty": 2.76
   }
 ]
