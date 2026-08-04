@@ -376,5 +376,405 @@
     "total_marks": 17,
     "weighted_sum": 48,
     "overall_difficulty": 2.82
+  },
+  {
+    "filename": "2009_9745H2_P2_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Distinguish vector and scalar quantities", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)", "description": "Define acceleration", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(c)(i)", "description": "Determine change in velocity magnitude", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Calculate acceleration between A and B", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(iii)", "description": "Draw resultant force direction at P", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(c)(iv)", "description": "Explain force causes acceleration but no KE change", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 10,
+    "weighted_sum": 23,
+    "overall_difficulty": 2.30
+  },
+  {
+    "filename": "2009_9745H2_P2_q2.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Calculate initial vertical velocity component", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)", "description": "Calculate average force during collision", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)", "description": "State and explain if collision is elastic", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)", "description": "Explain why ball does not rebound to kicking point", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 29,
+    "overall_difficulty": 3.22
+  },
+  {
+    "filename": "2009_9745H2_P2_q3.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Suggest implication of off-centre centre of gravity", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)", "description": "Explain two conditions for equilibrium while moving", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(c)", "description": "Determine tensions using principle of moments", "level": 4, "marks": 4, "weighted_score": 16}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 20,
+    "overall_difficulty": 2.86
+  },
+  {
+    "filename": "2009_9745H2_P2_q4.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Explain diffraction", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(a)(ii)", "description": "Explain coherence", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(a)(iii)", "description": "Explain superposition", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(i)", "description": "Calculate maximum angle in second order spectrum", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate minimum angle in third order spectrum", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(iii)", "description": "Explain problem with viewing second or third order maxima", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 11,
+    "weighted_sum": 29,
+    "overall_difficulty": 2.64
+  },
+  {
+    "filename": "2009_9745H2_P2_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Calculate electric force between particles", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)", "description": "Explain shaded area on force-separation graph", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)", "description": "Explain energy changes during fusion", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 25,
+    "overall_difficulty": 3.57
+  },
+  {
+    "filename": "2009_9745H2_P2_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Show magnetic flux linkage is 0.019 Wb turns", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Explain why e.m.f. is induced", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(ii)", "description": "Calculate magnitude of induced e.m.f.", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Sketch e.m.f. vs time graph", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 22,
+    "overall_difficulty": 2.75
+  },
+  {
+    "filename": "2009_9745H2_P2_q7.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Show temperature increases during compression", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)", "description": "Explain how to test pV^γ = c using log graph", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(i)", "description": "Determine lg(p/Pa) for V = 1.00×10⁻³ m³", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(ii)", "description": "Plot point and draw line of best fit", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(iii)", "description": "Determine constants γ and c from line", "level": 4, "marks": 4, "weighted_score": 16},
+      {"part": "(d)", "description": "Estimate final temperature for compression ratio 3.85", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(e)", "description": "Explain why gas temperature falls rapidly after explosion", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 17,
+    "weighted_sum": 56,
+    "overall_difficulty": 3.29
+  },
+  {
+    "filename": "2009_9745H2_P3_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Define simple harmonic motion", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)1", "description": "Calculate angular frequency of cone", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)2", "description": "Calculate maximum acceleration of cone", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Plot acceleration vs displacement graph", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)", "description": "Suggest why natural frequency should not be in range", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 10,
+    "weighted_sum": 24,
+    "overall_difficulty": 2.40
+  },
+  {
+    "filename": "2009_9745H2_P3_q2.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Calculate resistance of solenoid wire", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)", "description": "Calculate total number of turns", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(iii)", "description": "Show turns per metre is 3000", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "Define the tesla", "level": 1, "marks": 3, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Calculate magnetic flux density", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(i)", "description": "Calculate velocity component along axis", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(ii)", "description": "Calculate velocity component normal to axis", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)", "description": "Derive r = mv/Bq for circular motion in magnetic field", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)", "description": "Determine if electron collides with wall", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 16,
+    "weighted_sum": 45,
+    "overall_difficulty": 2.81
+  },
+  {
+    "filename": "2009_9745H2_P3_q3.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Calculate momentum of electron from de Broglie wavelength", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)", "description": "Calculate potential difference for electron acceleration", "level": 3, "marks": 4, "weighted_score": 12}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 18,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2009_9745H2_P3_q4.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain why half-life definition is inappropriate", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)", "description": "Calculate half-life of cobalt-60 from activity and mass", "level": 3, "marks": 4, "weighted_score": 12}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 20,
+    "overall_difficulty": 3.33
+  },
+  {
+    "filename": "2009_9745H2_P3_q5.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Define gravitational field strength", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "State Newton's law and derive g = GM/R²", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(i)", "description": "Calculate mean density of neutron star", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Suggest whether density varies with distance from centre", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)(i)", "description": "Calculate gravitational field strength at surface", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Calculate centripetal acceleration from period", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(iii)", "description": "Suggest whether particles leave surface due to rotation", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)", "description": "Suggest why proton stream may be X-ray source", "level": 2, "marks": 3, "weighted_score": 6}
+    ],
+    "total_marks": 21,
+    "weighted_sum": 64,
+    "overall_difficulty": 3.05
+  },
+  {
+    "filename": "2009_9745H2_P3_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Deduce air resistance varies with speed from graph", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)", "description": "State feature that enables g determination", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Determine maximum height from velocity-time graph", "level": 4, "marks": 4, "weighted_score": 16},
+      {"part": "(c)(ii)", "description": "Calculate energy lost due to air resistance ratio", "level": 4, "marks": 4, "weighted_score": 16},
+      {"part": "(d)(i)", "description": "Show acceleration is approximately -13 m/s²", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(ii)", "description": "Calculate force due to air resistance", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)", "description": "Sketch velocity-time graph for fall", "level": 3, "marks": 3, "weighted_score": 9}
+    ],
+    "total_marks": 20,
+    "weighted_sum": 70,
+    "overall_difficulty": 3.50
+  },
+  {
+    "filename": "2009_9745H2_P3_q7.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Define the volt", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Distinguish e.m.f. and p.d. by energy transfers", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(i)", "description": "Calculate charge passing through cell", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(ii)", "description": "Calculate total energy transferred by cell", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Calculate energy transferred in resistor R", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(iv)", "description": "Calculate resistance of R", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Calculate new resistance with two cells", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)", "description": "Suggest why R values differ", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)(i)", "description": "Explain why internal resistance is negligible", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)(ii)1", "description": "Calculate p.d. across thermistor at 0°C", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(ii)2", "description": "Calculate p.d. across thermistor at 20°C", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(iii)", "description": "Determine if fixed resistor can achieve desired range", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 20,
+    "weighted_sum": 57,
+    "overall_difficulty": 2.85
+  },
+  {
+    "filename": "2010_9646_P2_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State Newton's second law of motion", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Show resistive force is 3600 N", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Calculate distance travelled during deceleration", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Describe horizontal forces using Newton's third law", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(i)", "description": "Explain why stopping distance is greater on slope", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)(ii)", "description": "Calculate deceleration on slope", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 32,
+    "overall_difficulty": 2.67
+  },
+  {
+    "filename": "2010_9646_P2_q2.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Calculate resistance of lamp", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)", "description": "Calculate energy transferred in lamp", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(iii)", "description": "Calculate number of electrons passing through", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Explain how resistance is obtained from I-V graph", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(ii)", "description": "Sketch resistance variation with p.d.", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(iii)", "description": "Explain why p.d. cannot vary from 0 to 12 V", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 11,
+    "weighted_sum": 31,
+    "overall_difficulty": 2.82
+  },
+  {
+    "filename": "2010_9646_P2_q3.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State meaning of diffraction", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(a)(ii)", "description": "State meaning of phase difference", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(a)(iii)", "description": "State meaning of coherence", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Explain formation of interference fringes", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(ii)1", "description": "Describe effect of increased intensity on fringes", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(ii)2", "description": "Describe effect of phase change by π on fringes", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 11,
+    "weighted_sum": 23,
+    "overall_difficulty": 2.09
+  },
+  {
+    "filename": "2010_9646_P2_q4.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Define magnetic flux", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)", "description": "Calculate magnetic flux linkage", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Explain why flux linkage changes as coil rotates", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(ii)", "description": "Calculate average induced e.m.f.", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(iii)", "description": "Explain how maximum e.m.f. is determined from graph", "level": 3, "marks": 1, "weighted_score": 3}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 20,
+    "overall_difficulty": 2.50
+  },
+  {
+    "filename": "2010_9646_P2_q5.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Explain absolute zero on thermodynamic scale", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(a)(ii)", "description": "State relation between temperature and molecular energy", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)(i)", "description": "Calculate mass of air in oven", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Calculate mass of air that escapes", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 23,
+    "overall_difficulty": 2.56
+  },
+  {
+    "filename": "2010_9646_P2_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Determine temperature at x = 17.5 cm from graph", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "State relation between thermal energy rates", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(ii)", "description": "Determine temperature gradient from graph", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iii)", "description": "Explain why temperature is higher in insulated rod", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)", "description": "Show inverse proportion proposal is incorrect", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(d)(i)", "description": "Complete table with excess temperature and log", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(ii)", "description": "Explain why graph supports exponential proposal", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(d)(iii)", "description": "Determine constants θ₀ and μ from graph", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(e)", "description": "Sketch temperature variation for wooden rod", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 17,
+    "weighted_sum": 57,
+    "overall_difficulty": 3.35
+  },
+  {
+    "filename": "2010_9646_P2_q7.pdf",
+    "parts": [
+      {"part": "(a-e)", "description": "Design experiment to determine solar panel efficiency", "level": 5, "marks": 12, "weighted_score": 60}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 60,
+    "overall_difficulty": 5.00
+  },
+  {
+    "filename": "2010_9646_P3_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "State meaning of latent heat of vaporisation", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Suggest why two different values of P are used", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(b)(ii)", "description": "Calculate specific latent heat of vaporisation", "level": 3, "marks": 3, "weighted_score": 9}
+    ],
+    "total_marks": 6,
+    "weighted_sum": 18,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2010_9646_P3_q2.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Explain why centripetal force exceeds 2mg", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(a)(ii)", "description": "State magnitude of centripetal force", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(iii)", "description": "Determine tension with ball below C", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "Calculate angular speed from centripetal force", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(b)(ii)", "description": "Calculate linear speed", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Explain why work is done moving from top to bottom", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(ii)", "description": "Calculate work done for 240 g ball", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 13,
+    "weighted_sum": 39,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2010_9646_P3_q3.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State meaning of field of force", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "Explain how field strength changes are represented", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(i)", "description": "State property experiencing force in gravitational field", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(ii)", "description": "State property experiencing force in electric field", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(iii)", "description": "State property experiencing force in magnetic field", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(c)", "description": "Explain velocity selection using electric and magnetic fields", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 9,
+    "weighted_sum": 20,
+    "overall_difficulty": 2.22
+  },
+  {
+    "filename": "2010_9646_P3_q4.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Determine resistance of R₁ from switch data", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(ii)", "description": "Determine resistance of R₂ from switch data", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(a)(iii)", "description": "Determine resistance of R₃ from switch data", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)", "description": "Calculate resistance between X and Z", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 5,
+    "weighted_sum": 15,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "2010_9646_P3_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Define work function of a surface", "level": 1, "marks": 2, "weighted_score": 2},
+      {"part": "(b)", "description": "Determine if electrons are emitted", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)", "description": "Explain if intensity affects conclusion", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 15,
+    "overall_difficulty": 2.14
+  },
+  {
+    "filename": "2010_9646_P3_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Define force", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Show area representing energy stored", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(ii)", "description": "Show E = ½kx² for elastic spring", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(i)", "description": "Determine total length of spring", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(ii)1", "description": "Calculate change in gravitational potential energy", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)(ii)2", "description": "Calculate change in elastic potential energy", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)(iii)", "description": "Show work done is 4.0 × 10⁻³ J", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(i)", "description": "State total energy of oscillation", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(d)(ii)1", "description": "Calculate maximum speed", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(ii)2", "description": "Calculate frequency of oscillation", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)", "description": "Suggest effect of spring mass on frequency", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 19,
+    "weighted_sum": 56,
+    "overall_difficulty": 2.95
+  },
+  {
+    "filename": "2010_9646_P3_q7.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Explain progressive transverse wave", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(b)", "description": "Distinguish polarised and unpolarised transverse waves", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(c)(i)", "description": "State amplitude after polaroid Q", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(ii)", "description": "State intensity after polaroid Q", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(c)(iii)", "description": "State relation between amplitude and intensity", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(d)", "description": "Complete table for amplitudes and intensities", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(e)(i)", "description": "State principle of superposition", "level": 1, "marks": 3, "weighted_score": 3},
+      {"part": "(e)(ii)", "description": "Explain formation of stationary wave in pipe", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(f)(i)", "description": "Mark nodes and antinodes on pipe", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(f)(ii)", "description": "Calculate speed of sound in pipe", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(g)", "description": "Explain why speed measurement is underestimate", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 24,
+    "weighted_sum": 60,
+    "overall_difficulty": 2.50
+  },
+  {
+    "filename": "2010_9646_P3_q8.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "State momentum conservation equation for α-decay", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(a)(ii)", "description": "Show ratio of kinetic energies equals (A/4 - 1)", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(i)", "description": "Calculate energy released from mass defect", "level": 3, "marks": 4, "weighted_score": 12},
+      {"part": "(b)(ii)", "description": "Show α-particle energy is 6.42 MeV", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)(i)", "description": "Suggest explanation for energy difference", "level": 4, "marks": 2, "weighted_score": 8},
+      {"part": "(c)(ii)", "description": "Suggest why nuclei do not move in opposite directions", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(d)(i)", "description": "Calculate half-life of bismuth-212", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(d)(ii)", "description": "Explain observations about nuclei counts", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 21,
+    "weighted_sum": 72,
+    "overall_difficulty": 3.43
   }
 ]
