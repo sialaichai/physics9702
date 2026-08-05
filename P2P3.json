@@ -1213,5 +1213,84 @@
     "total_marks": 7,
     "weighted_sum": 22,
     "overall_difficulty": 3.14
+  },
+  {
+    "filename": "9702_w09_41_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Sketch magnetic flux pattern around wire", "level": 2, "marks": 3, "weighted_score": 6},
+      {"part": "(b)(i)", "description": "Mark point of zero resultant magnetic field", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(ii)", "description": "Calculate Earth's horizontal magnetic flux density", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(c)", "description": "Determine new current in wire", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 8,
+    "weighted_sum": 20,
+    "overall_difficulty": 2.50
+  },
+  {
+    "filename": "9702_w12_21_q1.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Define acceleration", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(a)(ii)", "description": "State Newton's first law", "level": 1, "marks": 1, "weighted_score": 1},
+      {"part": "(b)(i)", "description": "Calculate distance in first 3.0s", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Explain variation of resultant force", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(b)(iii)1", "description": "Describe frictional force at C", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(iii)2", "description": "Describe frictional force between C and E", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)(iv)1", "description": "Calculate average acceleration", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(iv)2", "description": "Calculate average frictional force", "level": 4, "marks": 3, "weighted_score": 12}
+    ],
+    "total_marks": 14,
+    "weighted_sum": 42,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "9702_m19_22_q6.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Describe e.m.f. and p.d. with energy", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(i)1", "description": "Calculate current in resistor Z", "level": 3, "marks": 1, "weighted_score": 3},
+      {"part": "(b)(i)2", "description": "Calculate total power from battery", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)3", "description": "Calculate number of conduction electrons", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)4", "description": "Calculate total resistance of X and Y", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(i)5", "description": "Calculate resistance Rx", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "State and explain voltmeter change", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 13,
+    "weighted_sum": 39,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "9702_w02_4_q5.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Draw capacitor arrangement for 48μF/50V", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)", "description": "Draw capacitor arrangement for 72μF/25V", "level": 3, "marks": 2, "weighted_score": 6}
+    ],
+    "total_marks": 4,
+    "weighted_sum": 12,
+    "overall_difficulty": 3.00
+  },
+  {
+    "filename": "9702_w25_qp_22_q1.pdf",
+    "parts": [
+      {"part": "(a)", "description": "Complete SI base units table", "level": 1, "marks": 3, "weighted_score": 3},
+      {"part": "(b)(i)", "description": "Calculate upthrust on balloon", "level": 3, "marks": 2, "weighted_score": 6},
+      {"part": "(b)(ii)", "description": "Explain upthrust on balloon", "level": 2, "marks": 2, "weighted_score": 4},
+      {"part": "(b)(iii)", "description": "Calculate initial acceleration", "level": 3, "marks": 3, "weighted_score": 9},
+      {"part": "(c)", "description": "Determine absolute uncertainty", "level": 4, "marks": 2, "weighted_score": 8}
+    ],
+    "total_marks": 12,
+    "weighted_sum": 30,
+    "overall_difficulty": 2.50
+  },
+  {
+    "filename": "9702_s06_2_q06.pdf",
+    "parts": [
+      {"part": "(a)(i)", "description": "Sketch stationary wave form", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(a)(ii)", "description": "Mark node positions", "level": 2, "marks": 1, "weighted_score": 2},
+      {"part": "(b)", "description": "Calculate speed of sound", "level": 4, "marks": 3, "weighted_score": 12},
+      {"part": "(c)", "description": "Suggest antinode position", "level": 2, "marks": 2, "weighted_score": 4}
+    ],
+    "total_marks": 7,
+    "weighted_sum": 20,
+    "overall_difficulty": 2.86
   }
+
 ]
